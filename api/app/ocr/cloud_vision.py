@@ -37,7 +37,8 @@ class CloudVisionEngine:
                 f"service-account key, including the outer braces."
             ) from exc
 
-        missing = [k for k in ("type", "project_id", "private_key", "client_email") if k not in info]
+        required = ("type", "project_id", "private_key", "client_email")
+        missing = [k for k in required if k not in info]
         if missing:
             raise RuntimeError(
                 f"GOOGLE_APPLICATION_CREDENTIALS_JSON parsed but is missing {missing}. "
