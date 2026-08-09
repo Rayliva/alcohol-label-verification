@@ -105,12 +105,17 @@ class TestBold:
 
 class TestProportion:
     def test_warning_text_the_size_of_body_text_passes(self) -> None:
-        layout = GOOD_LAYOUT.replace(warning_text_height=11.0, median_text_height=12.0)
+        # A compliant label prints the warning smaller than its body copy;
+        # the corpus measures 63%. Passing has to mean "proportionate", not
+        # "the same size as the brand name".
+        layout = GOOD_LAYOUT.replace(warning_text_height=7.6, median_text_height=12.0)
         report = check_warning(detected=STATUTORY_WARNING, layout=layout)
         assert verdict_for(report.checks, WarningCheckName.PROPORTION) is Verdict.PASS
 
     def test_somewhat_small_warning_text_is_reviewed(self) -> None:
-        layout = GOOD_LAYOUT.replace(warning_text_height=8.4, median_text_height=12.0)
+        # 45% of the surrounding text: smaller than any label in the corpus
+        # prints it, not small enough to call a violation on its own.
+        layout = GOOD_LAYOUT.replace(warning_text_height=5.4, median_text_height=12.0)
         report = check_warning(detected=STATUTORY_WARNING, layout=layout)
         assert verdict_for(report.checks, WarningCheckName.PROPORTION) is Verdict.NEEDS_REVIEW
 

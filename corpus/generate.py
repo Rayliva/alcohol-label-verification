@@ -443,7 +443,7 @@ _MALT_APPLICATION = {
     "bottler_address": "Brewed and bottled by North Shore Brewing, Duluth, Minnesota",
 }
 
-_PHASE_FOUR = "Wine and malt rule sets ship in Phase 4 (docs/PRD.md → Sequencing)."
+_PHASE_FOUR = "Wine and malt rule sets ship in Phase 4 (docs/PRD.md, Sequencing)."
 
 
 def _tier_three() -> list[Variant]:
@@ -756,12 +756,45 @@ def _glare(image: Image.Image, *, top: float, bottom: float, opacity: int) -> Im
 # --- Writing -------------------------------------------------------------------
 
 
-def _render(variants: list[Variant], out_dir: Path) -> None:
+def _render(variants: list[Variant], out_dir: Path, ocr_dir: Path | None = None) -> None:
     for item in variants:
-        path = render(item.spec, out_dir)
+        rendered = render(item.spec, out_dir)
         if item.degradation:
-            image = Image.open(path)
-            _apply_degradation(image, item.degradation).save(path)
+            image = Image.open(rendered.path)
+            _apply_degradation(image, item.degradation).save(rendered.path)
+        if ocr_dir is not None:
+            write_ground_truth_ocr(item, rendered, ocr_dir)
+
+
+def write_ground_truth_ocr(item: Variant, rendered: object, ocr_dir: Path) -> None:
+    """The boxes a perfect OCR engine would return for this label.
+
+    Recorded so the accuracy suite runs end to end with no credentials and no
+    network, and so a wrong verdict can be attributed to the rules rather than
+    to OCR. Not written for degraded labels: their whole point is that OCR is
+    the thing under stress.
+    """
+    if item.degradation:
+        return
+    ocr_dir.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "image": item.image_name,
+        "width": rendered.width,  # type: ignore[attr-defined]
+        "height": rendered.height,  # type: ignore[attr-defined]
+        "blocks": [
+            {
+                "text": line.text,
+                "x": line.x,
+                "y": line.y,
+                "width": line.width,
+                "height": line.height,
+            }
+            for line in rendered.lines  # type: ignore[attr-defined]
+        ],
+    }
+    (ocr_dir / f"{item.label_id}.json").write_text(
+        json.dumps(payload, indent=2) + chr(10), encoding="utf-8"
+    )
 
 
 def _as_fixture(item: Variant) -> dict[str, object]:
@@ -844,7 +877,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.batch:
         variants = batch_variants(args.batch)
-        _render(variants, args.out / "batch")
+        _render(variants, args.out / "batch", FIXTURES / "ocr" / "batch")
         write_batch_manifest(variants, FIXTURES / "batch" / "manifest.csv")
         print(f"{len(variants)} batch labels -> {args.out / 'batch'}")
         return 0
@@ -860,7 +893,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         parser.error("choose --all, --tier, --id or --batch")
 
-    _render(selected, args.out)
+    _render(selected, args.out, FIXTURES / "ocr")
     if args.all:
         write_expectations(CATALOGUE, FIXTURES / "expected.json")
         write_malformed_manifests(FIXTURES / "manifests")

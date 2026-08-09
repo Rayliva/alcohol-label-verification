@@ -1,0 +1,56 @@
+{
+  "image": "t3-malt-added-flavors-abv-missing.png",
+  "width": 1000,
+  "height": 1400,
+  "blocks": [
+    {
+      "text": "NORTH SHORE BREWING",
+      "x": 70,
+      "y": 150,
+      "width": 849,
+      "height": 68
+    },
+    {
+      "text": "Flavored Malt Beverage",
+      "x": 70,
+      "y": 266,
+      "width": 403,
+      "height": 38
+    },
+    {
+      "text": "355 mL",
+      "x": 70,
+      "y": 382,
+      "width": 101,
+      "height": 30
+    },
+    {
+      "text": "Brewed and bottled by North Shore Brewing, Duluth, Minnesota",
+      "x": 70,
+      "y": 480,
+      "width": 850,
+      "height": 30
+    },
+    {
+      "text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic",
+      "x": 70,
+      "y": 1261,
+      "width": 804,
+      "height": 18
+    },
+    {
+      "text": "beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages",
+      "x": 70,
+      "y": 1284,
+      "width": 834,
+      "height": 18
+    },
+    {
+      "text": "impairs your ability to drive a car or operate machinery, and may cause health problems.",
+      "x": 70,
+      "y": 1307,
+      "width": 702,
+      "height": 18
+    }
+  ]
+}

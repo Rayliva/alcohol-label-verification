@@ -1,0 +1,56 @@
+{
+  "image": "t3-wine-table-wine-no-abv.png",
+  "width": 1000,
+  "height": 1400,
+  "blocks": [
+    {
+      "text": "CEDAR HOLLOW",
+      "x": 70,
+      "y": 150,
+      "width": 563,
+      "height": 68
+    },
+    {
+      "text": "California Table Wine",
+      "x": 70,
+      "y": 266,
+      "width": 360,
+      "height": 38
+    },
+    {
+      "text": "750 mL",
+      "x": 70,
+      "y": 382,
+      "width": 101,
+      "height": 30
+    },
+    {
+      "text": "Bottled by Cedar Hollow Cellars, Napa, California",
+      "x": 70,
+      "y": 480,
+      "width": 662,
+      "height": 30
+    },
+    {
+      "text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic",
+      "x": 70,
+      "y": 1261,
+      "width": 804,
+      "height": 18
+    },
+    {
+      "text": "beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages",
+      "x": 70,
+      "y": 1284,
+      "width": 834,
+      "height": 18
+    },
+    {
+      "text": "impairs your ability to drive a car or operate machinery, and may cause health problems.",
+      "x": 70,
+      "y": 1307,
+      "width": 702,
+      "height": 18
+    }
+  ]
+}

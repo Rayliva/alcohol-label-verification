@@ -128,8 +128,7 @@ def report(arms: list[Arm], n: int, warmup: int) -> None:
     print("OCR (~300-800ms per vendor docs, unverified) is not yet included.")
     print()
     header = (
-        f"{'arm':44} {'p50':>7} {'p95':>7} {'min':>7} "
-        f"{'max':>7} {'acc':>6} {'out':>5} {'cache':>6}"
+        f"{'arm':44} {'p50':>7} {'p95':>7} {'min':>7} {'max':>7} {'acc':>6} {'out':>5} {'cache':>6}"
     )
     print(header)
     print("-" * len(header))

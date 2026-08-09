@@ -103,3 +103,46 @@ class TestResultShape:
         result = match_text("brand_name", declared="Old Tom", detected="New Tom")
         assert result.reason[0].isupper()
         assert result.reason.endswith(".")
+
+
+class TestAbbreviations:
+    """A shortened word is a judgment call, not a mismatch.
+
+    An address transcribed with the state abbreviated is almost certainly the
+    same address. Calling it a FAIL sends an agent to reject an application over
+    a formatting choice, which is precisely how a tool loses their trust.
+    """
+
+    def test_an_abbreviated_state_is_reviewed_not_failed(self) -> None:
+        result = match_text(
+            "bottler_address",
+            declared="Bottled by Old Tom Distillery, Bardstown, Kentucky",
+            detected="Bottled by Old Tom Distillery, Bardstown, KY",
+        )
+        assert result.verdict is Verdict.NEEDS_REVIEW
+        assert "short" in result.reason.lower() or "abbrevia" in result.reason.lower()
+
+    def test_a_truncated_word_is_reviewed(self) -> None:
+        result = match_text(
+            "bottler_address",
+            declared="Bottled by Old Tom Distillery, Bardstown, Kentucky",
+            detected="Bottled by Old Tom Distillery, Bardstown, Kent.",
+        )
+        assert result.verdict is Verdict.NEEDS_REVIEW
+
+    def test_a_different_word_is_still_a_failure(self) -> None:
+        # "Frankfort" is not an abbreviation of "Bardstown".
+        result = match_text(
+            "bottler_address",
+            declared="Bottled by Old Tom Distillery, Bardstown, Kentucky",
+            detected="Bottled by Old Tom Distillery, Frankfort, Kentucky",
+        )
+        assert result.verdict is Verdict.FAIL
+
+    def test_a_different_state_is_still_a_failure(self) -> None:
+        result = match_text(
+            "bottler_address",
+            declared="Bottled by Old Tom Distillery, Bardstown, Kentucky",
+            detected="Bottled by Old Tom Distillery, Bardstown, Tennessee",
+        )
+        assert result.verdict is Verdict.FAIL

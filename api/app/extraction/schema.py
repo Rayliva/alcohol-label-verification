@@ -27,9 +27,7 @@ class ExtractedFields(BaseModel):
     bottler_address: str | None = Field(
         description="Name and address of the bottler, producer, or importer"
     )
-    country_of_origin: str | None = Field(
-        description="Country of origin if stated, otherwise null"
-    )
+    country_of_origin: str | None = Field(description="Country of origin if stated, otherwise null")
     government_warning: str | None = Field(
         description=(
             "The full government health warning text exactly as printed, including "

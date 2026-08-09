@@ -132,6 +132,22 @@ def match_text(field: str, *, declared: str | None, detected: str | None) -> Fie
             ),
         )
 
+    # An address with the state abbreviated is almost certainly the same
+    # address. Failing it sends an agent to reject an application over a
+    # formatting choice, which is how a tool loses their trust.
+    if _differs_only_by_abbreviation(left, right):
+        return FieldResult(
+            field=field,
+            declared=declared,
+            detected=detected,
+            verdict=Verdict.NEEDS_REVIEW,
+            confidence=score,
+            reason=(
+                "The two agree except that one shortens a word the other spells out. "
+                "Confirm they mean the same thing."
+            ),
+        )
+
     # Token-aware: a whole word replaced is a mismatch; a character difference
     # inside a word is a possible typo on either side. Character similarity
     # alone cannot tell these apart — "Old"->"Olde" scores higher than
@@ -172,6 +188,36 @@ def match_text(field: str, *, declared: str | None, detected: str | None) -> Fie
 # Below this, two tokens in the same position are different words rather than
 # the same word misspelled. Provisional (PRD A-4); tune against the corpus.
 _TYPO_THRESHOLD = 0.7
+
+
+def _is_abbreviation_of(short: str, long: str) -> bool:
+    """True when `short` reads as a shortening of `long`.
+
+    Covers the two forms that actually appear on labels: a truncation ("Kent."
+    for "Kentucky") and an initialism keeping the first letter and some later
+    ones in order ("KY"). Requires the first letter to match, so "Tennessee"
+    never reads as a shortening of "Kentucky".
+    """
+    if len(short) < 2 or len(short) >= len(long) or short[0] != long[0]:
+        return False
+    position = 0
+    for character in short:
+        position = long.find(character, position)
+        if position == -1:
+            return False
+        position += 1
+    return True
+
+
+def _differs_only_by_abbreviation(left: str, right: str) -> bool:
+    """True when every differing token pair is one word and its shortening."""
+    left_tokens, right_tokens = _TOKEN.findall(left), _TOKEN.findall(right)
+    if len(left_tokens) != len(right_tokens):
+        return False
+    differing = [(lt, rt) for lt, rt in zip(left_tokens, right_tokens, strict=True) if lt != rt]
+    if not differing:
+        return False
+    return all(_is_abbreviation_of(lt, rt) or _is_abbreviation_of(rt, lt) for lt, rt in differing)
 
 
 def _has_wholly_different_word(left: str, right: str) -> bool:

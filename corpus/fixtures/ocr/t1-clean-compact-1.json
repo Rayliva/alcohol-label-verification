@@ -1,0 +1,63 @@
+{
+  "image": "t1-clean-compact-1.png",
+  "width": 1000,
+  "height": 1400,
+  "blocks": [
+    {
+      "text": "OLD TOM DISTILLERY",
+      "x": 190,
+      "y": 150,
+      "width": 619,
+      "height": 58
+    },
+    {
+      "text": "Kentucky Straight Bourbon Whiskey",
+      "x": 243,
+      "y": 256,
+      "width": 513,
+      "height": 32
+    },
+    {
+      "text": "45% Alc./Vol. (90 Proof)",
+      "x": 363,
+      "y": 366,
+      "width": 272,
+      "height": 26
+    },
+    {
+      "text": "750 mL",
+      "x": 457,
+      "y": 416,
+      "width": 85,
+      "height": 26
+    },
+    {
+      "text": "Bottled by Old Tom Distillery, Bardstown, Kentucky",
+      "x": 210,
+      "y": 510,
+      "width": 578,
+      "height": 26
+    },
+    {
+      "text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during",
+      "x": 70,
+      "y": 1267,
+      "width": 842,
+      "height": 16
+    },
+    {
+      "text": "pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or",
+      "x": 70,
+      "y": 1288,
+      "width": 859,
+      "height": 16
+    },
+    {
+      "text": "operate machinery, and may cause health problems.",
+      "x": 70,
+      "y": 1309,
+      "width": 369,
+      "height": 16
+    }
+  ]
+}

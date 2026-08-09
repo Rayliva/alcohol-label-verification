@@ -64,5 +64,6 @@ strict_equality = true
 testpaths = ["tests"]
 markers = [
     "accuracy: corpus accuracy suite (slow; asserts the >=95% target)",
+    "integration: crosses a boundary (pipeline, OCR fixtures, filesystem)",
     "live: requires real API credentials and network access",
 ]

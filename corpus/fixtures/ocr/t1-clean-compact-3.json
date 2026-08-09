@@ -1,0 +1,63 @@
+{
+  "image": "t1-clean-compact-3.png",
+  "width": 1000,
+  "height": 1400,
+  "blocks": [
+    {
+      "text": "HARBOR LIGHT",
+      "x": 278,
+      "y": 150,
+      "width": 444,
+      "height": 58
+    },
+    {
+      "text": "London Dry Gin",
+      "x": 387,
+      "y": 256,
+      "width": 226,
+      "height": 32
+    },
+    {
+      "text": "47% Alc./Vol. (94 Proof)",
+      "x": 363,
+      "y": 366,
+      "width": 272,
+      "height": 26
+    },
+    {
+      "text": "700 mL",
+      "x": 457,
+      "y": 416,
+      "width": 85,
+      "height": 26
+    },
+    {
+      "text": "Bottled by Harbor Light Distilling Co., Portland, Maine",
+      "x": 197,
+      "y": 510,
+      "width": 605,
+      "height": 26
+    },
+    {
+      "text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during",
+      "x": 70,
+      "y": 1267,
+      "width": 842,
+      "height": 16
+    },
+    {
+      "text": "pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or",
+      "x": 70,
+      "y": 1288,
+      "width": 859,
+      "height": 16
+    },
+    {
+      "text": "operate machinery, and may cause health problems.",
+      "x": 70,
+      "y": 1309,
+      "width": 369,
+      "height": 16
+    }
+  ]
+}

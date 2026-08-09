@@ -128,6 +128,31 @@ class LabelSpec:
     expected: dict[str, str] = field(default_factory=dict)
 
 
+@dataclass(frozen=True)
+class DrawnLine:
+    """One line of text and the box it occupies.
+
+    Recorded so the corpus can be run end to end with no OCR provider and no
+    network: these are the boxes a perfect OCR engine would return. It makes the
+    rule engine and the geometry measurements testable offline, and it isolates
+    OCR error from rule error when a number looks wrong.
+    """
+
+    text: str
+    x: int
+    y: int
+    width: int
+    height: int
+
+
+@dataclass(frozen=True)
+class RenderedLabel:
+    path: Path
+    width: int
+    height: int
+    lines: tuple[DrawnLine, ...]
+
+
 def _wrap(text: str, font: ImageFont.FreeTypeFont, max_width: int) -> list[str]:
     words, lines, current = text.split(), [], ""
     for word in words:
@@ -149,6 +174,7 @@ def _draw_panel(
     origin_x: int,
     panel_width: int,
     entries: list[tuple[str, ImageFont.FreeTypeFont, int]],
+    drawn: list[DrawnLine],
 ) -> None:
     margin = 70
     inner = panel_width - 2 * margin
@@ -158,12 +184,17 @@ def _draw_panel(
             width = font.getlength(line)
             x = origin_x + ((panel_width - width) / 2 if spec.design.align == "center" else margin)
             draw.text((x, y), line, font=font, fill=spec.design.text_colour)
+            drawn.append(DrawnLine(line, int(x), y, int(width), font.size))
             y += font.size + 8
         y += gap
 
 
 def _draw_warning(
-    draw: ImageDraw.ImageDraw, spec: LabelSpec, origin_x: int, panel_width: int
+    draw: ImageDraw.ImageDraw,
+    spec: LabelSpec,
+    origin_x: int,
+    panel_width: int,
+    drawn: list[DrawnLine],
 ) -> None:
     if not spec.warning:
         return
@@ -201,11 +232,12 @@ def _draw_warning(
             draw.text((x, y), line[len(prefix) :], font=regular, fill=colour)
         else:
             draw.text((x, y), line, font=regular, fill=colour)
+        drawn.append(DrawnLine(line, int(origin_x + margin), y, int(regular.getlength(line)), size))
         y += size + 5
 
 
-def render(spec: LabelSpec, out_dir: Path) -> Path:
-    """Render `spec` to a PNG and return its path."""
+def render(spec: LabelSpec, out_dir: Path) -> RenderedLabel:
+    """Render `spec` to a PNG and return the path plus what was drawn where."""
     regular_path, bold_path = _resolve_fonts(spec.design.serif)
     panels = 2 if spec.back_fields else 1
     image = Image.new("RGB", (spec.width * panels, spec.height), spec.design.background)
@@ -234,20 +266,21 @@ def render(spec: LabelSpec, out_dir: Path) -> Path:
         if text and name in spec.back_fields
     ]
 
-    _draw_panel(draw, spec, 0, spec.width, front)
+    drawn: list[DrawnLine] = []
+    _draw_panel(draw, spec, 0, spec.width, front, drawn)
     if panels == 2:
         # A visible seam, so the two sides read as two sides of a container.
         draw.line([(spec.width, 0), (spec.width, spec.height)], fill="#999999", width=4)
-        _draw_panel(draw, spec, spec.width, spec.width, back)
+        _draw_panel(draw, spec, spec.width, spec.width, back, drawn)
 
     # The warning goes on the panel carrying the back-label content, which is
     # where a real label puts it.
-    _draw_warning(draw, spec, spec.width * (panels - 1), spec.width)
+    _draw_warning(draw, spec, spec.width * (panels - 1), spec.width, drawn)
 
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / f"{spec.label_id}.png"
     image.save(path)
-    return path
+    return RenderedLabel(path=path, width=image.width, height=image.height, lines=tuple(drawn))
 
 
 if __name__ == "__main__":
@@ -266,4 +299,4 @@ if __name__ == "__main__":
         ),
     ]
     for sample in samples:
-        print(render(sample, out))
+        print(render(sample, out).path)

@@ -1,0 +1,42 @@
+{
+  "image": "t2-warning-missing.png",
+  "width": 1000,
+  "height": 1400,
+  "blocks": [
+    {
+      "text": "OLD TOM DISTILLERY",
+      "x": 72,
+      "y": 150,
+      "width": 855,
+      "height": 76
+    },
+    {
+      "text": "Kentucky Straight Bourbon Whiskey",
+      "x": 215,
+      "y": 274,
+      "width": 568,
+      "height": 38
+    },
+    {
+      "text": "45% Alc./Vol. (90 Proof)",
+      "x": 346,
+      "y": 390,
+      "width": 307,
+      "height": 30
+    },
+    {
+      "text": "750 mL",
+      "x": 453,
+      "y": 444,
+      "width": 94,
+      "height": 30
+    },
+    {
+      "text": "Bottled by Old Tom Distillery, Bardstown, Kentucky",
+      "x": 180,
+      "y": 542,
+      "width": 639,
+      "height": 30
+    }
+  ]
+}

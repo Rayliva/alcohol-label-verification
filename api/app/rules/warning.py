@@ -61,14 +61,29 @@ FIELD = "government_warning"
 # 27 CFR 5.63 — these three must appear in the same field of vision.
 SAME_FIELD_OF_VISION = ("brand_name", "class_type", "alcohol_content")
 
-# Provisional thresholds (docs/specs/rule-engine.md §6, PRD open question 2).
-# Named here so a tuning pass changes one place and the accuracy suite catches
-# the fallout. None of them is a regulatory figure; the regulation states
-# absolute millimetres, which an uncalibrated image cannot supply.
-BOLD_PASS_RATIO = 1.15
-BOLD_REVIEW_RATIO = 1.05
-PROPORTION_PASS_RATIO = 0.80
-PROPORTION_REVIEW_RATIO = 0.60
+# Set by the pipeline for a field that is not on the label at all.
+ABSENT_SIDE = "absent"
+
+# Calibrated against the corpus on 2026-08-09, replacing the guesses this file
+# shipped with. None is a regulatory figure: the regulation states absolute
+# millimetres, which an uncalibrated image cannot supply.
+#
+# Bold — measured stroke-thickness ratio: 1.35 on a compliant label, 1.06 on
+# t2-warning-not-bold. The first guess (pass at 1.15) passed both.
+BOLD_PASS_RATIO = 1.20
+BOLD_REVIEW_RATIO = 1.10
+#
+# Proportion — measured warning height against the median height of the other
+# text: 63% on a compliant label, 23% on t2-warning-too-small. A compliant
+# warning is legitimately smaller than the brand name and the body copy, so the
+# first guess (pass at 80%) failed every clean label in the corpus. What the
+# proxy has to catch is a warning shrunk far below the text around it.
+PROPORTION_PASS_RATIO = 0.55
+PROPORTION_REVIEW_RATIO = 0.40
+#
+# Contrast — WCAG ratio inside the warning region: 18.6 on a compliant label,
+# 1.2 on t2-warning-low-contrast. The AA thresholds separate those comfortably
+# and are the recognised figures, so they stand.
 CONTRAST_PASS_RATIO = 4.5
 CONTRAST_REVIEW_RATIO = 3.0
 
@@ -252,15 +267,26 @@ def _check_contrast(layout: LayoutMetrics | None) -> WarningCheck:
 def _check_field_of_vision(layout: LayoutMetrics | None) -> WarningCheck:
     """27 CFR 5.63 — brand, class/type and alcohol content on one side."""
     sides = layout.field_sides if layout else {}
-    known = {name: sides[name] for name in SAME_FIELD_OF_VISION if sides.get(name)}
-    if len(known) < len(SAME_FIELD_OF_VISION):
-        missing = [name for name in SAME_FIELD_OF_VISION if name not in known]
+    # A field that is not on the label at all fails its own check. Repeating it
+    # here would report one violation twice and make the label look worse than
+    # it is.
+    applicable = [name for name in SAME_FIELD_OF_VISION if sides.get(name) != ABSENT_SIDE]
+    known = {name: sides[name] for name in applicable if sides.get(name)}
+    if len(known) < len(applicable):
+        missing = [name for name in applicable if name not in known]
         return WarningCheck(
             WarningCheckName.FIELD_OF_VISION,
             Verdict.NEEDS_REVIEW,
             "It could not be established which side of the container carries "
             f"{', '.join(name.replace('_', ' ') for name in missing)}, so whether "
             "27 CFR 5.63 is met was not checked. Look at the artwork.",
+        )
+    if not known:
+        return WarningCheck(
+            WarningCheckName.FIELD_OF_VISION,
+            Verdict.NEEDS_REVIEW,
+            "None of the three fields 27 CFR 5.63 governs could be located on the "
+            "artwork, so this was not checked. Look at the label.",
         )
     if len(set(known.values())) == 1:
         return WarningCheck(

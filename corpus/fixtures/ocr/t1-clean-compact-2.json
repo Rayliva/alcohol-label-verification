@@ -1,0 +1,63 @@
+{
+  "image": "t1-clean-compact-2.png",
+  "width": 1000,
+  "height": 1400,
+  "blocks": [
+    {
+      "text": "STONE'S THROW",
+      "x": 256,
+      "y": 150,
+      "width": 487,
+      "height": 58
+    },
+    {
+      "text": "Straight Rye Whiskey",
+      "x": 346,
+      "y": 256,
+      "width": 307,
+      "height": 32
+    },
+    {
+      "text": "50% Alc./Vol. (100 Proof)",
+      "x": 356,
+      "y": 366,
+      "width": 286,
+      "height": 26
+    },
+    {
+      "text": "750 mL",
+      "x": 457,
+      "y": 416,
+      "width": 85,
+      "height": 26
+    },
+    {
+      "text": "Distilled and bottled by Stone's Throw Spirits, Louisville, Kentucky",
+      "x": 127,
+      "y": 510,
+      "width": 745,
+      "height": 26
+    },
+    {
+      "text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during",
+      "x": 70,
+      "y": 1267,
+      "width": 842,
+      "height": 16
+    },
+    {
+      "text": "pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or",
+      "x": 70,
+      "y": 1288,
+      "width": 859,
+      "height": 16
+    },
+    {
+      "text": "operate machinery, and may cause health problems.",
+      "x": 70,
+      "y": 1309,
+      "width": 369,
+      "height": 16
+    }
+  ]
+}
