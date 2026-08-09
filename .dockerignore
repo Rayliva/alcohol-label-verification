@@ -1,0 +1,45 @@
+# Secrets — .gitignore does NOT apply to Docker build context.
+# Without these lines a `COPY . .` bakes credentials into the image.
+.env
+.env.*
+!.env.example
+*-credentials.json
+*service-account*.json
+
+# VCS and agent config
+.git/
+.github/
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Frontend — built separately on Vercel, not needed in the API image
+web/
+node_modules/
+
+# Tests and fixtures — not shipped in the runtime image
+api/tests/
+corpus/
+bench-results/
+test-results/
+playwright-report/
+
+# Docs
+docs/
+*.md
+!README.md
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

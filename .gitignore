@@ -1,0 +1,43 @@
+# Secrets — see .claude/rules/secrets.md
+.env
+.env.*
+!.env.example
+*-credentials.json
+*service-account*.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+*.egg-info/
+
+# Node
+node_modules/
+.vite/
+web/dist/
+*.tsbuildinfo
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+
+# Generated corpus images — regenerate with corpus/generate.py.
+# Fixtures and expected verdicts ARE committed; the rendered PNGs are not.
+corpus/out/
+
+# Benchmark output
+bench-results/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"><style>
+html,body{margin:0;padding:0}
+body{background:#F2F0EC;font-family:"Public Sans",system-ui,sans-serif;color:#1A1917;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input,textarea,select{font-family:inherit}
+a{color:#1A4C8B}
+a:hover{color:#0F3363}
+:focus-visible{outline:3px solid #1A4C8B;outline-offset:2px}
+mark{background:#F6E3A8;color:#1A1917;padding:0 2px}
+</style></helmet>
+
+<div style="min-height:100vh;background:#F2F0EC">
+
+<div style="background:#1A1917;color:#F2F0EC;padding:10px 40px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+  <span style="font:600 15px/1 'IBM Plex Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:#B8B2A6">Prototype — jump to screen</span>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <sc-for list="{{ navItems }}" as="nav" hint-placeholder-count="8">
+      <button type="button" onClick="{{ nav.go }}" style="{{ nav.style }}">{{ nav.label }}</button>
+    </sc-for>
+  </div>
+</div>
+
+<header style="background:#FFFFFF;border-bottom:2px solid #8C877C;padding:18px 40px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+  <div style="display:flex;align-items:baseline;gap:16px">
+    <span style="font:700 26px/1 'Public Sans',sans-serif;letter-spacing:-.01em">Label Check</span>
+    <span style="font:400 17px/1 'Public Sans',sans-serif;color:#4A4843">Alcohol Label Compliance Review</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:20px">
+    <span style="font:400 17px/1 'Public Sans',sans-serif;color:#4A4843">Signed in as {{ agentName }}</span>
+    <button type="button" style="min-height:44px;padding:10px 18px;font:500 17px/1.2 'Public Sans',sans-serif;background:#FFFFFF;color:#1A4C8B;border:2px solid #8C877C;border-radius:4px;cursor:pointer">Sign out</button>
+  </div>
+</header>
+
+<main style="padding:32px 40px 96px;max-width:1840px;margin:0 auto">
+
+<sc-if value="{{ isInput }}" hint-placeholder-val="{{ true }}">
+<div>
+  <h1 style="font:700 34px/1.2 'Public Sans',sans-serif;margin:0 0 8px">Check a single label</h1>
+  <p style="font:400 19px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 28px;max-width:70ch">Upload the label image and type in the values from the application. The tool reads the label and tells you, field by field, whether they match. You make the final call.</p>
+
+  <div style="display:grid;grid-template-columns:minmax(560px,1fr) minmax(640px,1.1fr);gap:32px;align-items:start">
+
+    <section style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;padding:28px">
+      <h2 style="font:700 24px/1.2 'Public Sans',sans-serif;margin:0 0 6px">1. Label image</h2>
+      <p style="font:400 17px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 20px">Accepts JPG, PNG or PDF. One label per file.</p>
+
+      <sc-if value="{{ noImage }}" hint-placeholder-val="{{ true }}">
+      <div style="border:3px dashed #8C877C;border-radius:6px;background:#F7F5F1;padding:40px 28px;text-align:center">
+        <p style="font:600 20px/1.4 'Public Sans',sans-serif;margin:0 0 6px">Drag a label image here</p>
+        <p style="font:400 17px/1.4 'Public Sans',sans-serif;color:#3A3833;margin:0 0 20px">or use the button below</p>
+        <button type="button" onClick="{{ chooseFile }}" style="min-height:52px;padding:14px 28px;font:600 19px/1.2 'Public Sans',sans-serif;background:#FFFFFF;color:#1A1917;border:2px solid #1A1917;border-radius:4px;cursor:pointer">Choose file</button>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ hasImage }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:20px;align-items:flex-start;border:2px solid #8C877C;border-radius:6px;padding:16px;background:#F7F5F1">
+        <div style="width:150px;height:200px;flex:none;background:#E6E1D7;border:2px solid #8C877C;border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px">
+          <span style="font:400 14px/1.4 'IBM Plex Mono',monospace;color:#4A4843">label<br>image<br>preview</span>
+        </div>
+        <div style="flex:1;min-width:0">
+          <p style="font:600 19px/1.4 'Public Sans',sans-serif;margin:0 0 4px;word-break:break-all">stones-throw-bourbon-front.jpg</p>
+          <p style="font:400 16px/1.4 'Public Sans',sans-serif;color:#3A3833;margin:0 0 4px">2,048 × 2,731 px · 3.1 MB</p>
+          <p style="font:400 16px/1.4 'Public Sans',sans-serif;color:#2F5D50;margin:0 0 16px">Resolution is good enough to read.</p>
+          <button type="button" onClick="{{ removeFile }}" style="min-height:44px;padding:10px 20px;font:500 17px/1.2 'Public Sans',sans-serif;background:#FFFFFF;color:#1A1917;border:2px solid #8C877C;border-radius:4px;cursor:pointer">Remove this file</button>
+        </div>
+      </div>
+      </sc-if>
+
+      <h2 style="font:700 24px/1.2 'Public Sans',sans-serif;margin:32px 0 6px">2. Beverage type</h2>
+      <p style="font:400 17px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 16px">This decides which rules apply. Alcohol content is required for spirits and wine, optional for most malt beverages.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <sc-for list="{{ bevOptions }}" as="bev" hint-placeholder-count="3">
+          <button type="button" onClick="{{ bev.go }}" aria-pressed="{{ bev.selected }}" style="{{ bev.style }}">
+            <span style="font:400 22px/1 'Public Sans',sans-serif">{{ bev.mark }}</span>
+            <span>{{ bev.label }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;padding:28px">
+      <h2 style="font:700 24px/1.2 'Public Sans',sans-serif;margin:0 0 6px">3. What the application declares</h2>
+      <p style="font:400 17px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 24px">Copy these from the COLA application exactly as submitted. Capitalization does not matter.</p>
+
+      <div style="display:flex;flex-direction:column;gap:22px">
+        <div>
+          <label for="f-brand" style="display:block;font:600 19px/1.3 'Public Sans',sans-serif;margin:0 0 6px">Brand name <span style="font-weight:400;color:#3A3833">(required)</span></label>
+          <input id="f-brand" type="text" value="{{ fBrand.value }}" onChange="{{ fBrand.onChange }}" style="width:100%;min-height:52px;padding:12px 14px;font:400 19px/1.3 'Public Sans',sans-serif;border:2px solid #8C877C;border-radius:4px;background:#FFFFFF;color:#1A1917">
+          <p style="font:400 16px/1.4 'Public Sans',sans-serif;color:#3A3833;margin:6px 0 0">The name the product is sold under, e.g. Stone's Throw.</p>
+        </div>
+
+        <div>
+          <label for="f-class" style="display:block;font:600 19px/1.3 'Public Sans',sans-serif;margin:0 0 6px">Class or type designation <span style="font-weight:400;color:#3A3833">(required)</span></label>
+          <input id="f-class" type="text" value="{{ fClass.value }}" onChange="{{ fClass.onChange }}" style="width:100%;min-height:52px;padding:12px 14px;font:400 19px/1.3 'Public Sans',sans-serif;border:2px solid #8C877C;border-radius:4px;background:#FFFFFF;color:#1A1917">
+          <p style="font:400 16px/1.4 'Public Sans',sans-serif;color:#3A3833;margin:6px 0 0">What the product legally is, e.g. Straight Bourbon Whiskey.</p>
+        </div>
+
+        <div>
+          <label for="f-abv" style="display:block;font:600 19px/1.3 'Public Sans',sans-serif;margin:0 0 6px">Alcohol content <span style="font-weight:400;color:#3A3833">(required for spirits)</span></label>
+          <input id="f-abv" type="text" value="{{ fAbv.value }}" onChange="{{ fAbv.onChange }}" style="width:100%;min-height:52px;padding:12px 14px;font:400 19px/1.3 'IBM Plex Mono',monospace;border:2px solid #8C877C;border-radius:4px;background:#FFFFFF;color:#1A1917">
+          <p style="font:400 16px/1.4 'Public Sans',sans-serif;color:#3A3833;margin:6px 0 0">Type it as written on the application, e.g. 45% Alc./Vol. (90 Proof).</p>
+        </div>
+
+        <div>
+          <label for="f-net" style="display:block;font:600 19px/1.3 'Public Sans',sans-serif;margin:0 0 6px">Net contents <span style="font-weight:400;color:#3A3833">(required)</span></label>
+          <input id="f-net" type="text" value="{{ fNet.value }}" onChange="{{ fNet.onChange }}" style="width:100%;min-height:52px;padding:12px 14px;font:400 19px/1.3 'IBM Plex Mono',monospace;border:2px solid #8C877C;border-radius:4px;background:#FFFFFF;color:#1A1917">
+          <p style="font:400 16px/1.4 'Public Sans',sans-serif;color:#3A3833;margin:6px 0 0">Volume in metric, e.g. 750 mL.</p>
+        </div>
+
+        <div>
+          <label for="f-bottler" style="display:block;font:600 19px/1.3 'Public Sans',sans-serif;margin:0 0 6px">Bottler or producer name and address <span style="font-weight:400;color:#3A3833">(required)</span></label>
+          <textarea id="f-bottler" rows="3" value="{{ fBottler.value }}" onChange="{{ fBottler.onChange }}" style="width:100%;min-height:96px;padding:12px 14px;font:400 19px/1.4 'Public Sans',sans-serif;border:2px solid #8C877C;border-radius:4px;background:#FFFFFF;color:#1A1917;resize:vertical"></textarea>
+          <p style="font:400 16px/1.4 'Public Sans',sans-serif;color:#3A3833;margin:6px 0 0">Full name and address, including street, city and state.</p>
+        </div>
+
+        <div>
+          <label for="f-origin" style="display:block;font:600 19px/1.3 'Public Sans',sans-serif;margin:0 0 6px">Country of origin <span style="font-weight:400;color:#3A3833">(imports only — leave blank for domestic)</span></label>
+          <input id="f-origin" type="text" value="{{ fOrigin.value }}" onChange="{{ fOrigin.onChange }}" style="width:100%;min-height:52px;padding:12px 14px;font:400 19px/1.3 'Public Sans',sans-serif;border:2px solid #8C877C;border-radius:4px;background:#FFFFFF;color:#1A1917">
+          <p style="font:400 16px/1.4 'Public Sans',sans-serif;color:#3A3833;margin:6px 0 0">Required only when the product is imported.</p>
+        </div>
+      </div>
+
+      <div style="margin-top:32px;border-top:2px solid #DDD9D0;padding-top:24px">
+        <p style="{{ missingStyle }}">{{ missingText }}</p>
+        <button type="button" onClick="{{ runCheck }}" disabled="{{ cannotSubmit }}" style="{{ submitStyle }}">Check this label</button>
+        <p style="font:400 17px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:20px 0 0">Have a lot of these? <button type="button" onClick="{{ goBatchUpload }}" style="min-height:44px;padding:8px 4px;font:500 17px/1.5 'Public Sans',sans-serif;background:none;border:none;color:#1A4C8B;text-decoration:underline;cursor:pointer">Check a batch of labels instead</button></p>
+      </div>
+    </section>
+
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isProcessing }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:1100px;margin:0 auto">
+  <div style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;padding:40px;display:grid;grid-template-columns:220px 1fr;gap:40px;align-items:start">
+    <div style="width:220px;height:293px;background:#E6E1D7;border:2px solid #8C877C;border-radius:3px;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px">
+      <span style="font:400 15px/1.5 'IBM Plex Mono',monospace;color:#4A4843">uploaded<br>label image<br>stays visible</span>
+    </div>
+    <div>
+      <h1 style="font:700 32px/1.2 'Public Sans',sans-serif;margin:0 0 8px">Checking this label</h1>
+      <p style="font:400 19px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 28px">This normally takes about 5 seconds. You do not need to do anything.</p>
+
+      <ol style="list-style:none;margin:0 0 28px;padding:0;display:flex;flex-direction:column;gap:14px">
+        <sc-for list="{{ stages }}" as="st" hint-placeholder-count="3">
+          <li style="display:flex;align-items:center;gap:14px;font:500 20px/1.3 'Public Sans',sans-serif">
+            <span style="{{ st.markStyle }}">{{ st.mark }}</span>
+            <span style="{{ st.textStyle }}">{{ st.label }}</span>
+          </li>
+        </sc-for>
+      </ol>
+
+      <div style="height:16px;background:#E6E1D7;border:2px solid #8C877C;border-radius:3px;overflow:hidden;max-width:520px">
+        <div style="{{ procBarStyle }}"></div>
+      </div>
+      <p style="font:500 19px/1.4 'IBM Plex Mono',monospace;color:#1A1917;margin:12px 0 0">{{ elapsedText }}</p>
+
+      <sc-if value="{{ procSlow }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:24px;border:2px solid #7A5B00;background:#FBF3DE;border-radius:4px;padding:20px;max-width:640px">
+        <p style="font:600 19px/1.4 'Public Sans',sans-serif;margin:0 0 6px;color:#5C4400">This is taking longer than usual</p>
+        <p style="font:400 17px/1.5 'Public Sans',sans-serif;margin:0 0 16px;color:#3A3833">The reading service is slow right now. Your entry is saved either way.</p>
+        <button type="button" onClick="{{ goInput }}" style="min-height:48px;padding:12px 22px;font:600 17px/1.2 'Public Sans',sans-serif;background:#FFFFFF;border:2px solid #1A1917;border-radius:4px;cursor:pointer">Cancel and go back</button>
+      </div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isResults }}" hint-placeholder-val="{{ false }}">
+<div>
+
+  <sc-if value="{{ fromBatch }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:0 0 20px">
+    <button type="button" onClick="{{ goBatchResults }}" style="min-height:48px;padding:12px 20px;font:500 17px/1.2 'Public Sans',sans-serif;background:#FFFFFF;border:2px solid #8C877C;border-radius:4px;cursor:pointer">Back to the batch table</button>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font:400 17px/1.2 'Public Sans',sans-serif;color:#3A3833">Label 3 of 200 in this batch</span>
+      <button type="button" style="min-height:48px;padding:12px 20px;font:500 17px/1.2 'Public Sans',sans-serif;background:#FFFFFF;border:2px solid #8C877C;border-radius:4px;cursor:pointer">Previous label</button>
+      <button type="button" style="min-height:48px;padding:12px 20px;font:500 17px/1.2 'Public Sans',sans-serif;background:#FFFFFF;border:2px solid #8C877C;border-radius:4px;cursor:pointer">Next label</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <section style="{{ summaryStyle }}">
+    <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;justify-content:space-between">
+      <div style="display:flex;align-items:flex-start;gap:18px">
+        <span style="{{ summaryMarkStyle }}">{{ summaryMark }}</span>
+        <div>
+          <h1 style="font:700 32px/1.2 'Public Sans',sans-serif;margin:0 0 6px">{{ summaryHeadline }}</h1>
+          <p style="font:400 20px/1.4 'Public Sans',sans-serif;color:#1A1917;margin:0 0 4px">{{ summaryCounts }}</p>
+          <p style="font:400 17px/1.4 'Public Sans',sans-serif;color:#3A3833;margin:0">Application app-10482 · Spirits · Read in 2.3 seconds · Reviewed by {{ agentName }}</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button type="button" style="min-height:52px;padding:14px 22px;font:500 18px/1.2 'Public Sans',sans-serif;background:#FFFFFF;border:2px solid #8C877C;border-radius:4px;cursor:pointer">Export results (CSV)</button>
+        <button type="button" onClick="{{ goInput }}" style="min-height:52px;padding:14px 22px;font:600 18px/1.2 'Public Sans',sans-serif;background:#1A1917;color:#FFFFFF;border:2px solid #1A1917;border-radius:4px;cursor:pointer">Check another label</button>
+      </div>
+    </div>
+  </section>
+
+  <h2 style="font:700 26px/1.2 'Public Sans',sans-serif;margin:36px 0 6px">Field-by-field result</h2>
+  <p style="font:400 18px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 20px;max-width:80ch">Problems are listed first. Each row shows what the application declared, what we read off the label, and the piece of the image we read it from.</p>
+
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <sc-for list="{{ fields }}" as="row" hint-placeholder-count="6">
+      <article style="{{ row.cardStyle }}">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:0 0 18px">
+          <h3 style="font:700 23px/1.2 'Public Sans',sans-serif;margin:0">{{ row.name }}</h3>
+          <span style="{{ row.badgeStyle }}"><span style="font-size:20px">{{ row.mark }}</span>{{ row.verdictLabel }}</span>
+        </div>
+
+        <div style="{{ row.gridStyle }}">
+          <div>
+            <p style="font:600 16px/1.2 'Public Sans',sans-serif;color:#3A3833;text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px">Declared in application</p>
+            <p style="font:400 19px/1.45 'IBM Plex Mono',monospace;margin:0;color:#1A1917;word-break:break-word">{{ row.declared }}</p>
+          </div>
+          <div>
+            <p style="font:600 16px/1.2 'Public Sans',sans-serif;color:#3A3833;text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px">Detected on label</p>
+            <p style="font:400 19px/1.45 'IBM Plex Mono',monospace;margin:0;color:#1A1917;word-break:break-word">{{ row.detected }}</p>
+          </div>
+          <div>
+            <p style="font:600 16px/1.2 'Public Sans',sans-serif;color:#3A3833;text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px">Evidence from the image</p>
+            <div style="{{ row.cropStyle }}">
+              <span style="font:500 18px/1.3 'Public Sans',sans-serif;color:#2A2823;text-align:center">{{ row.detected }}</span>
+            </div>
+            <p style="font:400 15px/1.3 'IBM Plex Mono',monospace;color:#4A4843;margin:6px 0 0">crop · {{ row.cropFile }}</p>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;padding-top:16px;border-top:2px solid #DDD9D0">
+          <p style="font:400 19px/1.5 'Public Sans',sans-serif;margin:0 0 10px;color:#1A1917">{{ row.reason }}</p>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span style="font:500 17px/1.2 'Public Sans',sans-serif;color:#3A3833">Reading confidence {{ row.confText }}</span>
+            <span style="display:inline-block;width:160px;height:12px;background:#E6E1D7;border:2px solid #8C877C;border-radius:2px;overflow:hidden"><span style="{{ row.confBarStyle }}"></span></span>
+            <span style="font:400 17px/1.2 'Public Sans',sans-serif;color:#3A3833">{{ row.confWord }}</span>
+          </div>
+        </div>
+
+        <sc-if value="{{ row.hasOverride }}" hint-placeholder-val="{{ false }}">
+        <div style="{{ row.overrideBoxStyle }}">
+          <p style="font:700 19px/1.3 'Public Sans',sans-serif;margin:0 0 6px">Agent decision: {{ row.overrideLabel }}</p>
+          <p style="font:400 17px/1.5 'Public Sans',sans-serif;margin:0 0 4px;color:#2A2823">Tool's original verdict was <strong>{{ row.verdictLabel }}</strong>. It has been kept on the record alongside your decision.</p>
+          <p style="font:400 17px/1.5 'Public Sans',sans-serif;margin:0;color:#2A2823">Decided by {{ agentName }} at 10:42 today.</p>
+          <button type="button" onClick="{{ row.onUndo }}" style="margin-top:14px;min-height:44px;padding:10px 18px;font:500 17px/1.2 'Public Sans',sans-serif;background:#FFFFFF;border:2px solid #1A1917;border-radius:4px;cursor:pointer">Undo my decision</button>
+        </div>
+        </sc-if>
+
+        <div style="margin-top:18px;padding-top:16px;border-top:2px solid #DDD9D0;display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">
+          <div style="display:flex;gap:12px">
+            <button type="button" onClick="{{ row.onAccept }}" style="{{ row.acceptStyle }}">Accept this field</button>
+            <button type="button" onClick="{{ row.onReject }}" style="{{ row.rejectStyle }}">Reject this field</button>
+          </div>
+          <div style="flex:1;min-width:320px">
+            <label for="{{ row.noteId }}" style="display:block;font:500 17px/1.2 'Public Sans',sans-serif;margin:0 0 6px;color:#1A1917">Note (optional) — goes on the record</label>
+            <input id="{{ row.noteId }}" type="text" value="{{ row.note }}" onChange="{{ row.onNote }}" placeholder="e.g. Called the bottler; street address is on the back label." style="width:100%;min-height:48px;padding:12px 14px;font:400 17px/1.3 'Public Sans',sans-serif;border:2px solid #8C877C;border-radius:4px;background:#FFFFFF;color:#1A1917">
+          </div>
+        </div>
+      </article>
+    </sc-for>
+  </div>
+
+  <h2 style="font:700 26px/1.2 'Public Sans',sans-serif;margin:40px 0 6px">Government warning statement</h2>
+  <p style="font:400 18px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 20px;max-width:80ch">This is the only check that has to match word for word. Each part is checked separately below.</p>
+
+  <article style="background:#FFFFFF;border:2px solid #8C877C;border-left:10px solid #7A5B00;border-radius:6px;padding:28px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:0 0 22px">
+      <h3 style="font:700 23px/1.2 'Public Sans',sans-serif;margin:0">Health warning statement</h3>
+      <span style="display:inline-flex;align-items:center;gap:8px;font:700 18px/1 'Public Sans',sans-serif;padding:10px 16px;border-radius:4px;background:#FBF3DE;color:#5C4400;border:2px solid #7A5B00;text-transform:uppercase;letter-spacing:.04em"><span style="font-size:20px">⚠</span>Needs review</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:28px;align-items:start">
+      <div>
+        <p style="font:600 16px/1.2 'Public Sans',sans-serif;color:#3A3833;text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px">Full text detected on the label — any wording that differs from the required text is highlighted</p>
+        <p style="font:400 19px/1.7 'IBM Plex Mono',monospace;margin:0;padding:20px;background:#F7F5F1;border:2px solid #8C877C;border-radius:4px;color:#1A1917">GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.</p>
+        <p style="font:400 19px/1.5 'Public Sans',sans-serif;color:#1A1917;margin:12px 0 0">Nothing is highlighted, because the wording matches the required text exactly. This is marked <strong>Needs review</strong> for one reason only: “GOVERNMENT WARNING” may not be printed in bold. Look at the crop and decide.</p>
+      </div>
+      <div>
+        <p style="font:600 16px/1.2 'Public Sans',sans-serif;color:#3A3833;text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px">Evidence from the image</p>
+        <div style="background:#EFEBE2;border:2px solid #8C877C;border-radius:4px;min-height:200px;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center">
+          <span style="font:500 15px/1.5 'Public Sans',sans-serif;color:#2A2823">GOVERNMENT WARNING: (1) According to the Surgeon General…</span>
+        </div>
+        <p style="font:400 15px/1.3 'IBM Plex Mono',monospace;color:#4A4843;margin:6px 0 0">crop · government_warning.png</p>
+      </div>
+    </div>
+
+    <div style="margin-top:26px;border-top:2px solid #DDD9D0;padding-top:20px">
+      <p style="font:600 19px/1.3 'Public Sans',sans-serif;margin:0 0 14px">The five separate requirements</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ warningChecks }}" as="wc" hint-placeholder-count="5">
+          <div style="{{ wc.rowStyle }}">
+            <span style="{{ wc.badgeStyle }}"><span style="font-size:19px">{{ wc.mark }}</span>{{ wc.verdictLabel }}</span>
+            <span style="font:600 19px/1.35 'Public Sans',sans-serif;color:#1A1917">{{ wc.name }}</span>
+            <span style="font:400 18px/1.4 'Public Sans',sans-serif;color:#2A2823">{{ wc.reason }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="margin-top:22px;padding-top:18px;border-top:2px solid #DDD9D0;display:flex;gap:12px;flex-wrap:wrap">
+      <button type="button" style="min-height:48px;padding:12px 22px;font:600 18px/1.2 'Public Sans',sans-serif;background:#FFFFFF;color:#1A1917;border:2px solid #1A1917;border-radius:4px;cursor:pointer">Accept the warning statement</button>
+      <button type="button" style="min-height:48px;padding:12px 22px;font:600 18px/1.2 'Public Sans',sans-serif;background:#FFFFFF;color:#1A1917;border:2px solid #8C877C;border-radius:4px;cursor:pointer">Reject the warning statement</button>
+    </div>
+  </article>
+
+</div>
+</sc-if>
+
+<sc-if value="{{ isBatchUpload }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:1200px">
+  <h1 style="font:700 34px/1.2 'Public Sans',sans-serif;margin:0 0 8px">Check a batch of labels</h1>
+  <p style="font:400 19px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 28px;max-width:75ch">Upload all the label images, then a spreadsheet listing what each application declared. We match them up before anything runs, so you find problems now rather than four minutes in.</p>
+
+  <section style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;padding:28px;margin-bottom:24px">
+    <h2 style="font:700 24px/1.2 'Public Sans',sans-serif;margin:0 0 6px">1. Label images</h2>
+    <p style="font:400 17px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 18px">JPG, PNG or PDF. Select as many as you need.</p>
+    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <button type="button" style="min-height:52px;padding:14px 28px;font:600 19px/1.2 'Public Sans',sans-serif;background:#FFFFFF;border:2px solid #1A1917;border-radius:4px;cursor:pointer">Choose image files</button>
+      <span style="font:600 20px/1.3 'Public Sans',sans-serif;color:#1A1917">247 images selected</span>
+      <button type="button" style="min-height:44px;padding:10px 18px;font:500 17px/1.2 'Public Sans',sans-serif;background:#FFFFFF;border:2px solid #8C877C;border-radius:4px;cursor:pointer">Clear all images</button>
+    </div>
+  </section>
+
+  <section style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;padding:28px;margin-bottom:24px">
+    <h2 style="font:700 24px/1.2 'Public Sans',sans-serif;margin:0 0 6px">2. Application spreadsheet</h2>
+    <p style="font:400 17px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 18px">One row per application, with the image filename in the first column. CSV or JSON.</p>
+    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:18px">
+      <button type="button" style="min-height:52px;padding:14px 28px;font:600 19px/1.2 'Public Sans',sans-serif;background:#FFFFFF;border:2px solid #1A1917;border-radius:4px;cursor:pointer">Choose spreadsheet</button>
+      <span style="font:600 20px/1.3 'Public Sans',sans-serif;color:#1A1917">august-imports.csv · 247 rows</span>
+    </div>
+    <div style="background:#F7F5F1;border:2px solid #8C877C;border-radius:4px;padding:18px 20px">
+      <p style="font:600 18px/1.4 'Public Sans',sans-serif;margin:0 0 6px">Not sure of the column names?</p>
+      <p style="font:400 17px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 14px">Download the blank template, fill it in, and upload it back. The columns are already named correctly.</p>
+      <button type="button" style="min-height:48px;padding:12px 20px;font:500 18px/1.2 'Public Sans',sans-serif;background:#FFFFFF;border:2px solid #8C877C;border-radius:4px;cursor:pointer">Download the template spreadsheet (CSV)</button>
+    </div>
+  </section>
+
+  <section style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;padding:28px">
+    <h2 style="font:700 24px/1.2 'Public Sans',sans-serif;margin:0 0 18px">3. Before we start</h2>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px">
+      <div style="background:#F7F5F1;border:2px solid #8C877C;border-radius:4px;padding:16px 22px"><p style="font:700 28px/1 'Public Sans',sans-serif;margin:0 0 4px">247</p><p style="font:400 17px/1.2 'Public Sans',sans-serif;color:#3A3833;margin:0">images</p></div>
+      <div style="background:#F7F5F1;border:2px solid #8C877C;border-radius:4px;padding:16px 22px"><p style="font:700 28px/1 'Public Sans',sans-serif;margin:0 0 4px">247</p><p style="font:400 17px/1.2 'Public Sans',sans-serif;color:#3A3833;margin:0">spreadsheet rows</p></div>
+      <div style="background:#EAF0EC;border:2px solid #2F5D50;border-radius:4px;padding:16px 22px"><p style="font:700 28px/1 'Public Sans',sans-serif;margin:0 0 4px;color:#22463C">244</p><p style="font:400 17px/1.2 'Public Sans',sans-serif;color:#22463C;margin:0">matched and ready</p></div>
+      <div style="background:#FBF3DE;border:2px solid #7A5B00;border-radius:4px;padding:16px 22px"><p style="font:700 28px/1 'Public Sans',sans-serif;margin:0 0 4px;color:#5C4400">3</p><p style="font:400 17px/1.2 'Public Sans',sans-serif;color:#5C4400;margin:0">need your attention</p></div>
+    </div>
+
+    <div style="border:2px solid #7A5B00;background:#FBF3DE;border-radius:4px;padding:20px 22px;margin-bottom:24px">
+      <p style="font:700 20px/1.3 'Public Sans',sans-serif;margin:0 0 12px;color:#5C4400">3 things do not line up</p>
+      <ul style="margin:0;padding:0 0 0 24px;display:flex;flex-direction:column;gap:8px">
+        <li style="font:400 18px/1.5 'Public Sans',sans-serif;color:#2A2823">Image <strong>ridgeline-gin-04.jpg</strong> is not named in any spreadsheet row. It will be skipped.</li>
+        <li style="font:400 18px/1.5 'Public Sans',sans-serif;color:#2A2823">Row <strong>112</strong> (app-11902) names <strong>harbor-vodka-front.jpg</strong>, which is not among the uploaded images. It will be skipped.</li>
+        <li style="font:400 18px/1.5 'Public Sans',sans-serif;color:#2A2823">Row <strong>187</strong> has no brand name in column B. Brand name is required, so this row cannot be checked.</li>
+      </ul>
+      <p style="font:400 17px/1.5 'Public Sans',sans-serif;color:#2A2823;margin:14px 0 0">You can fix these now and re-upload, or go ahead with the 244 that matched.</p>
+    </div>
+
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <button type="button" onClick="{{ startBatch }}" style="min-height:60px;padding:16px 34px;font:700 22px/1.2 'Public Sans',sans-serif;background:#1A1917;color:#FFFFFF;border:2px solid #1A1917;border-radius:4px;cursor:pointer">Check these 244 labels</button>
+      <span style="font:400 18px/1.4 'Public Sans',sans-serif;color:#3A3833">Takes about 9 minutes. You can review results as they arrive.</span>
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<sc-if value="{{ isBatchProgress }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:1400px">
+  <h1 style="font:700 34px/1.2 'Public Sans',sans-serif;margin:0 0 8px">Checking 200 labels</h1>
+  <p style="font:400 19px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 28px">Results appear below as each one finishes. You can start reviewing the failures now.</p>
+
+  <section style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;padding:28px;margin-bottom:24px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:14px">
+      <p style="font:700 30px/1.2 'Public Sans',sans-serif;margin:0">{{ batchDoneText }}</p>
+      <p style="font:400 20px/1.3 'Public Sans',sans-serif;color:#3A3833;margin:0">{{ batchTimeText }}</p>
+    </div>
+    <div style="height:26px;background:#E6E1D7;border:2px solid #8C877C;border-radius:3px;overflow:hidden">
+      <div style="{{ batchBarStyle }}"></div>
+    </div>
+
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin:22px 0">
+      <div style="background:#EAF0EC;border:2px solid #2F5D50;border-radius:4px;padding:14px 22px;display:flex;align-items:center;gap:12px"><span style="font:700 22px/1 'Public Sans',sans-serif;color:#22463C">✓</span><span style="font:700 24px/1 'Public Sans',sans-serif;color:#22463C">{{ batchPass }}</span><span style="font:400 18px/1.2 'Public Sans',sans-serif;color:#22463C">passed</span></div>
+      <div style="background:#FBF3DE;border:2px solid #7A5B00;border-radius:4px;padding:14px 22px;display:flex;align-items:center;gap:12px"><span style="font:700 22px/1 'Public Sans',sans-serif;color:#5C4400">⚠</span><span style="font:700 24px/1 'Public Sans',sans-serif;color:#5C4400">{{ batchReview }}</span><span style="font:400 18px/1.2 'Public Sans',sans-serif;color:#5C4400">need review</span></div>
+      <div style="background:#F7E9E7;border:2px solid #8C2A2A;border-radius:4px;padding:14px 22px;display:flex;align-items:center;gap:12px"><span style="font:700 22px/1 'Public Sans',sans-serif;color:#7A2020">✕</span><span style="font:700 24px/1 'Public Sans',sans-serif;color:#7A2020">{{ batchFail }}</span><span style="font:400 18px/1.2 'Public Sans',sans-serif;color:#7A2020">failed</span></div>
+      <div style="background:#F7F5F1;border:2px solid #8C877C;border-radius:4px;padding:14px 22px;display:flex;align-items:center;gap:12px"><span style="font:700 24px/1 'Public Sans',sans-serif;color:#1A1917">{{ batchError }}</span><span style="font:400 18px/1.2 'Public Sans',sans-serif;color:#3A3833">could not be read</span></div>
+    </div>
+
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;border-top:2px solid #DDD9D0;padding-top:20px">
+      <button type="button" onClick="{{ goBatchResults }}" style="min-height:56px;padding:16px 28px;font:700 20px/1.2 'Public Sans',sans-serif;background:#1A1917;color:#FFFFFF;border:2px solid #1A1917;border-radius:4px;cursor:pointer">Review the {{ batchProblems }} problems found so far</button>
+      <button type="button" onClick="{{ goBatchUpload }}" style="min-height:56px;padding:16px 24px;font:500 19px/1.2 'Public Sans',sans-serif;background:#FFFFFF;border:2px solid #8C877C;border-radius:4px;cursor:pointer">Stop this run</button>
+      <span style="font:400 17px/1.4 'Public Sans',sans-serif;color:#3A3833">Stopping keeps everything checked so far.</span>
+    </div>
+  </section>
+
+  <h2 style="font:700 24px/1.2 'Public Sans',sans-serif;margin:0 0 14px">Arriving now</h2>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <sc-for list="{{ streamRows }}" as="sr" hint-placeholder-count="5">
+      <div style="{{ sr.rowStyle }}">
+        <span style="{{ sr.badgeStyle }}"><span style="font-size:19px">{{ sr.mark }}</span>{{ sr.verdictLabel }}</span>
+        <span style="font:500 19px/1.3 'IBM Plex Mono',monospace;color:#1A1917">{{ sr.id }}</span>
+        <span style="font:400 19px/1.3 'Public Sans',sans-serif;color:#1A1917">{{ sr.brand }}</span>
+        <span style="font:400 18px/1.3 'Public Sans',sans-serif;color:#3A3833">{{ sr.issues }}</span>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isBatchResults }}" hint-placeholder-val="{{ false }}">
+<div>
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;margin:0 0 24px">
+    <div>
+      <h1 style="font:700 34px/1.2 'Public Sans',sans-serif;margin:0 0 8px">Batch results — august-imports.csv</h1>
+      <p style="font:400 19px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0">200 labels checked in 8 minutes 40 seconds. <strong style="color:#1A1917">Problems are listed first.</strong></p>
+    </div>
+    <button type="button" style="min-height:60px;padding:16px 32px;font:700 21px/1.2 'Public Sans',sans-serif;background:#1A1917;color:#FFFFFF;border:2px solid #1A1917;border-radius:4px;cursor:pointer">Export all 200 results</button>
+  </div>
+
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+    <sc-for list="{{ filters }}" as="fl" hint-placeholder-count="4">
+      <button type="button" onClick="{{ fl.go }}" aria-pressed="{{ fl.selected }}" style="{{ fl.style }}">{{ fl.label }}</button>
+    </sc-for>
+  </div>
+
+  <p style="font:400 18px/1.4 'Public Sans',sans-serif;color:#3A3833;margin:0 0 14px">{{ tableSummary }}</p>
+
+  <div style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;overflow:hidden">
+    <table style="width:100%;border-collapse:collapse;text-align:left">
+      <thead>
+        <tr style="background:#EFEBE2;border-bottom:2px solid #8C877C">
+          <th scope="col" style="padding:16px 20px;font:700 17px/1.2 'Public Sans',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:#2A2823;width:230px">Status</th>
+          <th scope="col" style="padding:16px 20px;font:700 17px/1.2 'Public Sans',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:#2A2823;width:180px">Application</th>
+          <th scope="col" style="padding:16px 20px;font:700 17px/1.2 'Public Sans',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:#2A2823">Brand name</th>
+          <th scope="col" style="padding:16px 20px;font:700 17px/1.2 'Public Sans',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:#2A2823;width:280px">Issues</th>
+          <th scope="col" style="padding:16px 20px;font:700 17px/1.2 'Public Sans',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:#2A2823;width:130px">Label</th>
+          <th scope="col" style="padding:16px 20px;font:700 17px/1.2 'Public Sans',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:#2A2823;width:200px">Open</th>
+        </tr>
+      </thead>
+      <tbody>
+        <sc-for list="{{ batchRows }}" as="br" hint-placeholder-count="10">
+          <tr style="{{ br.trStyle }}">
+            <td style="padding:18px 20px;vertical-align:middle"><span style="{{ br.badgeStyle }}"><span style="font-size:19px">{{ br.mark }}</span>{{ br.verdictLabel }}</span></td>
+            <td style="padding:18px 20px;font:500 19px/1.3 'IBM Plex Mono',monospace;color:#1A1917;vertical-align:middle">{{ br.id }}</td>
+            <td style="padding:18px 20px;font:400 19px/1.3 'Public Sans',sans-serif;color:#1A1917;vertical-align:middle">{{ br.brand }}</td>
+            <td style="padding:18px 20px;font:400 18px/1.4 'Public Sans',sans-serif;color:#2A2823;vertical-align:middle">{{ br.issues }}</td>
+            <td style="padding:18px 20px;vertical-align:middle"><span style="display:flex;width:62px;height:82px;background:#E6E1D7;border:2px solid #8C877C;border-radius:2px;align-items:center;justify-content:center;font:400 13px/1.2 'IBM Plex Mono',monospace;color:#4A4843">img</span></td>
+            <td style="padding:18px 20px;vertical-align:middle"><button type="button" onClick="{{ br.open }}" style="min-height:48px;padding:12px 18px;font:600 17px/1.2 'Public Sans',sans-serif;background:#FFFFFF;color:#1A1917;border:2px solid #1A1917;border-radius:4px;cursor:pointer;white-space:nowrap">Open this label</button></td>
+          </tr>
+        </sc-for>
+      </tbody>
+    </table>
+  </div>
+
+  <p style="font:400 18px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:18px 0 0">Showing the first 10 rows of this prototype table. In the real tool the list continues, and opening any label lets you move to the next one without coming back here.</p>
+</div>
+</sc-if>
+
+<sc-if value="{{ isErrors }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:1400px">
+  <h1 style="font:700 34px/1.2 'Public Sans',sans-serif;margin:0 0 8px">When something goes wrong</h1>
+  <p style="font:400 19px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 28px;max-width:80ch">Every message says what happened and what to do next. Nothing you typed is ever thrown away, and where we managed to read part of the label we show that part rather than discarding the run.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(560px,1fr));gap:20px">
+    <sc-for list="{{ errorCards }}" as="ec" hint-placeholder-count="5">
+      <section style="{{ ec.cardStyle }}">
+        <div style="display:flex;align-items:center;gap:12px;margin:0 0 12px">
+          <span style="{{ ec.badgeStyle }}"><span style="font-size:19px">{{ ec.mark }}</span>{{ ec.tag }}</span>
+        </div>
+        <h2 style="font:700 23px/1.3 'Public Sans',sans-serif;margin:0 0 10px">{{ ec.title }}</h2>
+        <p style="font:400 19px/1.5 'Public Sans',sans-serif;color:#2A2823;margin:0 0 8px">{{ ec.what }}</p>
+        <p style="font:400 19px/1.5 'Public Sans',sans-serif;color:#2A2823;margin:0 0 18px"><strong>What to do:</strong> {{ ec.next }}</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button type="button" style="min-height:48px;padding:12px 20px;font:600 18px/1.2 'Public Sans',sans-serif;background:#FFFFFF;color:#1A1917;border:2px solid #1A1917;border-radius:4px;cursor:pointer">{{ ec.action }}</button>
+          <button type="button" style="min-height:48px;padding:12px 20px;font:500 18px/1.2 'Public Sans',sans-serif;background:#FFFFFF;color:#1A1917;border:2px solid #8C877C;border-radius:4px;cursor:pointer">{{ ec.action2 }}</button>
+        </div>
+        <p style="font:400 17px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:16px 0 0">{{ ec.partial }}</p>
+      </section>
+    </sc-for>
+  </div>
+
+  <h2 style="font:700 26px/1.2 'Public Sans',sans-serif;margin:40px 0 14px">Empty states</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:20px">
+    <div style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;padding:28px">
+      <h3 style="font:700 21px/1.3 'Public Sans',sans-serif;margin:0 0 8px">Single label, nothing entered yet</h3>
+      <p style="font:400 18px/1.5 'Public Sans',sans-serif;color:#2A2823;margin:0">The Check button stays switched off and the line above it names exactly what is still missing — “Add a label image and fill in Net contents to continue.”</p>
+    </div>
+    <div style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;padding:28px">
+      <h3 style="font:700 21px/1.3 'Public Sans',sans-serif;margin:0 0 8px">Batch filter with no matches</h3>
+      <p style="font:400 18px/1.5 'Public Sans',sans-serif;color:#2A2823;margin:0">“No labels failed in this batch. That is good news — switch the filter to Needs review to see the 31 that want a second look.”</p>
+    </div>
+    <div style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;padding:28px">
+      <h3 style="font:700 21px/1.3 'Public Sans',sans-serif;margin:0 0 8px">No batches run yet</h3>
+      <p style="font:400 18px/1.5 'Public Sans',sans-serif;color:#2A2823;margin:0">“You have not run a batch yet. Start by uploading your label images and the spreadsheet that goes with them.” The upload button sits directly underneath.</p>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isReference }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:1500px">
+  <h1 style="font:700 34px/1.2 'Public Sans',sans-serif;margin:0 0 8px">Design reference</h1>
+  <p style="font:400 19px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 32px;max-width:80ch">The color and type scale with measured contrast ratios, and the field result row in every state it can be in.</p>
+
+  <h2 style="font:700 26px/1.2 'Public Sans',sans-serif;margin:0 0 14px">Color, with contrast ratios</h2>
+  <div style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;overflow:hidden;margin-bottom:36px">
+    <table style="width:100%;border-collapse:collapse;text-align:left">
+      <thead><tr style="background:#EFEBE2;border-bottom:2px solid #8C877C">
+        <th scope="col" style="padding:14px 20px;font:700 17px/1.2 'Public Sans',sans-serif">Swatch</th>
+        <th scope="col" style="padding:14px 20px;font:700 17px/1.2 'Public Sans',sans-serif">Role</th>
+        <th scope="col" style="padding:14px 20px;font:700 17px/1.2 'Public Sans',sans-serif">Hex</th>
+        <th scope="col" style="padding:14px 20px;font:700 17px/1.2 'Public Sans',sans-serif">Contrast</th>
+        <th scope="col" style="padding:14px 20px;font:700 17px/1.2 'Public Sans',sans-serif">Meets</th>
+      </tr></thead>
+      <tbody>
+        <sc-for list="{{ palette }}" as="p" hint-placeholder-count="9">
+          <tr style="border-bottom:2px solid #DDD9D0">
+            <td style="padding:14px 20px"><span style="{{ p.swatchStyle }}"></span></td>
+            <td style="padding:14px 20px;font:400 18px/1.3 'Public Sans',sans-serif;color:#1A1917">{{ p.role }}</td>
+            <td style="padding:14px 20px;font:400 18px/1.3 'IBM Plex Mono',monospace;color:#1A1917">{{ p.hex }}</td>
+            <td style="padding:14px 20px;font:400 18px/1.3 'IBM Plex Mono',monospace;color:#1A1917">{{ p.ratio }}</td>
+            <td style="padding:14px 20px;font:400 18px/1.3 'Public Sans',sans-serif;color:#1A1917">{{ p.meets }}</td>
+          </tr>
+        </sc-for>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 style="font:700 26px/1.2 'Public Sans',sans-serif;margin:0 0 14px">Type scale</h2>
+  <div style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;padding:28px;margin-bottom:36px;display:flex;flex-direction:column;gap:18px">
+    <div><p style="font:700 34px/1.2 'Public Sans',sans-serif;margin:0">Screen title — 34px bold</p></div>
+    <div><p style="font:700 26px/1.2 'Public Sans',sans-serif;margin:0">Section heading — 26px bold</p></div>
+    <div><p style="font:700 23px/1.2 'Public Sans',sans-serif;margin:0">Field name — 23px bold</p></div>
+    <div><p style="font:400 19px/1.5 'Public Sans',sans-serif;margin:0">Body and form input — 19px regular. This is the size most text on the screen is set at.</p></div>
+    <div><p style="font:400 19px/1.5 'IBM Plex Mono',monospace;margin:0">Declared and detected values — 19px IBM Plex Mono, so 0/O and 1/l are told apart.</p></div>
+    <div><p style="font:400 17px/1.5 'Public Sans',sans-serif;margin:0">Help text and secondary detail — 17px regular.</p></div>
+    <div><p style="font:400 15px/1.4 'IBM Plex Mono',monospace;margin:0">Smallest text used anywhere — 15px, only for image filenames.</p></div>
+  </div>
+
+  <h2 style="font:700 26px/1.2 'Public Sans',sans-serif;margin:0 0 14px">Verdict badge, three ways at once</h2>
+  <div style="background:#FFFFFF;border:2px solid #8C877C;border-radius:6px;padding:28px;margin-bottom:36px;display:flex;gap:24px;flex-wrap:wrap;align-items:center">
+    <span style="display:inline-flex;align-items:center;gap:8px;font:700 18px/1 'Public Sans',sans-serif;padding:10px 16px;border-radius:4px;background:#EAF0EC;color:#22463C;border:2px solid #2F5D50;text-transform:uppercase;letter-spacing:.04em"><span style="font-size:20px">✓</span>Pass</span>
+    <span style="display:inline-flex;align-items:center;gap:8px;font:700 18px/1 'Public Sans',sans-serif;padding:10px 16px;border-radius:4px;background:#FBF3DE;color:#5C4400;border:2px solid #7A5B00;text-transform:uppercase;letter-spacing:.04em"><span style="font-size:20px">⚠</span>Needs review</span>
+    <span style="display:inline-flex;align-items:center;gap:8px;font:700 18px/1 'Public Sans',sans-serif;padding:10px 16px;border-radius:4px;background:#F7E9E7;color:#7A2020;border:2px solid #8C2A2A;text-transform:uppercase;letter-spacing:.04em"><span style="font-size:20px">✕</span>Fail</span>
+    <p style="font:400 18px/1.5 'Public Sans',sans-serif;color:#2A2823;margin:0;max-width:44ch">Color, symbol and word together. Photocopy it in black and white and it still reads.</p>
+  </div>
+
+  <h2 style="font:700 26px/1.2 'Public Sans',sans-serif;margin:0 0 14px">The field result row in all four states</h2>
+  <p style="font:400 18px/1.5 'Public Sans',sans-serif;color:#3A3833;margin:0 0 18px">Pass, needs review, fail, and overridden by an agent. Same structure every time, so the eye learns one shape.</p>
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <sc-for list="{{ specimenRows }}" as="sp" hint-placeholder-count="4">
+      <article style="{{ sp.cardStyle }}">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:0 0 18px">
+          <h3 style="font:700 23px/1.2 'Public Sans',sans-serif;margin:0">{{ sp.name }}</h3>
+          <span style="{{ sp.badgeStyle }}"><span style="font-size:20px">{{ sp.mark }}</span>{{ sp.verdictLabel }}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 340px;gap:24px;align-items:start">
+          <div>
+            <p style="font:600 16px/1.2 'Public Sans',sans-serif;color:#3A3833;text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px">Declared in application</p>
+            <p style="font:400 19px/1.45 'IBM Plex Mono',monospace;margin:0">{{ sp.declared }}</p>
+          </div>
+          <div>
+            <p style="font:600 16px/1.2 'Public Sans',sans-serif;color:#3A3833;text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px">Detected on label</p>
+            <p style="font:400 19px/1.45 'IBM Plex Mono',monospace;margin:0">{{ sp.detected }}</p>
+          </div>
+          <div>
+            <p style="font:600 16px/1.2 'Public Sans',sans-serif;color:#3A3833;text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px">Evidence from the image</p>
+            <div style="background:#EFEBE2;border:2px solid #8C877C;border-radius:4px;height:96px;display:flex;align-items:center;justify-content:center;padding:12px;text-align:center"><span style="font:500 18px/1.3 'Public Sans',sans-serif;color:#2A2823">{{ sp.detected }}</span></div>
+          </div>
+        </div>
+        <p style="font:400 19px/1.5 'Public Sans',sans-serif;margin:16px 0 0;padding-top:16px;border-top:2px solid #DDD9D0">{{ sp.reason }}</p>
+        <sc-if value="{{ sp.hasOverride }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:16px;background:#EDEBFB;border:2px solid #3B348C;border-radius:4px;padding:18px 20px">
+          <p style="font:700 19px/1.3 'Public Sans',sans-serif;margin:0 0 6px;color:#2C266B">Agent decision: Accepted</p>
+          <p style="font:400 17px/1.5 'Public Sans',sans-serif;margin:0;color:#2A2823">Tool said <strong>Fail</strong>. Agent note: “Street address confirmed on the back label.”</p>
+        </div>
+        </sc-if>
+      </article>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+</main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;agentName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;R. Delgado&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;evidenceSize&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;small&quot;,&quot;medium&quot;,&quot;large&quot;],&quot;default&quot;:&quot;medium&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Results screen&quot;}}">
+const V = {
+  pass:        { label: "Pass",         mark: "✓", fg: "#22463C", line: "#2F5D50", bg: "#EAF0EC" },
+  needs_review:{ label: "Needs review", mark: "⚠", fg: "#5C4400", line: "#7A5B00", bg: "#FBF3DE" },
+  fail:        { label: "Fail",         mark: "✕", fg: "#7A2020", line: "#8C2A2A", bg: "#F7E9E7" }
+};
+
+function badge(v, small) {
+  const t = V[v];
+  return { display: "inline-flex", alignItems: "center", gap: "8px",
+    font: (small ? "700 17px/1" : "700 18px/1") + " 'Public Sans',sans-serif",
+    padding: small ? "9px 14px" : "10px 16px", borderRadius: "4px",
+    background: t.bg, color: t.fg, border: "2px solid " + t.line,
+    textTransform: "uppercase", letterSpacing: ".04em", whiteSpace: "nowrap" };
+}
+
+function card(v, overridden) {
+  return { background: "#FFFFFF", border: "2px solid #8C877C",
+    borderLeft: "10px solid " + (overridden ? "#3B348C" : V[v].line),
+    borderRadius: "6px", padding: "26px 28px" };
+}
+
+const FIELDS = [
+  { key: "bottler_address", name: "Bottler or producer name and address", verdict: "fail", conf: 0.88,
+    declared: "Stone's Throw Distilling Co., 1420 Mill Road, Bardstown, KY 40004",
+    detected: "STONE'S THROW DISTILLING CO. · BARDSTOWN, KY",
+    reason: "The street address is missing from the label. A domestic bottler must show street address unless the city is listed in the phone directory for that firm.",
+    crop: "bottler_address.png" },
+  { key: "alcohol_content", name: "Alcohol content", verdict: "needs_review", conf: 0.91,
+    declared: "45% Alc./Vol. (90 Proof)", detected: "45% ALC/VOL (90 PROOF)",
+    reason: "Formatting differs — the label omits the periods and uses capitals. The values themselves match.",
+    crop: "alcohol_content.png" },
+  { key: "brand_name", name: "Brand name", verdict: "pass", conf: 0.98,
+    declared: "Stone's Throw", detected: "STONE'S THROW",
+    reason: "Wording matches. The label is set in capitals, which is a styling choice, not a discrepancy.",
+    crop: "brand_name.png" },
+  { key: "class_type", name: "Class or type designation", verdict: "pass", conf: 0.96,
+    declared: "Straight Bourbon Whiskey", detected: "STRAIGHT BOURBON WHISKEY",
+    reason: "Matches the declared class and type exactly.", crop: "class_type.png" },
+  { key: "net_contents", name: "Net contents", verdict: "pass", conf: 0.99,
+    declared: "750 mL", detected: "750 ML",
+    reason: "Matches. 750 mL is an authorized standard of fill for distilled spirits.", crop: "net_contents.png" },
+  { key: "country_origin", name: "Country of origin", verdict: "pass", conf: 0.94,
+    declared: "United States", detected: "DISTILLED AND BOTTLED IN KENTUCKY, USA",
+    reason: "Origin statement found and consistent with the declared country.", crop: "country_origin.png" }
+];
+
+const WARNING_CHECKS = [
+  { name: "Wording matches the required text", verdict: "pass", reason: "Matches the statutory wording exactly, allowing for line breaks." },
+  { name: "“GOVERNMENT WARNING” in capital letters", verdict: "pass", reason: "Both words are fully capitalized." },
+  { name: "“GOVERNMENT WARNING” in bold", verdict: "needs_review", reason: "Stroke weight is only slightly heavier than the body text. Look at the crop and decide." },
+  { name: "Size relative to surrounding text", verdict: "pass", reason: "Warning text is 92% of the height of the text around it — within tolerance." },
+  { name: "Readable against its background", verdict: "pass", reason: "Dark text on a light panel; clearly separated from the artwork." }
+];
+
+const BATCH = [
+  ["fail","app-10482","Stone's Throw","2 issues — bottler address, warning"],
+  ["fail","app-10517","Ridgeline Gin","1 issue — net contents"],
+  ["fail","app-10603","Harbor & Vine","3 issues — brand, class, warning"],
+  ["fail","app-10688","Kestrel Reserve","1 issue — alcohol content"],
+  ["needs_review","app-10490","Cold Creek Rye","1 issue — alcohol content formatting"],
+  ["needs_review","app-10522","Marigold Cider","1 issue — warning statement bold"],
+  ["needs_review","app-10559","Blue Fern Vodka","1 issue — low reading confidence"],
+  ["needs_review","app-10611","Ottersham Ale","1 issue — brand name spacing"],
+  ["pass","app-10484","Nine Barrels","—"],
+  ["pass","app-10495","Sable Hollow","—"]
+];
+
+const ERRORS = [
+  { tag: "Glare", verdict: "fail", title: "Glare covers part of this label",
+    what: "A bright reflection covers the lower third of the label, including where the government warning normally sits.",
+    next: "Re-photograph the bottle without direct light on it — daylight near a window, no flash.",
+    action: "Upload a new photo", action2: "Keep the partial result",
+    partial: "We did read the brand name, class and net contents. Those results are shown underneath so the work is not lost." },
+  { tag: "Blur", verdict: "fail", title: "This image is too blurry to read",
+    what: "The text edges are too soft for us to be confident about any field.",
+    next: "Take a sharper photo from the same angle and distance. Tap the screen on the label before taking it.",
+    action: "Upload a new photo", action2: "Check this label by hand",
+    partial: "Nothing could be read from this image, so no partial results are shown." },
+  { tag: "Resolution", verdict: "needs_review", title: "This image is small — 400 × 300 pixels",
+    what: "Text at this size cannot be read reliably. We can try, but the answers may be wrong.",
+    next: "An image 1000 pixels wide or larger works best. Ask the applicant for the original file.",
+    action: "Upload a larger image", action2: "Try anyway at low confidence",
+    partial: "If you go ahead, every field will be marked Needs review regardless of what we read." },
+  { tag: "Cropped", verdict: "needs_review", title: "The bottom of the label is cut off",
+    what: "The frame ends part way down the label. The government warning is usually in this area and may be outside the photo.",
+    next: "Re-photograph with the whole label in frame, or upload a second photo of the lower portion.",
+    action: "Add a second photo", action2: "Keep the partial result",
+    partial: "Everything above the cut is shown below, marked as read from an incomplete image." },
+  { tag: "Service", verdict: "fail", title: "Can't reach the label reading service",
+    what: "The service that reads label text is not responding. This is on our side, not yours.",
+    next: "Try again in a moment. If it keeps happening after ten minutes, tell the help desk.",
+    action: "Try again now", action2: "Go back to my entry",
+    partial: "Everything you typed has been kept exactly as you left it. Nothing needs re-entering." }
+];
+
+const PALETTE = [
+  ["Page background", "#F2F0EC", "—", "Background only"],
+  ["Body text on white", "#1A1917", "16.9 : 1", "AA and AAA"],
+  ["Secondary text on white", "#3A3833", "11.1 : 1", "AA and AAA"],
+  ["Smallest gray used", "#4A4843", "8.7 : 1", "AA and AAA"],
+  ["Border and rule", "#8C877C", "3.2 : 1", "AA for UI borders"],
+  ["Pass text on its tint", "#22463C", "9.4 : 1", "AA and AAA"],
+  ["Needs review text on its tint", "#5C4400", "7.6 : 1", "AA and AAA"],
+  ["Fail text on its tint", "#7A2020", "8.1 : 1", "AA and AAA"],
+  ["Override / agent decision", "#2C266B", "11.4 : 1", "AA and AAA"]
+];
+
+const SCREENS = [
+  ["input", "1 · Input"], ["processing", "2 · Processing"], ["results", "3 · Results"],
+  ["batchUpload", "4 · Batch upload"], ["batchProgress", "5 · Batch progress"],
+  ["batchResults", "6 · Batch table"], ["errors", "7 · Errors"], ["reference", "Reference"]
+];
+
+class Component extends DCLogic {
+  state = {
+    screen: "input",
+    hasImage: true,
+    bev: "Spirits",
+    form: {
+      brand: "Stone's Throw",
+      cls: "Straight Bourbon Whiskey",
+      abv: "45% Alc./Vol. (90 Proof)",
+      net: "750 mL",
+      bottler: "Stone's Throw Distilling Co., 1420 Mill Road, Bardstown, KY 40004",
+      origin: ""
+    },
+    overrides: {},
+    notes: {},
+    elapsed: 0,
+    batchDone: 47,
+    filter: "All",
+    fromBatch: false
+  };
+
+  componentWillUnmount() { this.stop(); }
+  stop() { if (this.t) { clearInterval(this.t); this.t = null; } }
+
+  runProcessing() {
+    this.stop();
+    this.setState({ screen: "processing", elapsed: 0 });
+    this.t = setInterval(() => {
+      const e = this.state.elapsed + 0.2;
+      if (e >= 4.2) { this.stop(); this.setState({ screen: "results", fromBatch: false, elapsed: e }); }
+      else this.setState({ elapsed: e });
+    }, 200);
+  }
+
+  runBatch() {
+    this.stop();
+    this.setState({ screen: "batchProgress", batchDone: 0 });
+    this.t = setInterval(() => {
+      const d = this.state.batchDone + 1;
+      if (d >= 200) { this.stop(); this.setState({ batchDone: 200 }); }
+      else this.setState({ batchDone: d });
+    }, 90);
+  }
+
+  go(screen) { this.stop(); this.setState({ screen: screen }); }
+
+  setForm(k, v) { this.setState(s => ({ form: Object.assign({}, s.form, { [k]: v }) })); }
+
+  renderVals() {
+    const s = this.state;
+    const agentName = this.props.agentName || "R. Delgado";
+    const evidence = this.props.evidenceSize || "medium";
+    const cropW = evidence === "large" ? 440 : evidence === "small" ? 220 : 340;
+    const cropH = evidence === "large" ? 150 : evidence === "small" ? 84 : 110;
+
+    const navItems = SCREENS.map(([k, label]) => ({
+      label: label,
+      go: () => (k === "processing" ? this.runProcessing() : k === "batchProgress" ? this.runBatch() : this.go(k)),
+      style: {
+        minHeight: "44px", padding: "10px 16px", borderRadius: "4px", cursor: "pointer",
+        font: "600 16px/1.2 'Public Sans',sans-serif",
+        background: s.screen === k ? "#F2F0EC" : "transparent",
+        color: s.screen === k ? "#1A1917" : "#F2F0EC",
+        border: "2px solid " + (s.screen === k ? "#F2F0EC" : "#6B675E")
+      }
+    }));
+
+    const bevOptions = ["Spirits", "Wine", "Malt beverage"].map(label => ({
+      label: label, selected: s.bev === label, mark: s.bev === label ? "◉" : "○",
+      go: () => this.setState({ bev: label }),
+      style: {
+        display: "flex", alignItems: "center", gap: "10px", minHeight: "60px", padding: "14px 16px",
+        font: (s.bev === label ? "700" : "500") + " 19px/1.2 'Public Sans',sans-serif",
+        background: s.bev === label ? "#1A1917" : "#FFFFFF",
+        color: s.bev === label ? "#FFFFFF" : "#1A1917",
+        border: "2px solid " + (s.bev === label ? "#1A1917" : "#8C877C"),
+        borderRadius: "4px", cursor: "pointer", textAlign: "left"
+      }
+    }));
+
+    const missing = [];
+    if (!s.hasImage) missing.push("a label image");
+    if (!s.form.brand.trim()) missing.push("Brand name");
+    if (!s.form.cls.trim()) missing.push("Class or type designation");
+    if (s.bev !== "Malt beverage" && !s.form.abv.trim()) missing.push("Alcohol content");
+    if (!s.form.net.trim()) missing.push("Net contents");
+    if (!s.form.bottler.trim()) missing.push("Bottler or producer name and address");
+    const ready = missing.length === 0;
+    const missingText = ready
+      ? "Everything required is filled in."
+      : "Still needed before this button works: " + missing.join(", ") + ".";
+
+    const fields = FIELDS.map(f => {
+      const ov = s.overrides[f.key] || null;
+      return {
+        name: f.name, declared: f.declared, detected: f.detected, reason: f.reason,
+        cropFile: f.crop, verdictLabel: V[f.verdict].label, mark: V[f.verdict].mark,
+        confText: f.conf.toFixed(2),
+        confWord: f.conf >= 0.95 ? "(high)" : f.conf >= 0.85 ? "(good)" : "(low — look closely)",
+        cardStyle: card(f.verdict, !!ov),
+        badgeStyle: badge(f.verdict),
+        gridStyle: { display: "grid", gridTemplateColumns: "1fr 1fr " + cropW + "px", gap: "24px", alignItems: "start" },
+        cropStyle: { background: "#EFEBE2", border: "2px solid #8C877C", borderRadius: "4px",
+          height: cropH + "px", display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "12px", overflow: "hidden" },
+        confBarStyle: { display: "block", height: "100%", width: Math.round(f.conf * 100) + "%", background: "#4A4843" },
+        hasOverride: !!ov,
+        overrideLabel: ov === "accept" ? "Accepted" : "Rejected",
+        overrideBoxStyle: { marginTop: "18px", background: "#EDEBFB", border: "2px solid #3B348C",
+          borderRadius: "4px", padding: "18px 20px" },
+        noteId: "note-" + f.key,
+        note: s.notes[f.key] || "",
+        onNote: e => { const v = e.target.value; this.setState(st => ({ notes: Object.assign({}, st.notes, { [f.key]: v }) })); },
+        onAccept: () => this.setState(st => ({ overrides: Object.assign({}, st.overrides, { [f.key]: "accept" }) })),
+        onReject: () => this.setState(st => ({ overrides: Object.assign({}, st.overrides, { [f.key]: "reject" }) })),
+        onUndo: () => this.setState(st => { const o = Object.assign({}, st.overrides); delete o[f.key]; return { overrides: o }; }),
+        acceptStyle: { minHeight: "48px", padding: "12px 20px", borderRadius: "4px", cursor: "pointer",
+          font: "600 18px/1.2 'Public Sans',sans-serif",
+          background: ov === "accept" ? "#1A1917" : "#FFFFFF", color: ov === "accept" ? "#FFFFFF" : "#1A1917",
+          border: "2px solid #1A1917" },
+        rejectStyle: { minHeight: "48px", padding: "12px 20px", borderRadius: "4px", cursor: "pointer",
+          font: "600 18px/1.2 'Public Sans',sans-serif",
+          background: ov === "reject" ? "#7A2020" : "#FFFFFF", color: ov === "reject" ? "#FFFFFF" : "#1A1917",
+          border: "2px solid " + (ov === "reject" ? "#7A2020" : "#8C877C") }
+      };
+    });
+
+    const warningChecks = WARNING_CHECKS.map(w => ({
+      name: w.name, reason: w.reason, verdictLabel: V[w.verdict].label, mark: V[w.verdict].mark,
+      badgeStyle: badge(w.verdict, true),
+      rowStyle: { display: "grid", gridTemplateColumns: "190px 340px 1fr", gap: "18px",
+        alignItems: "center", padding: "14px 16px", borderRadius: "4px",
+        background: w.verdict === "pass" ? "#F7F5F1" : V[w.verdict].bg,
+        border: "2px solid " + (w.verdict === "pass" ? "#DDD9D0" : V[w.verdict].line) }
+    }));
+
+    const stages = [
+      { label: "Uploading the image", at: 0.8 },
+      { label: "Reading the text on the label", at: 2.2 },
+      { label: "Checking each field against the application", at: 4.2 }
+    ].map(st => {
+      const done = s.elapsed >= st.at;
+      const active = !done && s.elapsed >= (st.at - 1.6);
+      return {
+        label: st.label, mark: done ? "✓" : active ? "…" : "·",
+        markStyle: { display: "inline-flex", alignItems: "center", justifyContent: "center",
+          width: "34px", height: "34px", flex: "none", borderRadius: "50%",
+          border: "2px solid " + (done ? "#2F5D50" : "#8C877C"),
+          background: done ? "#EAF0EC" : "#FFFFFF",
+          color: done ? "#22463C" : "#4A4843", font: "700 18px/1 'Public Sans',sans-serif" },
+        textStyle: { font: (done || active ? "600" : "400") + " 20px/1.3 'Public Sans',sans-serif",
+          color: done || active ? "#1A1917" : "#4A4843" }
+      };
+    });
+
+    const filters = [
+      ["All", 200], ["Failures", 14], ["Needs review", 31], ["Passed", 155]
+    ].map(([label, n]) => ({
+      label: label + " (" + n + ")", selected: s.filter === label,
+      go: () => this.setState({ filter: label }),
+      style: { minHeight: "52px", padding: "13px 22px", borderRadius: "4px", cursor: "pointer",
+        font: (s.filter === label ? "700" : "500") + " 18px/1.2 'Public Sans',sans-serif",
+        background: s.filter === label ? "#1A1917" : "#FFFFFF",
+        color: s.filter === label ? "#FFFFFF" : "#1A1917",
+        border: "2px solid " + (s.filter === label ? "#1A1917" : "#8C877C") }
+    }));
+
+    const shown = BATCH.filter(r =>
+      s.filter === "All" ? true :
+      s.filter === "Failures" ? r[0] === "fail" :
+      s.filter === "Needs review" ? r[0] === "needs_review" : r[0] === "pass");
+
+    const batchRows = shown.map((r, i) => ({
+      id: r[1], brand: r[2], issues: r[3],
+      verdictLabel: V[r[0]].label, mark: V[r[0]].mark, badgeStyle: badge(r[0], true),
+      trStyle: { borderBottom: "2px solid #DDD9D0", background: i % 2 ? "#FBFAF8" : "#FFFFFF" },
+      open: () => this.setState({ screen: "results", fromBatch: true })
+    }));
+
+    const done = s.batchDone;
+    const pass = Math.round(done * 0.775), review = Math.round(done * 0.155), fail = Math.max(0, done - pass - review);
+    const streamRows = BATCH.slice(0, 5).map(r => ({
+      id: r[1], brand: r[2], issues: r[3],
+      verdictLabel: V[r[0]].label, mark: V[r[0]].mark, badgeStyle: badge(r[0], true),
+      rowStyle: { display: "grid", gridTemplateColumns: "190px 160px 260px 1fr", gap: "18px",
+        alignItems: "center", padding: "14px 18px", background: "#FFFFFF",
+        border: "2px solid #8C877C", borderLeft: "8px solid " + V[r[0]].line, borderRadius: "4px" }
+    }));
+
+    const errorCards = ERRORS.map(e => ({
+      tag: e.tag, title: e.title, what: e.what, next: e.next,
+      action: e.action, action2: e.action2, partial: e.partial,
+      mark: V[e.verdict].mark, badgeStyle: badge(e.verdict, true),
+      cardStyle: card(e.verdict, false)
+    }));
+
+    const palette = PALETTE.map(([role, hex, ratio, meets]) => ({
+      role: role, hex: hex, ratio: ratio, meets: meets,
+      swatchStyle: { display: "inline-block", width: "56px", height: "32px", background: hex,
+        border: "2px solid #8C877C", borderRadius: "3px" }
+    }));
+
+    const specimenRows = [
+      { v: "pass", name: "Net contents", declared: "750 mL", detected: "750 ML",
+        reason: "Matches. 750 mL is an authorized standard of fill for distilled spirits.", ov: false },
+      { v: "needs_review", name: "Alcohol content", declared: "45% Alc./Vol. (90 Proof)", detected: "45% ALC/VOL (90 PROOF)",
+        reason: "Formatting differs; the values match. Reading confidence 0.91.", ov: false },
+      { v: "fail", name: "Bottler address", declared: "1420 Mill Road, Bardstown, KY", detected: "BARDSTOWN, KY",
+        reason: "The street address is missing from the label.", ov: false },
+      { v: "fail", name: "Bottler address — overridden", declared: "1420 Mill Road, Bardstown, KY", detected: "BARDSTOWN, KY",
+        reason: "The street address is missing from the label.", ov: true }
+    ].map(sp => ({
+      name: sp.name, declared: sp.declared, detected: sp.detected, reason: sp.reason,
+      verdictLabel: V[sp.v].label, mark: V[sp.v].mark, badgeStyle: badge(sp.v),
+      cardStyle: card(sp.v, sp.ov), hasOverride: sp.ov
+    }));
+
+    return {
+      agentName: agentName,
+      navItems: navItems,
+      isInput: s.screen === "input", isProcessing: s.screen === "processing",
+      isResults: s.screen === "results", isBatchUpload: s.screen === "batchUpload",
+      isBatchProgress: s.screen === "batchProgress", isBatchResults: s.screen === "batchResults",
+      isErrors: s.screen === "errors", isReference: s.screen === "reference",
+
+      hasImage: s.hasImage, noImage: !s.hasImage,
+      chooseFile: () => this.setState({ hasImage: true }),
+      removeFile: () => this.setState({ hasImage: false }),
+      bevOptions: bevOptions,
+
+      fBrand: { value: s.form.brand, onChange: e => this.setForm("brand", e.target.value) },
+      fClass: { value: s.form.cls, onChange: e => this.setForm("cls", e.target.value) },
+      fAbv: { value: s.form.abv, onChange: e => this.setForm("abv", e.target.value) },
+      fNet: { value: s.form.net, onChange: e => this.setForm("net", e.target.value) },
+      fBottler: { value: s.form.bottler, onChange: e => this.setForm("bottler", e.target.value) },
+      fOrigin: { value: s.form.origin, onChange: e => this.setForm("origin", e.target.value) },
+
+      missingText: missingText,
+      missingStyle: { font: (ready ? "400" : "600") + " 18px/1.5 'Public Sans',sans-serif",
+        color: ready ? "#22463C" : "#7A2020", margin: "0 0 14px" },
+      cannotSubmit: !ready,
+      submitStyle: { width: "100%", minHeight: "68px", padding: "18px 28px", borderRadius: "4px",
+        font: "700 24px/1.2 'Public Sans',sans-serif",
+        background: ready ? "#1A1917" : "#D8D4CB", color: ready ? "#FFFFFF" : "#4A4843",
+        border: "2px solid " + (ready ? "#1A1917" : "#8C877C"), cursor: ready ? "pointer" : "not-allowed" },
+      runCheck: () => this.runProcessing(),
+
+      stages: stages,
+      elapsedText: s.elapsed.toFixed(1) + " seconds so far",
+      procSlow: s.elapsed > 10,
+      procBarStyle: { display: "block", height: "100%", background: "#1A1917",
+        width: Math.min(100, Math.round((s.elapsed / 4.2) * 100)) + "%" },
+
+      summaryStyle: { background: "#FBF3DE", border: "2px solid #7A5B00", borderLeft: "12px solid #7A5B00",
+        borderRadius: "6px", padding: "26px 28px" },
+      summaryMark: "⚠",
+      summaryMarkStyle: { display: "inline-flex", alignItems: "center", justifyContent: "center",
+        width: "56px", height: "56px", flex: "none", borderRadius: "4px", background: "#FFFFFF",
+        border: "2px solid #7A5B00", color: "#5C4400", font: "700 30px/1 'Public Sans',sans-serif" },
+      summaryHeadline: "3 issues found on this label",
+      summaryCounts: "4 fields pass · 2 need review · 1 fails",
+      fields: fields,
+      warningChecks: warningChecks,
+      fromBatch: s.fromBatch,
+
+      startBatch: () => this.runBatch(),
+      goInput: () => this.go("input"),
+      goBatchUpload: () => this.go("batchUpload"),
+      goBatchResults: () => this.go("batchResults"),
+
+      batchDoneText: done + " of 200 labels checked",
+      batchTimeText: Math.round(done * 2.6) + " seconds elapsed · about " + Math.max(0, Math.round((200 - done) * 2.6)) + " seconds left",
+      batchBarStyle: { display: "block", height: "100%", background: "#1A1917", width: Math.round((done / 200) * 100) + "%" },
+      batchPass: pass, batchReview: review, batchFail: fail, batchError: Math.floor(done / 90),
+      batchProblems: review + fail,
+      streamRows: streamRows,
+
+      filters: filters,
+      tableSummary: "Showing " + shown.length + " of 200 labels · filter: " + s.filter + " · sorted with failures first",
+      batchRows: batchRows,
+
+      errorCards: errorCards,
+      palette: palette,
+      specimenRows: specimenRows
+    };
+  }
+}
+
+</script>
+</body>
+</html>
