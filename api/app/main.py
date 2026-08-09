@@ -29,6 +29,7 @@ log = structlog.get_logger()
 _readiness: dict[str, Any] = {
     "prompt_cache": "not_attempted",
     "schema": "not_attempted",
+    "ocr": "not_attempted",
     "warm_ms": None,
 }
 
@@ -77,18 +78,45 @@ def _warm_schema() -> str:
     return "warm"
 
 
+def _warm_ocr() -> str:
+    """Prove the configured OCR engine actually works.
+
+    Constructing the client only validates that the credentials JSON parses.
+    Running one tiny extract additionally proves authentication, that the API
+    is enabled, and that billing is attached — the failure that otherwise
+    surfaces on a user's first upload rather than at boot.
+    """
+    import io
+
+    from PIL import Image
+
+    from app.ocr.factory import get_engine
+
+    engine = get_engine()
+    if engine.name == "fake":
+        return "fake"
+
+    buffer = io.BytesIO()
+    Image.new("RGB", (32, 32), "white").save(buffer, format="PNG")
+    engine.extract(buffer.getvalue())  # no text expected; the call succeeding is the point
+    return "warm"
+
+
 @asynccontextmanager
-async def lifespan(_: FastAPI):  # noqa: ANN201
+async def lifespan(_: FastAPI):
     started = time.perf_counter()
+    stages: list[tuple[str, Any]] = [("ocr", _warm_ocr)]
     if settings.anthropic_api_key:
-        for name, fn in (("prompt_cache", _warm_prompt_cache), ("schema", _warm_schema)):
-            try:
-                _readiness[name] = fn()
-            except Exception as exc:
-                _readiness[name] = f"failed: {type(exc).__name__}"
-                log.error("warmup_failed", stage=name, error=str(exc)[:200])
+        stages += [("prompt_cache", _warm_prompt_cache), ("schema", _warm_schema)]
     else:
         _readiness["prompt_cache"] = _readiness["schema"] = "skipped_no_key"
+
+    for name, fn in stages:
+        try:
+            _readiness[name] = fn()
+        except Exception as exc:
+            _readiness[name] = f"failed: {type(exc).__name__}"
+            log.error("warmup_failed", stage=name, error=str(exc)[:300])
 
     _readiness["warm_ms"] = round((time.perf_counter() - started) * 1000)
     log.info("startup_complete", **_readiness, ocr_engine=settings.ocr_engine)
@@ -118,7 +146,9 @@ def health() -> dict[str, Any]:
     Returns 200 even when warming did not fully succeed — the service is
     usable, just slower on first use. The body says which.
     """
-    degraded = [k for k in ("prompt_cache", "schema") if _readiness[k] not in ("warm",)]
+    degraded = [
+        k for k in ("prompt_cache", "schema", "ocr") if _readiness[k] not in ("warm", "fake")
+    ]
     return {
         "status": "ok" if not degraded else "degraded",
         "ocr_engine": settings.ocr_engine,
