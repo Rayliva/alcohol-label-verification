@@ -115,8 +115,11 @@ async def lifespan(_: FastAPI):
         try:
             _readiness[name] = fn()
         except Exception as exc:
-            _readiness[name] = f"failed: {type(exc).__name__}"
-            log.error("warmup_failed", stage=name, error=str(exc)[:300])
+            # Surface the reason, not just the type. Our own errors name the
+            # variable or the provider message; none of them contain a
+            # credential value. Truncated defensively all the same.
+            _readiness[name] = f"failed: {type(exc).__name__}: {str(exc)[:240]}"
+            log.error("warmup_failed", stage=name, error=str(exc)[:500])
 
     _readiness["warm_ms"] = round((time.perf_counter() - started) * 1000)
     log.info("startup_complete", **_readiness, ocr_engine=settings.ocr_engine)

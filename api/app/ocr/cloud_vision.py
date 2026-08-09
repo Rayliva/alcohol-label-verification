@@ -31,9 +31,18 @@ class CloudVisionEngine:
             info = json.loads(raw)
         except json.JSONDecodeError as exc:
             raise RuntimeError(
-                "GOOGLE_APPLICATION_CREDENTIALS_JSON is not valid JSON. "
-                "It must be the full service-account key as a single-line string."
+                f"GOOGLE_APPLICATION_CREDENTIALS_JSON is not valid JSON "
+                f"({exc.msg} at line {exc.lineno} col {exc.colno}; value is "
+                f"{len(raw)} chars, starts {raw[:12]!r}). It must be the full "
+                f"service-account key, including the outer braces."
             ) from exc
+
+        missing = [k for k in ("type", "project_id", "private_key", "client_email") if k not in info]
+        if missing:
+            raise RuntimeError(
+                f"GOOGLE_APPLICATION_CREDENTIALS_JSON parsed but is missing {missing}. "
+                f"Keys present: {sorted(info)[:8]}. Paste the whole service-account file."
+            )
 
         credentials = service_account.Credentials.from_service_account_info(info)
         self._client = vision.ImageAnnotatorClient(credentials=credentials)
