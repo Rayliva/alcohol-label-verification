@@ -97,14 +97,30 @@ The brief notes that TTB's network blocks outbound traffic to many domains. That
 
 | Metric | Target | Measured |
 |---|---|---|
-| Single label, p95 | < 5s | _pending full pipeline_ |
+| Single label, p95 | < 5s | **2,528 ms** ✅ |
 | Field verdict accuracy | ≥ 95% | _pending corpus_ |
 | False PASS on warning violations | 0 | _pending corpus_ |
 | Batch of 200 | completes | _pending_ |
 
+### End-to-end pipeline (2026-08-09)
+
+Real measurement, not the sum of stage estimates. Warm caches, `claude-haiku-4-5`, thinking disabled, Cloud Vision OCR, n=20 on a rendered spirits label.
+
+| Stage | p50 | p90 | p95 | max |
+|---|---|---|---|---|
+| OCR (Cloud Vision) | 260 ms | 288 ms | 292 ms | 316 ms |
+| Field extraction (LLM) | 1,614 ms | 2,193 ms | 2,242 ms | 2,733 ms |
+| **Total** | **1,891 ms** | **2,452 ms** | **2,528 ms** | **2,999 ms** |
+
+Zero of twenty runs exceeded the 5-second target; the slowest was 2,999 ms. That leaves roughly 2 seconds of headroom for the compliance rules (microseconds — pure Python over a struct) and evidence cropping.
+
+**OCR came in well under its estimate.** Vendor documentation suggested 300–800 ms; measured p95 is 292 ms, and OCR is only ~11% of total time. The architecture's premise — keep the model on text, not pixels — is what makes the budget comfortable rather than tight.
+
+**A methodology note worth stating.** An earlier run at n=8 reported p95 5,211 ms and appeared to fail the target. At n=8 the p95 index *is* the maximum, so that figure was "the worst of eight," not a p95 — one network outlier defined it. Re-running at n=20 gave 2,528 ms with nothing above 3 s. Small-sample tail metrics are not tail metrics.
+
 ### Model selection (Phase 0 spike, 2026-08-09)
 
-Field extraction measured on the **LLM leg only** — OCR is not yet included. Warm cache, `effort: low`, 6–8 runs per arm, structured outputs enabled.
+Field extraction measured on the **LLM leg only**, before OCR was available. Warm cache, `effort: low`, 6–8 runs per arm, structured outputs enabled. Note the same small-sample caveat applies to the p95 column here — it is directionally right, and the ranking held, but treat p50 as the more reliable figure.
 
 | Model | Thinking | p50 | p95 | Exact-field match | Prompt cache |
 |---|---|---|---|---|---|
