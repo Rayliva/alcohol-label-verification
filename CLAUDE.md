@@ -36,13 +36,25 @@ Per-project skills live in `.claude/skills/`. Read `.claude/skills/INDEX.md` whe
 
 ## Workflow
 
-Bootstrap is **complete**. The project documents are:
+Bootstrap is **complete**. Phase 0 is **complete**. Phase 1 is **in progress**.
 
-- [`docs/PRD.md`](docs/PRD.md) — problem, personas, success metrics, prioritized scope, test corpus
-- [`docs/tech-spec.md`](docs/tech-spec.md) — stack, architecture, deployment
-- [`docs/build-loop.md`](docs/build-loop.md) — **the build procedure. TDD loop.** Run `/build` to execute it
+**Start here: [`docs/build-loop.md`](docs/build-loop.md) opens with a CURRENT STATE section** — what is done, the next behaviours in order, environment gotchas, and decisions already settled. Read it before writing code. Run `/build` to continue the loop.
 
-**`docs/build-loop.md` governs how work proceeds.** Phase 0 is a manual latency spike that must clear p95 < 5s before any UI is built; everything after is red → green → refactor, one behavior per iteration.
+| Document | Contents |
+|---|---|
+| [`requirements.md`](requirements.md) | The brief, verbatim. Never edited |
+| [`docs/PRD.md`](docs/PRD.md) | Derived requirements, personas, metrics, scope, test corpus |
+| [`docs/tech-spec.md`](docs/tech-spec.md) | Stack, architecture, deployment |
+| [`docs/ui-spec.md`](docs/ui-spec.md) | Screens, data shape, design-review resolutions |
+| [`docs/build-loop.md`](docs/build-loop.md) | **Current state + build procedure** |
+| [`README.md`](README.md) | Approach, measured numbers, limitations |
+
+Quick orientation:
+
+- **Live API:** https://alcohol-label-verification-3sn4.onrender.com/health — pushing to `main` auto-deploys
+- **Run tests:** from `api/`, `.venv/Scripts/python.exe -m pytest -q` (Windows paths; `uv` is `python -m uv`)
+- **No credentials needed:** `OCR_ENGINE=fake` runs the whole stack offline
+- **Never read, print, or commit `.env`**
 
 Derived requirements, scope decisions, and assumptions belong in `docs/PRD.md` and the README — **never** in `requirements.md`.
 
