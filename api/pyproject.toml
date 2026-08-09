@@ -44,6 +44,10 @@ select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
 # The substitution table is deliberately full of ambiguous typographic
 # characters - mapping them to ASCII is its entire purpose.
 "app/rules/normalize.py" = ["RUF001"]
+# Same reason: these tests assert that curly quotes, en dashes and non-breaking
+# spaces normalise away. The ambiguous character IS the fixture.
+"tests/unit/rules/test_normalize.py" = ["RUF001"]
+"tests/unit/rules/test_match_text.py" = ["RUF001"]
 
 [tool.mypy]
 python_version = "3.12"
