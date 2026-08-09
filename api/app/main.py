@@ -149,9 +149,23 @@ def health() -> dict[str, Any]:
     Returns 200 even when warming did not fully succeed — the service is
     usable, just slower on first use. The body says which.
     """
-    degraded = [
-        k for k in ("prompt_cache", "schema", "ocr") if _readiness[k] not in ("warm", "fake")
-    ]
+    # "degraded" must mean actionable. A known and documented condition is
+    # reported as a note instead, so the status field keeps its meaning.
+    acceptable = ("warm", "fake", "not_engaging", "skipped_no_key")
+    degraded = [k for k in ("prompt_cache", "schema", "ocr") if _readiness[k] not in acceptable]
+
+    notes = []
+    if _readiness["prompt_cache"] == "not_engaging":
+        notes.append(
+            f"Prompt caching is inactive: the system prompt is below "
+            f"{settings.extraction_model}'s minimum cacheable prefix. Known and accepted "
+            f"— see README > Performance. Costs a little per request, changes no behaviour."
+        )
+    if _readiness["ocr"] == "fake":
+        notes.append("OCR is using deterministic fixtures. Set OCR_ENGINE=cloud for real OCR.")
+    if _readiness["prompt_cache"] == "skipped_no_key":
+        notes.append("ANTHROPIC_API_KEY is not set; extraction will fail.")
+
     return {
         "status": "ok" if not degraded else "degraded",
         "ocr_engine": settings.ocr_engine,
@@ -159,4 +173,5 @@ def health() -> dict[str, Any]:
         "thinking": settings.extraction_thinking,
         "warmup": _readiness,
         "degraded": degraded,
+        "notes": notes,
     }

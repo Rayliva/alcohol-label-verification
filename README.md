@@ -4,7 +4,8 @@ Verifies alcohol beverage label artwork against the data declared in a TTB COLA 
 
 > **Status:** in development. Measured performance numbers, the deployed URL, and full setup instructions land as the build progresses. Sections marked _TBD_ are not yet written rather than omitted.
 
-**Live demo:** _TBD_
+**Live API:** https://alcohol-label-verification-3sn4.onrender.com/health
+**Live demo:** _UI pending — Phase 2_
 
 ---
 
@@ -101,6 +102,7 @@ The brief notes that TTB's network blocks outbound traffic to many domains. That
 | Field verdict accuracy | ≥ 95% | _pending corpus_ |
 | False PASS on warning violations | 0 | _pending corpus_ |
 | Batch of 200 | completes | _pending_ |
+| Deployed and always-on | required | **live**, ~150 ms to `/health` |
 
 ### End-to-end pipeline (2026-08-09)
 
