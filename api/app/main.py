@@ -20,6 +20,7 @@ import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes import router
 from app.config import settings
 from app.extraction.client import SYSTEM_PROMPT, extract_from_text
 
@@ -140,6 +141,9 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+
+app.include_router(router)
 
 
 @app.get("/health")

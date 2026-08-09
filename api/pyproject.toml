@@ -48,6 +48,10 @@ select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
 # spaces normalise away. The ambiguous character IS the fixture.
 "tests/unit/rules/test_normalize.py" = ["RUF001"]
 "tests/unit/rules/test_match_text.py" = ["RUF001"]
+# FastAPI's dependency system is built on calls in argument defaults. That is
+# the framework's documented interface, not the mutable-default bug B008 exists
+# to catch.
+"app/api/routes.py" = ["B008"]
 
 [tool.mypy]
 python_version = "3.12"
