@@ -11,12 +11,16 @@ Ground truth comes from programmatic rendering (HTML/SVG → PNG), not image gen
 ## Commands
 
 ```bash
-# TODO: confirm once corpus/generate.py exists
-uv run python corpus/generate.py --all
-uv run python corpus/generate.py --tier 2          # single-field violations
-uv run python corpus/generate.py --id warning-title-case   # one label
-uv run python corpus/generate.py --batch 200       # batch throughput fixture
+# Windows paths; corpus/out/ is gitignored, so regenerate before anything
+# that needs the images.
+api/.venv/Scripts/python.exe corpus/generate.py --all      # tiers 1-5 + fixtures
+api/.venv/Scripts/python.exe corpus/generate.py --tier 2   # single-field violations
+api/.venv/Scripts/python.exe corpus/generate.py --id t2-warning-title-case
+api/.venv/Scripts/python.exe corpus/generate.py --batch 200  # throughput fixture
 ```
+
+`--all` also rewrites `corpus/fixtures/expected.json` and the tier 7 malformed
+manifests. `--tier` and `--id` render images only.
 
 ## Corpus structure
 

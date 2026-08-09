@@ -1,0 +1,1613 @@
+{
+  "generated_from": "corpus/generate.py",
+  "statutory_warning": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+  "curated_count": 61,
+  "scored_count": 55,
+  "labels": [
+    {
+      "id": "t1-clean-classic-1",
+      "tier": 1,
+      "beverage_type": "spirits",
+      "image": "t1-clean-classic-1.png",
+      "notes": "Fully compliant Kentucky Straight Bourbon Whiskey, classic design.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t1-clean-classic-2",
+      "tier": 1,
+      "beverage_type": "spirits",
+      "image": "t1-clean-classic-2.png",
+      "notes": "Fully compliant Straight Rye Whiskey, classic design.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "STONE'S THROW",
+        "class_type": "Straight Rye Whiskey",
+        "alcohol_content": "50% Alc./Vol. (100 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Distilled and bottled by Stone's Throw Spirits, Louisville, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t1-clean-classic-3",
+      "tier": 1,
+      "beverage_type": "spirits",
+      "image": "t1-clean-classic-3.png",
+      "notes": "Fully compliant London Dry Gin, classic design.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "HARBOR LIGHT",
+        "class_type": "London Dry Gin",
+        "alcohol_content": "47% Alc./Vol. (94 Proof)",
+        "net_contents": "700 mL",
+        "bottler_address": "Bottled by Harbor Light Distilling Co., Portland, Maine"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t1-clean-modern-1",
+      "tier": 1,
+      "beverage_type": "spirits",
+      "image": "t1-clean-modern-1.png",
+      "notes": "Fully compliant Kentucky Straight Bourbon Whiskey, modern design.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t1-clean-modern-2",
+      "tier": 1,
+      "beverage_type": "spirits",
+      "image": "t1-clean-modern-2.png",
+      "notes": "Fully compliant Straight Rye Whiskey, modern design.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "STONE'S THROW",
+        "class_type": "Straight Rye Whiskey",
+        "alcohol_content": "50% Alc./Vol. (100 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Distilled and bottled by Stone's Throw Spirits, Louisville, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t1-clean-modern-3",
+      "tier": 1,
+      "beverage_type": "spirits",
+      "image": "t1-clean-modern-3.png",
+      "notes": "Fully compliant London Dry Gin, modern design.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "HARBOR LIGHT",
+        "class_type": "London Dry Gin",
+        "alcohol_content": "47% Alc./Vol. (94 Proof)",
+        "net_contents": "700 mL",
+        "bottler_address": "Bottled by Harbor Light Distilling Co., Portland, Maine"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t1-clean-dark-1",
+      "tier": 1,
+      "beverage_type": "spirits",
+      "image": "t1-clean-dark-1.png",
+      "notes": "Fully compliant Kentucky Straight Bourbon Whiskey, dark design.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t1-clean-dark-2",
+      "tier": 1,
+      "beverage_type": "spirits",
+      "image": "t1-clean-dark-2.png",
+      "notes": "Fully compliant Straight Rye Whiskey, dark design.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "STONE'S THROW",
+        "class_type": "Straight Rye Whiskey",
+        "alcohol_content": "50% Alc./Vol. (100 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Distilled and bottled by Stone's Throw Spirits, Louisville, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t1-clean-dark-3",
+      "tier": 1,
+      "beverage_type": "spirits",
+      "image": "t1-clean-dark-3.png",
+      "notes": "Fully compliant London Dry Gin, dark design.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "HARBOR LIGHT",
+        "class_type": "London Dry Gin",
+        "alcohol_content": "47% Alc./Vol. (94 Proof)",
+        "net_contents": "700 mL",
+        "bottler_address": "Bottled by Harbor Light Distilling Co., Portland, Maine"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t1-clean-compact-1",
+      "tier": 1,
+      "beverage_type": "spirits",
+      "image": "t1-clean-compact-1.png",
+      "notes": "Fully compliant Kentucky Straight Bourbon Whiskey, compact design.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t1-clean-compact-2",
+      "tier": 1,
+      "beverage_type": "spirits",
+      "image": "t1-clean-compact-2.png",
+      "notes": "Fully compliant Straight Rye Whiskey, compact design.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "STONE'S THROW",
+        "class_type": "Straight Rye Whiskey",
+        "alcohol_content": "50% Alc./Vol. (100 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Distilled and bottled by Stone's Throw Spirits, Louisville, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t1-clean-compact-3",
+      "tier": 1,
+      "beverage_type": "spirits",
+      "image": "t1-clean-compact-3.png",
+      "notes": "Fully compliant London Dry Gin, compact design.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "HARBOR LIGHT",
+        "class_type": "London Dry Gin",
+        "alcohol_content": "47% Alc./Vol. (94 Proof)",
+        "net_contents": "700 mL",
+        "bottler_address": "Bottled by Harbor Light Distilling Co., Portland, Maine"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t2-brand-different",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-brand-different.png",
+      "notes": "Label brands a different distillery than the application.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "fail",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-brand-typo",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-brand-typo.png",
+      "notes": "One letter doubled: a plausible transcription slip either way.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "needs_review",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "needs_review"
+    },
+    {
+      "id": "t2-brand-case-only",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-brand-case-only.png",
+      "notes": "Dave Morrison's example: STONE'S THROW against Stone's Throw. Not a violation, and a tool that calls it one gets ignored.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "Stone's Throw",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t2-brand-missing",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-brand-missing.png",
+      "notes": "No brand name anywhere on the artwork.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "fail",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-brand-corporate-suffix",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-brand-corporate-suffix.png",
+      "notes": "Label carries the longer legal name. Same business, a judgment call.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "needs_review",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "needs_review"
+    },
+    {
+      "id": "t2-class-different",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-class-different.png",
+      "notes": "Label says Tennessee Whiskey; the application says Kentucky Straight Bourbon. Different class designations.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "fail",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-class-missing",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-class-missing.png",
+      "notes": "No class or type designation on the label.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "fail",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-class-case-only",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-class-case-only.png",
+      "notes": "Set in capitals on the artwork. Formatting, not a discrepancy.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t2-abv-different",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-abv-different.png",
+      "notes": "Label states 40%; the application declares 45%.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "fail",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-abv-small-difference",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-abv-small-difference.png",
+      "notes": "0.2 points apart. Inside the 27 CFR 5.65 liquid tolerance, which does not govern two documents, so a human decides.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "needs_review",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "needs_review"
+    },
+    {
+      "id": "t2-abv-proof-mismatch",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-abv-proof-mismatch.png",
+      "notes": "45% printed with 80 proof. The label contradicts itself: 27 CFR 5.1 defines proof as twice the percentage.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "fail",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-abv-missing",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-abv-missing.png",
+      "notes": "No alcohol content on the label at all.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "fail",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-abv-proof-only",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-abv-proof-only.png",
+      "notes": "Proof stated without the percentage by volume that 27 CFR 5.65 requires.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "fail",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-volume-different",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-volume-different.png",
+      "notes": "700 mL on the label against 750 mL on the application.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "fail",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-volume-centilitres",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-volume-centilitres.png",
+      "notes": "75 cL is 750 mL. 27 CFR 5.70 permits the alternate metric statement.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t2-volume-litres",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-volume-litres.png",
+      "notes": "0.75 L is 750 mL.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t2-volume-missing",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-volume-missing.png",
+      "notes": "No net contents statement on the label.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "fail",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-bottler-different-city",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-bottler-different-city.png",
+      "notes": "Label bottled in Frankfort; the application says Bardstown.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "fail",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-bottler-missing",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-bottler-missing.png",
+      "notes": "No name and address of the bottler on the label.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "fail",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-bottler-abbreviated-state",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-bottler-abbreviated-state.png",
+      "notes": "KY for Kentucky. Almost certainly the same address, still a judgment call.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "needs_review",
+        "government_warning": "pass"
+      },
+      "expected_overall": "needs_review"
+    },
+    {
+      "id": "t2-warning-verbatim",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-warning-verbatim.png",
+      "notes": "Control: the statutory text of 27 CFR 16.21, exactly.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t2-warning-title-case",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-warning-title-case.png",
+      "notes": "'Government Warning' in title case. 27 CFR 16.22 requires capitals \u2014 the violation Jenny Park caught by eye.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "fail"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-warning-one-word-altered",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-warning-one-word-altered.png",
+      "notes": "'birth defects' rendered as 'birth defect'. One word, and the statement is no longer the statutory one.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "fail"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-warning-missing",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-warning-missing.png",
+      "notes": "No government warning anywhere on the label.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "fail"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-warning-paraphrased",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-warning-paraphrased.png",
+      "notes": "Same meaning, rewritten. 27 CFR 16.21 is not a summary requirement.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "fail"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-warning-not-bold",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-warning-not-bold.png",
+      "notes": "Prefix set at the same weight as the body text. 27 CFR 16.22 requires bold.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": true,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "fail"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-warning-too-small",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-warning-too-small.png",
+      "notes": "Warning at 40% of body-text height \u2014 'burying it in tiny text'.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": true,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "fail"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t2-warning-low-contrast",
+      "tier": 2,
+      "beverage_type": "spirits",
+      "image": "t2-warning-low-contrast.png",
+      "notes": "Warning printed in a grey barely separable from its background.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": true,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "fail"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t3-wine-table-wine-no-abv",
+      "tier": 3,
+      "beverage_type": "wine",
+      "image": "t3-wine-table-wine-no-abv.png",
+      "notes": "12% table wine with no percentage stated. 27 CFR 4.36 permits the omission when the label says 'table wine' \u2014 an engine that requires ABV rejects a valid label.",
+      "scored": false,
+      "excluded_reason": "Wine and malt rule sets ship in Phase 4 (docs/PRD.md \u2192 Sequencing).",
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "CEDAR HOLLOW",
+        "class_type": "California Table Wine",
+        "alcohol_content": null,
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Cedar Hollow Cellars, Napa, California"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t3-wine-over-14-abv-present",
+      "tier": 3,
+      "beverage_type": "wine",
+      "image": "t3-wine-over-14-abv-present.png",
+      "notes": "15.5% wine stating its alcohol content, as 27 CFR 4.36 requires above 14%.",
+      "scored": false,
+      "excluded_reason": "Wine and malt rule sets ship in Phase 4 (docs/PRD.md \u2192 Sequencing).",
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "CEDAR HOLLOW",
+        "class_type": "Napa Valley Cabernet Sauvignon",
+        "alcohol_content": "15.5% Alc./Vol.",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Cedar Hollow Cellars, Napa, California"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t3-wine-over-14-abv-missing",
+      "tier": 3,
+      "beverage_type": "wine",
+      "image": "t3-wine-over-14-abv-missing.png",
+      "notes": "15.5% wine with no alcohol statement. Above 14% the omission is a violation, and 'table wine' does not save it.",
+      "scored": false,
+      "excluded_reason": "Wine and malt rule sets ship in Phase 4 (docs/PRD.md \u2192 Sequencing).",
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "CEDAR HOLLOW",
+        "class_type": "Napa Valley Cabernet Sauvignon",
+        "alcohol_content": "15.5% Alc./Vol.",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Cedar Hollow Cellars, Napa, California"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "fail",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t3-malt-plain-no-abv",
+      "tier": 3,
+      "beverage_type": "malt",
+      "image": "t3-malt-plain-no-abv.png",
+      "notes": "An ordinary IPA with no alcohol statement. 27 CFR 7.63 requires none.",
+      "scored": false,
+      "excluded_reason": "Wine and malt rule sets ship in Phase 4 (docs/PRD.md \u2192 Sequencing).",
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "NORTH SHORE BREWING",
+        "class_type": "India Pale Ale",
+        "alcohol_content": null,
+        "net_contents": "355 mL",
+        "bottler_address": "Brewed and bottled by North Shore Brewing, Duluth, Minnesota"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t3-malt-added-flavors-abv-present",
+      "tier": 3,
+      "beverage_type": "malt",
+      "image": "t3-malt-added-flavors-abv-present.png",
+      "notes": "Flavored malt beverage stating its alcohol content, as 27 CFR 7.63 requires once alcohol comes from added nonbeverage ingredients.",
+      "scored": false,
+      "excluded_reason": "Wine and malt rule sets ship in Phase 4 (docs/PRD.md \u2192 Sequencing).",
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "NORTH SHORE BREWING",
+        "class_type": "Flavored Malt Beverage",
+        "alcohol_content": "8% Alc./Vol.",
+        "net_contents": "355 mL",
+        "bottler_address": "Brewed and bottled by North Shore Brewing, Duluth, Minnesota"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t3-malt-added-flavors-abv-missing",
+      "tier": 3,
+      "beverage_type": "malt",
+      "image": "t3-malt-added-flavors-abv-missing.png",
+      "notes": "Flavored malt beverage with no alcohol statement \u2014 the case where 27 CFR 7.63 does require one.",
+      "scored": false,
+      "excluded_reason": "Wine and malt rule sets ship in Phase 4 (docs/PRD.md \u2192 Sequencing).",
+      "requires_layout": false,
+      "degradation": null,
+      "application": {
+        "brand_name": "NORTH SHORE BREWING",
+        "class_type": "Flavored Malt Beverage",
+        "alcohol_content": "8% Alc./Vol.",
+        "net_contents": "355 mL",
+        "bottler_address": "Brewed and bottled by North Shore Brewing, Duluth, Minnesota"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "fail",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t4-blur-light",
+      "tier": 4,
+      "beverage_type": "spirits",
+      "image": "t4-blur-light.png",
+      "notes": "Slight focus miss, still legible. Must still be read correctly.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": "blur-light",
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t4-low-light",
+      "tier": 4,
+      "beverage_type": "spirits",
+      "image": "t4-low-light.png",
+      "notes": "Underexposed photograph. Must still be read correctly.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": "low-light",
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t4-skew",
+      "tier": 4,
+      "beverage_type": "spirits",
+      "image": "t4-skew.png",
+      "notes": "Photographed at an angle. Must still be read correctly.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": "skew",
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t4-glare-mild",
+      "tier": 4,
+      "beverage_type": "spirits",
+      "image": "t4-glare-mild.png",
+      "notes": "Reflection across the upper label, text still readable. Must still be read correctly.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": "glare-mild",
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t4-jpeg-artefacts",
+      "tier": 4,
+      "beverage_type": "spirits",
+      "image": "t4-jpeg-artefacts.png",
+      "notes": "Heavily recompressed phone photo. Must still be read correctly.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": "jpeg-artefacts",
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t4-downscale",
+      "tier": 4,
+      "beverage_type": "spirits",
+      "image": "t4-downscale.png",
+      "notes": "Small but legible: 550px wide. Must still be read correctly.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": "downscale",
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "pass"
+      },
+      "expected_overall": "pass"
+    },
+    {
+      "id": "t4-blur-heavy",
+      "tier": 4,
+      "beverage_type": "spirits",
+      "image": "t4-blur-heavy.png",
+      "notes": "Out of focus beyond recovery. Must fail with a specific reason, not a generic error.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": "blur-heavy",
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {},
+      "expected_overall": "unreadable"
+    },
+    {
+      "id": "t4-glare-severe",
+      "tier": 4,
+      "beverage_type": "spirits",
+      "image": "t4-glare-severe.png",
+      "notes": "Reflection covers the lower third, including the warning. Must fail with a specific reason, not a generic error.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": "glare-severe",
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {},
+      "expected_overall": "unreadable"
+    },
+    {
+      "id": "t4-tiny",
+      "tier": 4,
+      "beverage_type": "spirits",
+      "image": "t4-tiny.png",
+      "notes": "400px wide. Text this small cannot be read reliably. Must fail with a specific reason, not a generic error.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": "tiny",
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {},
+      "expected_overall": "unreadable"
+    },
+    {
+      "id": "t4-near-black",
+      "tier": 4,
+      "beverage_type": "spirits",
+      "image": "t4-near-black.png",
+      "notes": "Photographed in the dark. Must fail with a specific reason, not a generic error.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": "near-black",
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {},
+      "expected_overall": "unreadable"
+    },
+    {
+      "id": "t4-skew-crop",
+      "tier": 4,
+      "beverage_type": "spirits",
+      "image": "t4-skew-crop.png",
+      "notes": "Steep angle with the bottom of the label out of frame. Must fail with a specific reason, not a generic error.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": "skew-crop",
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {},
+      "expected_overall": "unreadable"
+    },
+    {
+      "id": "t4-noise",
+      "tier": 4,
+      "beverage_type": "spirits",
+      "image": "t4-noise.png",
+      "notes": "Sensor noise swamping the text. Must fail with a specific reason, not a generic error.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": false,
+      "degradation": "noise",
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {},
+      "expected_overall": "unreadable"
+    },
+    {
+      "id": "t5-field-of-vision-1",
+      "tier": 5,
+      "beverage_type": "spirits",
+      "image": "t5-field-of-vision-1.png",
+      "notes": "Alcohol content moved to the back label. 27 CFR 5.63 requires brand, class/type and alcohol content in the same field of vision.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": true,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "fail"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t5-field-of-vision-2",
+      "tier": 5,
+      "beverage_type": "spirits",
+      "image": "t5-field-of-vision-2.png",
+      "notes": "Class designation moved to the back label. 27 CFR 5.63 requires brand, class/type and alcohol content in the same field of vision.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": true,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "fail"
+      },
+      "expected_overall": "fail"
+    },
+    {
+      "id": "t5-field-of-vision-3",
+      "tier": 5,
+      "beverage_type": "spirits",
+      "image": "t5-field-of-vision-3.png",
+      "notes": "Brand name printed only on the back label. 27 CFR 5.63 requires brand, class/type and alcohol content in the same field of vision.",
+      "scored": true,
+      "excluded_reason": null,
+      "requires_layout": true,
+      "degradation": null,
+      "application": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "bottler_address": "Bottled by Old Tom Distillery, Bardstown, Kentucky"
+      },
+      "expected_fields": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "bottler_address": "pass",
+        "government_warning": "fail"
+      },
+      "expected_overall": "fail"
+    }
+  ]
+}

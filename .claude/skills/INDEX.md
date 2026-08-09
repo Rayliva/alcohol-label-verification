@@ -20,7 +20,6 @@ For *constraints* on how work is done — spec-first, test-first — see `.claud
 
 Several skills reference commands that don't exist yet. Fill these in as the build creates them rather than inventing them now:
 
-- `corpus/generate.py` CLI flags — [generate-corpus](generate-corpus.md)
 - `app.bench` harness invocation — [benchmark-latency](benchmark-latency.md)
 - `app.debug` CLI — [debug-verdict](debug-verdict.md)
 - Render service name — [deploy](deploy.md)
