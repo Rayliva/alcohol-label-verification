@@ -15,7 +15,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import statistics
 import sys
 from dataclasses import dataclass, field
 
@@ -78,7 +77,7 @@ class Arm:
         if not self.latencies:
             return float("nan")
         ordered = sorted(self.latencies)
-        idx = min(len(ordered) - 1, int(round(pct / 100 * (len(ordered) - 1))))
+        idx = min(len(ordered) - 1, round(pct / 100 * (len(ordered) - 1)))
         return ordered[idx]
 
     @property
@@ -102,14 +101,14 @@ def run_arm(model: str, thinking: str, n: int, warmup: int) -> Arm:
     for _ in range(warmup):
         try:
             extract_from_text(SAMPLE_OCR_TEXT, model=model, thinking=thinking)  # type: ignore[arg-type]
-        except Exception as exc:  # noqa: BLE001 - reported, not swallowed
+        except Exception as exc:
             arm.errors.append(f"warmup: {type(exc).__name__}: {exc}")
             return arm
 
     for _ in range(n):
         try:
             result = extract_from_text(SAMPLE_OCR_TEXT, model=model, thinking=thinking)  # type: ignore[arg-type]
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             arm.errors.append(f"{type(exc).__name__}: {exc}")
             continue
         arm.latencies.append(result.latency_ms)
@@ -128,7 +127,10 @@ def report(arms: list[Arm], n: int, warmup: int) -> None:
     print("Target: p95 < 5000ms for the FULL pipeline. This measures the LLM leg only;")
     print("OCR (~300-800ms per vendor docs, unverified) is not yet included.")
     print()
-    header = f"{'arm':44} {'p50':>7} {'p95':>7} {'min':>7} {'max':>7} {'acc':>6} {'out':>5} {'cache':>6}"
+    header = (
+        f"{'arm':44} {'p50':>7} {'p95':>7} {'min':>7} "
+        f"{'max':>7} {'acc':>6} {'out':>5} {'cache':>6}"
+    )
     print(header)
     print("-" * len(header))
     for arm in arms:
