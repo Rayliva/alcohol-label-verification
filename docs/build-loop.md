@@ -8,60 +8,82 @@
 
 # CURRENT STATE — read before doing anything
 
-Last updated: 2026-08-09, end of session 1.
+Last updated: 2026-08-09, end of session 2.
 
 ## Where we are
 
-**Phase 0: COMPLETE.** All three gates met.
+**Phase 0: COMPLETE.** **Phase 1: COMPLETE.** **Phase 2: half done** — the API
+ships; the React UI does not exist yet.
+
+213 tests, 7.6 seconds, no credentials and no network. Lint, format and mypy clean.
 
 | Gate | Result |
 |---|---|
 | Model | `claude-haiku-4-5`, thinking `disabled`, effort `low` — pinned in `app/config.py` |
-| Latency | p95 **2,528 ms** end-to-end against a 5,000 ms target (n=20) |
+| Latency (Phase 0 spike) | p95 **2,528 ms** against a 5,000 ms target (n=20) |
+| Field-verdict accuracy | **100.0%** over 258 verdicts, curated corpus, OCR and extraction held perfect |
+| False PASS on warning violations | **0** |
 | Deploy | Live: https://alcohol-label-verification-3sn4.onrender.com/health |
 
-**Phase 1: IN PROGRESS.** 30 tests passing, lint clean.
+### Done
 
-Done:
-- `app/ocr/` — `OcrEngine` protocol, `CloudVisionEngine`, `FakeOcrEngine`, factory
-- `app/extraction/` — structured-output client, capability handling per model generation
-- `app/rules/types.py` — `Verdict`, `FieldResult`
-- `app/rules/normalize.py` — `normalize()` and `normalize_whitespace_only()`
-- `app/rules/match_text.py` — token-aware fuzzy matching
-- `app/main.py` — FastAPI, `/health`, three-stage startup warming
-- `api/Dockerfile`, deployed and verified
+- `app/ocr/` — protocol, Cloud Vision, fake, factory
+- `app/extraction/` — structured-output client, per-generation capability handling
+- `app/rules/` — `normalize`, `match_text` (with abbreviation handling), `match_abv`,
+  `match_volume`, `warning` (six sub-checks), `beverage_types/` (spirits populated;
+  wine and malt registered, unavailable, with reasons), `engine`
+- `app/pipeline/` — quality gate, geometric measurement, evidence crops, orchestration
+- `app/errors.py` — typed errors with code + message + what_to_do
+- `app/api/` — `POST /api/verify`, `GET /api/beverage-types`, in the ui-spec shape
+- `corpus/generate.py` — 61 curated labels, 200-label batch fixture, 4 malformed
+  manifests, `fixtures/expected.json`, ground-truth OCR fixtures
+- `docs/specs/rule-engine.md`, `docs/specs/pipeline.md`
 
-## Next behaviours, in order
+### Next behaviours, in order
 
-Work the TDD loop below. Each is one or more iterations.
+1. **Web UI (Phase 2).** `web/` does not exist. React 19 + Vite + Tailwind v4 per
+   the tech spec. Screens 1, 2, 3 first (upload, processing, results). The nine
+   accessibility constraints in `.claude/rules/accessibility.md` are testable and
+   get tests; layout does not. Design handoff at `docs/design/design_handoff_label_check/`,
+   but **`docs/ui-spec.md` wins on conflict**.
+2. **Batch (Phase 3).** In-memory job store, manifest parsing (the four malformed
+   fixtures are already written and each must be caught in pre-flight, named by
+   filename or row), worker pool, progress, results table, export.
+3. **README.** Setup, approach, measured numbers, limitations. Several numbers
+   are already measurable; the end-to-end one is not (see below).
+4. **Phase 4.** Wine and malt rule content, image preprocessing, vision escalation.
 
-1. **`app/rules/match_abv.py`** — parse ABV to a number; cross-check `proof = 2 x ABV`
-   (`45% Alc./Vol. (90 Proof)`). Regulatory tolerances are label-vs-liquid, **not**
-   form-vs-label — any form/label difference is at minimum NEEDS_REVIEW. See
-   `.claude/rules/verify-regulations.md`.
-2. **`app/rules/match_volume.py`** — parse value + unit, normalise to mL
-   (`750 mL` = `75 cL` = `0.75 L`).
-3. **`app/rules/warning.py`** — the five sub-checks: exact text (whitespace-normalised
-   only, never case-folded), `GOVERNMENT WARNING` in capitals, bold via relative stroke
-   weight, proportional size vs `OcrResult.median_text_height`, contrasting background.
-4. **`app/rules/beverage_types/spirits.py`** — config-driven required-field set.
-   Engine reads config from the first commit; only spirits is populated (wine and malt
-   are Phase 4).
-5. **`corpus/generate.py`** — the real tiered corpus. `corpus/render.py` currently
-   renders only 3 spike samples and has no `corpus/fixtures/expected.json`. This is a
-   gap; the accuracy target cannot be measured until it exists. See PRD → Test corpus.
-6. **Pipeline assembly** — `image -> ocr -> extract -> rules -> FieldResult[]`, plus
-   evidence crops from bounding boxes.
-7. **API routes** then **Phase 2 UI**.
+## What needs a human, and why
+
+These are the only things blocked on the user rather than on more building:
+
+- **Pushing to `main` auto-deploys to Render.** Seven commits are sitting locally,
+  unpushed. Nothing has been pushed this session.
+- **The end-to-end latency number** needs a live run against Cloud Vision and the
+  Anthropic API. The published accuracy figure is explicitly *not* end to end: OCR
+  replays the boxes the renderer drew and extraction returns what the artwork
+  says, so it measures the rule engine and the geometry in isolation. The README
+  must publish both, and the live one does not exist yet.
+- **Real OCR accuracy on the six readable-but-degraded corpus images.** They carry
+  no ground-truth OCR by design — OCR is the thing under stress there.
+- **AI-generated tier 1 artwork and real bottle photographs.** Tier 1 currently
+  renders 4 designs across 3 spirits products instead of 3 beverage types; the
+  PRD asks for AI-generated clean baselines and a small unscored smoke set of real
+  photos. Neither can be produced from here.
+- **Vercel project** for the frontend, once `web/` exists.
 
 ## Environment facts that will otherwise cost you time
 
 - **Windows.** Use `api/.venv/Scripts/python.exe`, not `bin/python`.
 - **`uv` was installed via pip** and is not on PATH — invoke it as `python -m uv`.
 - Run tests from `api/`: `.venv/Scripts/python.exe -m pytest -q`
-- Lint: `.venv/Scripts/python.exe -m ruff check app`
-- **`corpus/out/` is gitignored.** Regenerate images with
-  `api/.venv/Scripts/python.exe corpus/render.py` before anything that needs them.
+- Accuracy suite: `.venv/Scripts/python.exe -m pytest -q -m accuracy` (prints the
+  accuracy figure and what it excluded)
+- Lint: `.venv/Scripts/python.exe -m ruff check app tests ../corpus`
+- **`corpus/out/` is gitignored.** Regenerate before anything that needs images:
+  `api/.venv/Scripts/python.exe corpus/generate.py --all` and `--batch 200`
+- `tests/conftest.py` forces the suite offline. Do not remove it: with a populated
+  `.env`, FastAPI startup warming fires real API calls on every TestClient.
 - Optional deps are extras: `python -m uv sync --extra server --extra cloud-ocr`
 - Git line-ending warnings on Windows are noise. If a commit is blocked by CRLF
   safety, use `git -c core.safecrlf=false commit`.
@@ -72,27 +94,32 @@ Work the TDD loop below. Each is one or more iterations.
   **Never read, print, or commit it.**
 - Render has the same variables plus `OCR_ENGINE=cloud`. **Pushing to `main`
   auto-deploys.**
-- `OCR_ENGINE=fake` runs the entire stack with no credentials and no network — use it
-  for all tests.
+- `OCR_ENGINE=fake` runs the entire stack with no credentials and no network.
 
 ## Known and accepted
 
-- **Haiku 4.5 prompt cache does not engage.** The system prompt is below that model's
-  minimum cacheable prefix. Documented in the README, surfaced in `/health` notes.
-  Accepted — do not pad the prompt to game the threshold.
+- **Haiku 4.5 prompt cache does not engage.** The system prompt is below that
+  model's minimum cacheable prefix. Documented in the README, surfaced in
+  `/health` notes. Accepted — do not pad the prompt to game the threshold.
 - **`/health` "degraded" means actionable.** Known conditions go in `notes`.
+- **Every geometric check is a proxy.** 27 CFR 16.22 states absolute millimetres,
+  which an uncalibrated photograph cannot supply (PRD OS-7). Thresholds were
+  calibrated against the corpus on 2026-08-09 and the numbers are recorded in
+  `app/rules/warning.py`. The README must say they are proxies.
 
 ## Decisions already made — do not relitigate
 
-- **Spirits first.** Wine and malt rule sets are Phase 4, but the engine reads beverage
-  config from day one. Wine/malt buttons ship **disabled with an explanation**.
-- **No authentication.** An optional "your name or initials" field attributes overrides
-  within a session. Rationale in README → Production considerations.
-- **`unreadable` is a fourth label-level outcome**, separate from `fail`.
-- **`crop_url` is nullable** — a field absent from the label has no region to crop.
+- **Spirits first.** Wine and malt rule sets are Phase 4, but the engine reads
+  beverage config from day one. Wine/malt buttons ship **disabled with an
+  explanation** — `/api/beverage-types` already returns the reason.
+- **No authentication.** An optional "your name or initials" field attributes
+  overrides within a session. Rationale in README → Production considerations.
+- **`unreadable` is a fourth label-level outcome**, separate from `fail`, produced
+  by the pipeline and never by the rule engine.
+- **`crop_url` is nullable**, and is a data URI — the service stores nothing.
 - UI design handoff is at `docs/design/design_handoff_label_check/`. Nine review
-  resolutions are recorded in `docs/ui-spec.md` → Resolutions from design review; the
-  handoff README predates them, so **`ui-spec.md` wins on conflict**.
+  resolutions are recorded in `docs/ui-spec.md` → Resolutions from design review;
+  the handoff README predates them, so **`ui-spec.md` wins on conflict**.
 
 ---
 

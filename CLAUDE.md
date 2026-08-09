@@ -36,7 +36,7 @@ Per-project skills live in `.claude/skills/`. Read `.claude/skills/INDEX.md` whe
 
 ## Workflow
 
-Bootstrap is **complete**. Phase 0 is **complete**. Phase 1 is **in progress**.
+Bootstrap is **complete**. Phase 0 and Phase 1 are **complete**. Phase 2 is **in progress** - the API ships, the web UI does not exist yet.
 
 **Start here: [`docs/build-loop.md`](docs/build-loop.md) opens with a CURRENT STATE section** — what is done, the next behaviours in order, environment gotchas, and decisions already settled. Read it before writing code. Run `/build` to continue the loop.
 
@@ -53,6 +53,7 @@ Quick orientation:
 
 - **Live API:** https://alcohol-label-verification-3sn4.onrender.com/health — pushing to `main` auto-deploys
 - **Run tests:** from `api/`, `.venv/Scripts/python.exe -m pytest -q` (Windows paths; `uv` is `python -m uv`)
+- **Accuracy suite:** `.venv/Scripts/python.exe -m pytest -q -m accuracy` - regenerate the corpus first with `api/.venv/Scripts/python.exe corpus/generate.py --all`
 - **No credentials needed:** `OCR_ENGINE=fake` runs the whole stack offline
 - **Never read, print, or commit `.env`**
 
