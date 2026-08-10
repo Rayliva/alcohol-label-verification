@@ -8,6 +8,7 @@ import type {
   VerificationResponse,
 } from "./api/types";
 import { EMPTY_DECLARED } from "./api/types";
+import { BatchScreen } from "./screens/BatchScreen";
 import { InputScreen } from "./screens/InputScreen";
 import { ProcessingScreen } from "./screens/ProcessingScreen";
 import { ResultsScreen } from "./screens/ResultsScreen";
@@ -20,7 +21,7 @@ import { ResultsScreen } from "./screens/ResultsScreen";
  * their emails.
  */
 
-type Step = "input" | "processing" | "results";
+type Step = "input" | "processing" | "results" | "batch";
 
 const FALLBACK_TYPES: BeverageTypeOption[] = [
   {
@@ -116,8 +117,11 @@ export default function App() {
             image={image}
             onImage={setImage}
             onSubmit={submit}
+            onBatch={() => setStep("batch")}
           />
         ) : null}
+
+        {step === "batch" ? <BatchScreen onSingle={() => setStep("input")} /> : null}
 
         {step === "processing" ? (
           <ProcessingScreen

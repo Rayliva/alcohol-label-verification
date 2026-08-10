@@ -52,6 +52,7 @@ select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
 # the framework's documented interface, not the mutable-default bug B008 exists
 # to catch.
 "app/api/routes.py" = ["B008"]
+"app/api/batch_routes.py" = ["B008"]
 
 [tool.mypy]
 python_version = "3.12"

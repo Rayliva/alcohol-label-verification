@@ -21,6 +21,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from app.api.batch_routes import router as batch_router
 from app.api.routes import router
 from app.config import settings
 from app.extraction.client import SYSTEM_PROMPT, extract_from_text
@@ -165,6 +166,7 @@ async def unhandled(_request: Request, exc: Exception) -> JSONResponse:
 
 
 app.include_router(router)
+app.include_router(batch_router)
 
 
 @app.get("/health")
