@@ -74,12 +74,14 @@ BOLD_PASS_RATIO = 1.20
 BOLD_REVIEW_RATIO = 1.10
 #
 # Proportion — measured warning height against the median height of the other
-# text: 63% on a compliant label, 23% on t2-warning-too-small. A compliant
-# warning is legitimately smaller than the brand name and the body copy, so the
-# first guess (pass at 80%) failed every clean label in the corpus. What the
-# proxy has to catch is a warning shrunk far below the text around it.
-PROPORTION_PASS_RATIO = 0.55
-PROPORTION_REVIEW_RATIO = 0.40
+# text. Across the 49 corpus labels with ground-truth geometry, compliant
+# warnings measure 0.525 to 0.610 and the shrunken variant measures 0.220.
+# A compliant warning is legitimately smaller than the brand name and the body
+# copy, so the original guess (pass at 0.80) failed every clean label. What the
+# proxy has to catch is a warning shrunk far below the text around it, and the
+# thresholds sit in the gap with margin on both sides.
+PROPORTION_PASS_RATIO = 0.45
+PROPORTION_REVIEW_RATIO = 0.30
 #
 # Contrast — WCAG ratio inside the warning region: 18.6 on a compliant label,
 # 1.2 on t2-warning-low-contrast. The AA thresholds separate those comfortably
@@ -144,7 +146,14 @@ def _check_text(detected: str) -> WarningCheck:
 
 
 def _check_caps(detected: str) -> WarningCheck:
-    """27 CFR 16.22 — GOVERNMENT WARNING in capital letters."""
+    """27 CFR 16.22 — GOVERNMENT WARNING in capital letters.
+
+    Whitespace is collapsed first, and only whitespace. A label that wraps
+    between GOVERNMENT and WARNING would otherwise be reported as carrying no
+    heading at all, while the exact-text check on the same label said PASS —
+    two checks contradicting each other destroys the agent's trust in both.
+    """
+    detected = normalize_whitespace_only(detected)
     position = detected.upper().find(WARNING_PREFIX)
     if position == -1:
         return WarningCheck(

@@ -140,3 +140,32 @@ class TestResultShape:
             result = match_volume(FIELD, declared=declared, detected=detected)
             assert result.reason.strip().endswith(".")
             assert len(result.reason) > 20
+
+
+class TestQuantitiesThatMustNotBeMisread:
+    """Regressions from the pre-push review, 2026-08-09."""
+
+    def test_a_comma_grouped_number_does_not_parse_from_its_tail(self) -> None:
+        # "1,750 mL" was reading as 750 mL and passing against a 750 mL
+        # declaration — a bottle two and a third times the declared size.
+        assert parse_net_contents("1,750 mL").millilitres is None
+
+    def test_a_comma_grouped_volume_is_not_passed(self) -> None:
+        result = match_volume(FIELD, declared="750 mL", detected="1,750 mL")
+        assert result.verdict is not Verdict.PASS
+
+    def test_a_two_part_customary_statement_adds_up(self) -> None:
+        # "1 PT 9 FL OZ" is a real TTB net contents form. Keeping only the
+        # first quantity read it as 473 mL instead of 739 mL.
+        parsed = parse_net_contents("1 PT 9 FL OZ")
+        assert parsed.millilitres == pytest.approx(739.3, rel=1e-3)
+
+    def test_a_two_part_customary_statement_is_compared_in_full(self) -> None:
+        result = match_volume(FIELD, declared="473 mL", detected="1 PT 9 FL OZ")
+        assert result.verdict is Verdict.FAIL
+
+    def test_a_two_part_metric_statement_adds_up(self) -> None:
+        assert parse_net_contents("1 L 500 mL").millilitres == pytest.approx(1500.0)
+
+    def test_the_customary_equivalent_is_still_ignored_beside_a_metric_statement(self) -> None:
+        assert parse_net_contents("750 mL (25.4 fl oz)").millilitres == pytest.approx(750.0)

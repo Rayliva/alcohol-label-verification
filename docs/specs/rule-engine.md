@@ -180,11 +180,18 @@ not that it failed a format rule.
 
 **Thresholds** (provisional, tuned against the corpus, named constants in one place):
 
-- `bold`: stroke ratio ≥ 1.15 PASS · 1.05–1.15 NEEDS_REVIEW · < 1.05 FAIL
-- `proportion`: warning height ≥ 80% of median body text PASS · 60–80% NEEDS_REVIEW ·
-  < 60% FAIL. This is a **proxy** for §16.22's absolute millimetre sizes, which are not
-  derivable from an uncalibrated image (PRD OS-7). The README says so plainly.
+Calibrated against the corpus on 2026-08-09; the measured values behind each are
+recorded beside the constants in `app/rules/warning.py`.
+
+- `bold`: stroke-thickness ratio ≥ 1.20 PASS · 1.10–1.20 NEEDS_REVIEW · < 1.10 FAIL
+  (measured: 1.35 compliant, 1.06 on the unbold variant)
+- `proportion`: warning height ≥ 45% of the median height of the other text PASS ·
+  30–45% NEEDS_REVIEW · < 30% FAIL (measured: 0.525–0.610 compliant, 0.220 on the
+  shrunken variant). This is a **proxy** for §16.22's absolute millimetre sizes,
+  which are not derivable from an uncalibrated image (PRD OS-7). The README says
+  so plainly.
 - `contrast`: WCAG contrast ratio ≥ 4.5 PASS · 3.0–4.5 NEEDS_REVIEW · < 3.0 FAIL
+  (measured: 18.6 compliant, 1.2 on the low-contrast variant)
 
 **Missing measurement is never a PASS.** With `layout is None`, `bold`, `proportion`,
 `contrast` and `field_of_vision` each return NEEDS_REVIEW naming the measurement that was

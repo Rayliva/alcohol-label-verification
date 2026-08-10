@@ -20,7 +20,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from io import BytesIO
 
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, ImageOps, UnidentifiedImageError
 
 from app.errors import UnreadableImageError
 from app.extraction.schema import ExtractedFields
@@ -84,6 +84,18 @@ class VerificationResult:
 
 
 def _decode(image_bytes: bytes) -> Image.Image:
+    """Open an upload as an upright RGB image, or say why it could not be.
+
+    Three failures reach this function from real submissions and none of them
+    may become a bare 500: a file that is not an image at all, a file that is
+    truncated in transit, and a small file declaring enormous dimensions.
+    """
+    if image_bytes[:5] == b"%PDF-":
+        raise UnreadableImageError(
+            code="unsupported_file",
+            message="This is a PDF. The tool reads label artwork as an image.",
+            what_to_do="Export the label artwork as a JPG or PNG and upload that.",
+        )
     try:
         image = Image.open(BytesIO(image_bytes))
         image.load()
@@ -93,7 +105,24 @@ def _decode(image_bytes: bytes) -> Image.Image:
             message="This file could not be opened as an image.",
             what_to_do="Upload the label artwork as a JPG or PNG.",
         ) from exc
-    return image.convert("RGB")
+    except Image.DecompressionBombError as exc:
+        raise UnreadableImageError(
+            code="image_dimensions_implausible",
+            message="This file claims dimensions far larger than any label photograph.",
+            what_to_do="Re-export the artwork at a normal size and upload it again.",
+        ) from exc
+    except OSError as exc:
+        raise UnreadableImageError(
+            code="image_truncated",
+            message="The image file is incomplete — it ends part way through.",
+            what_to_do="Upload the file again; it may have been cut short in transit.",
+        ) from exc
+
+    # Every phone writes portrait shots as landscape pixels plus an orientation
+    # tag. Ignoring it hands the agent sideways evidence crops and makes a
+    # one-panel label look like a two-panel container to the field-of-vision
+    # check.
+    return ImageOps.exif_transpose(image).convert("RGB")
 
 
 def _detected_fields(fields: ExtractedFields) -> dict[str, str | None]:
@@ -120,6 +149,9 @@ def _crops(
             missing.append(name)
             continue
         region = crop_box(image, block.box)
+        if region is None:
+            missing.append(name)
+            continue
         region.thumbnail((MAX_CROP_EDGE, MAX_CROP_EDGE))
         buffer = BytesIO()
         region.save(buffer, format="PNG", optimize=True)

@@ -17,8 +17,9 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 import structlog
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api.routes import router
 from app.config import settings
@@ -116,10 +117,11 @@ async def lifespan(_: FastAPI):
         try:
             _readiness[name] = fn()
         except Exception as exc:
-            # Surface the reason, not just the type. Our own errors name the
-            # variable or the provider message; none of them contain a
-            # credential value. Truncated defensively all the same.
-            _readiness[name] = f"failed: {type(exc).__name__}: {str(exc)[:240]}"
+            # The exception text goes to the log, which is authenticated. What
+            # /health publishes is the failing stage and the exception type,
+            # because a provider's message is third-party text and this endpoint
+            # is open to anyone (.claude/rules/secrets.md).
+            _readiness[name] = f"failed: {type(exc).__name__}"
             log.error("warmup_failed", stage=name, error=str(exc)[:500])
 
     _readiness["warm_ms"] = round((time.perf_counter() - started) * 1000)
@@ -141,6 +143,25 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(Exception)
+async def unhandled(_request: Request, exc: Exception) -> JSONResponse:
+    """The backstop. Nothing reaches an agent as a bare 500.
+
+    An agent who reads "Internal Server Error" learns nothing, rejects the
+    application, and concludes the tool wastes their time. Screen 7 of the UI
+    spec has a line for this case; this handler is what populates it.
+    """
+    log.error("unhandled_error", error=f"{type(exc).__name__}: {str(exc)[:500]}")
+    return JSONResponse(
+        status_code=500,
+        content={
+            "code": "unexpected_error",
+            "message": "Something went wrong while checking this label.",
+            "what_to_do": "Try again. If it keeps happening, report it with the time.",
+        },
+    )
 
 
 app.include_router(router)

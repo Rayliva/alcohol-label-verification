@@ -156,3 +156,41 @@ class TestResultShape:
             result = match_abv(FIELD, declared=declared, detected=detected)
             assert result.reason.strip().endswith(".")
             assert len(result.reason) > 20
+
+
+class TestNumbersThatMustNotParse:
+    """Regressions from the pre-push review, 2026-08-09.
+
+    Every one of these produced a false PASS: the regex had no left boundary,
+    so it matched the tail of a grouped number and reported a 45.5% spirit as
+    a 5% one. A false PASS on alcohol content is the error class this product
+    exists to prevent.
+    """
+
+    def test_a_comma_grouped_number_does_not_parse_from_its_tail(self) -> None:
+        parsed = parse_alcohol_content("45,5% Alc/Vol")
+        assert parsed.abv is None
+
+    def test_a_comma_decimal_is_not_read_as_a_smaller_number(self) -> None:
+        result = match_abv(FIELD, declared="5% Alc/Vol", detected="45,5% Alc/Vol")
+        assert result.verdict is not Verdict.PASS
+
+    def test_a_proof_with_a_grouped_number_does_not_parse(self) -> None:
+        assert parse_alcohol_content("1,090 Proof").proof is None
+
+    def test_two_different_percentages_are_ambiguous_rather_than_guessed(self) -> None:
+        # "40% grain neutral spirits" is not the alcohol content statement.
+        parsed = parse_alcohol_content("contains 40% grain neutral spirits, 20% alc/vol")
+        assert parsed.abv is None
+
+    def test_the_same_percentage_repeated_still_parses(self) -> None:
+        parsed = parse_alcohol_content("45% Alc./Vol. — 45% ABV")
+        assert parsed.abv == 45.0
+
+    def test_an_ambiguous_statement_is_reviewed_not_passed(self) -> None:
+        result = match_abv(
+            FIELD,
+            declared="40% Alc/Vol",
+            detected="contains 40% grain neutral spirits, 20% alc/vol",
+        )
+        assert result.verdict is Verdict.NEEDS_REVIEW

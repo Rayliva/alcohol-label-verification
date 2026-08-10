@@ -20,8 +20,10 @@ from pathlib import Path
 from typing import Any, Literal
 
 import anthropic
+from pydantic import ValidationError
 
 from app.config import settings
+from app.errors import ExtractionError
 from app.extraction.schema import ExtractedFields
 
 SYSTEM_PROMPT = """\
@@ -103,11 +105,31 @@ def _request_kwargs(model: str, thinking_mode: str, effort: str) -> dict[str, An
     return kwargs
 
 
-def _parse(response: Any, model: str, elapsed_ms: float) -> ExtractionResult:
-    text = next(b.text for b in response.content if b.type == "text")
+def parse_response(response: Any, model: str, elapsed_ms: float) -> ExtractionResult:
+    """Turn a model response into fields, or raise something an agent can read.
+
+    Three things go wrong here and none of them may reach a user as a bare 500:
+    a response carrying no text block at all, text that is not valid JSON
+    because the reply was cut short, and JSON that does not match the schema.
+    """
+    text = next((b.text for b in response.content if getattr(b, "type", None) == "text"), None)
+    if text is None:
+        raise ExtractionError(
+            code="extraction_empty",
+            message="The label reading service returned no result for this label.",
+            what_to_do="Try again in a moment. If it keeps happening, report it.",
+        )
     usage = response.usage
+    try:
+        parsed = ExtractedFields.model_validate(json.loads(text))
+    except (json.JSONDecodeError, ValidationError) as exc:
+        raise ExtractionError(
+            code="extraction_unreadable",
+            message="The label reading service returned a result that could not be read.",
+            what_to_do="Try again in a moment. If it keeps happening, report it.",
+        ) from exc
     return ExtractionResult(
-        fields=ExtractedFields.model_validate(json.loads(text)),
+        fields=parsed,
         latency_ms=elapsed_ms,
         input_tokens=usage.input_tokens,
         output_tokens=usage.output_tokens,
@@ -142,7 +164,7 @@ def extract_from_text(
         messages=[{"role": "user", "content": f"Label text:\n\n{ocr_text}"}],
         **_request_kwargs(model, thinking_mode, effort_level),
     )
-    return _parse(response, model, (time.perf_counter() - started) * 1000)
+    return parse_response(response, model, (time.perf_counter() - started) * 1000)
 
 
 def extract_from_image(
@@ -181,4 +203,4 @@ def extract_from_image(
             }
         ],
     )
-    return _parse(response, model, (time.perf_counter() - started) * 1000)
+    return parse_response(response, model, (time.perf_counter() - started) * 1000)

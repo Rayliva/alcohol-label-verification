@@ -58,8 +58,10 @@ _UNIT_FRAGMENTS: tuple[tuple[str, float, UnitSystem], ...] = (
     (r"gal\.?", _GALLON_ML, UnitSystem.CUSTOMARY),
 )
 
+# The look-behind is not decoration. Without it "1,750 mL" matched the "750" and
+# a bottle two and a third times the declared size passed as an exact match.
 _QUANTITY = re.compile(
-    r"(\d+(?:\.\d+)?)\s*(" + "|".join(f for f, _, _ in _UNIT_FRAGMENTS) + r")(?![a-z])",
+    r"(?<![\d.,])(\d+(?:\.\d+)?)\s*(" + "|".join(f for f, _, _ in _UNIT_FRAGMENTS) + r")(?![a-z])",
     re.IGNORECASE,
 )
 
@@ -104,9 +106,15 @@ def parse_net_contents(text: str | None) -> NetContents:
     # 27 CFR 5.70 treats the metric statement as the declaration and the
     # customary figure as an optional equivalent.
     metric = [m for m in matches if m[2] is UnitSystem.METRIC]
-    quantity, factor, system = metric[0] if metric else matches[0]
+    chosen = metric or matches
+    system = chosen[0][2]
 
-    return NetContents(text=text, millilitres=quantity * factor, system=system)
+    # One statement can carry several units: "1 PT 9 FL OZ" is a real net
+    # contents form, and so is "1 L 500 mL". Keeping only the first quantity
+    # read that bottle as 473 mL instead of 739 mL.
+    millilitres = sum(quantity * factor for quantity, factor, _ in chosen)
+
+    return NetContents(text=text, millilitres=millilitres, system=system)
 
 
 def _fmt(millilitres: float) -> str:

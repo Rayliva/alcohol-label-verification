@@ -33,8 +33,10 @@ class CloudVisionEngine:
             raise RuntimeError(
                 f"GOOGLE_APPLICATION_CREDENTIALS_JSON is not valid JSON "
                 f"({exc.msg} at line {exc.lineno} col {exc.colno}; value is "
-                f"{len(raw)} chars, starts {raw[:12]!r}). It must be the full "
-                f"service-account key, including the outer braces."
+                f"{len(raw)} chars and "
+                f"{'does' if raw.lstrip().startswith('{') else 'does not'} begin with "
+                f"an opening brace). It must be the full service-account key, "
+                f"including the outer braces."
             ) from exc
 
         required = ("type", "project_id", "private_key", "client_email")
@@ -86,7 +88,9 @@ class CloudVisionEngine:
                         TextBlock(
                             text=text,
                             box=_to_box(paragraph.bounding_box),
-                            confidence=paragraph.confidence or None,
+                            confidence=(
+                                paragraph.confidence if paragraph.confidence is not None else None
+                            ),
                         )
                     )
 

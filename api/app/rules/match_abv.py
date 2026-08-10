@@ -29,11 +29,14 @@ from app.rules.types import FieldResult, Verdict
 # 27 CFR 5.65 permits "alc", "%", "/" for "by", and "vol" as abbreviations, so the
 # surrounding words vary widely. The percent sign or the word "percent" is the only
 # reliable marker of the mandatory statement.
-_ABV = re.compile(r"(\d+(?:\.\d+)?)\s*(?:%|percent\b)", re.IGNORECASE)
+#
+# The look-behind is not decoration. Without it "45,5%" matched the "5", and a
+# 45.5% spirit read as a match against a 5% application.
+_ABV = re.compile(r"(?<![\d.,])(\d+(?:\.\d+)?)\s*(?:%|percent\b)", re.IGNORECASE)
 
 # Proof appears as a word or as the degree symbol: "90 Proof", "90°", "Proof: 90".
-_PROOF_AFTER = re.compile(r"(\d+(?:\.\d+)?)\s*(?:proof\b|°)", re.IGNORECASE)
-_PROOF_BEFORE = re.compile(r"proof\b\s*:?\s*(\d+(?:\.\d+)?)", re.IGNORECASE)
+_PROOF_AFTER = re.compile(r"(?<![\d.,])(\d+(?:\.\d+)?)\s*(?:proof\b|°)", re.IGNORECASE)
+_PROOF_BEFORE = re.compile(r"proof\b\s*:?\s*(?<![\d.,])(\d+(?:\.\d+)?)", re.IGNORECASE)
 
 # 27 CFR 5.65. Never applied as a pass rule — see the module docstring.
 LIQUID_TOLERANCE_POINTS = 0.3
@@ -65,14 +68,23 @@ def parse_alcohol_content(text: str | None) -> AlcoholContent:
     if not text or not text.strip():
         return AlcoholContent(text="", abv=None, proof=None)
 
-    abv_match = _ABV.search(text)
-    proof_match = _PROOF_AFTER.search(text) or _PROOF_BEFORE.search(text)
-
     return AlcoholContent(
         text=text,
-        abv=float(abv_match.group(1)) if abv_match else None,
-        proof=float(proof_match.group(1)) if proof_match else None,
+        abv=_single_value(_ABV.findall(text)),
+        proof=_single_value(_PROOF_AFTER.findall(text) + _PROOF_BEFORE.findall(text)),
     )
+
+
+def _single_value(matches: list[str]) -> float | None:
+    """One unambiguous number, or nothing.
+
+    A label may say "40% grain neutral spirits ... 20% alc/vol". Taking the
+    first percentage reports the wrong figure with full confidence, and reading
+    it back as a match against a 40% application is exactly the false PASS this
+    product cannot afford. Two different numbers means a human decides.
+    """
+    values = {float(value) for value in matches}
+    return values.pop() if len(values) == 1 else None
 
 
 def _fmt(value: float) -> str:

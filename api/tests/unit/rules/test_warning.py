@@ -105,25 +105,25 @@ class TestBold:
 
 class TestProportion:
     def test_warning_text_the_size_of_body_text_passes(self) -> None:
-        # A compliant label prints the warning smaller than its body copy;
-        # the corpus measures 63%. Passing has to mean "proportionate", not
-        # "the same size as the brand name".
-        layout = GOOD_LAYOUT.replace(warning_text_height=7.6, median_text_height=12.0)
+        # A compliant label prints the warning smaller than its body copy; the
+        # corpus measures 0.525 to 0.610. Passing has to mean "proportionate",
+        # not "the same size as the brand name".
+        layout = GOOD_LAYOUT.replace(warning_text_height=6.6, median_text_height=12.0)
         report = check_warning(detected=STATUTORY_WARNING, layout=layout)
         assert verdict_for(report.checks, WarningCheckName.PROPORTION) is Verdict.PASS
 
     def test_somewhat_small_warning_text_is_reviewed(self) -> None:
-        # 45% of the surrounding text: smaller than any label in the corpus
+        # 35% of the surrounding text: smaller than any label in the corpus
         # prints it, not small enough to call a violation on its own.
-        layout = GOOD_LAYOUT.replace(warning_text_height=5.4, median_text_height=12.0)
+        layout = GOOD_LAYOUT.replace(warning_text_height=4.2, median_text_height=12.0)
         report = check_warning(detected=STATUTORY_WARNING, layout=layout)
         assert verdict_for(report.checks, WarningCheckName.PROPORTION) is Verdict.NEEDS_REVIEW
 
     def test_buried_in_tiny_text_fails(self) -> None:
-        layout = GOOD_LAYOUT.replace(warning_text_height=4.8, median_text_height=12.0)
+        layout = GOOD_LAYOUT.replace(warning_text_height=2.4, median_text_height=12.0)
         report = check_warning(detected=STATUTORY_WARNING, layout=layout)
         assert verdict_for(report.checks, WarningCheckName.PROPORTION) is Verdict.FAIL
-        assert "40%" in reason_for(report.checks, WarningCheckName.PROPORTION)
+        assert "20%" in reason_for(report.checks, WarningCheckName.PROPORTION)
 
 
 class TestContrast:
@@ -233,3 +233,24 @@ class TestFieldResult:
             for check in report.checks:
                 assert check.reason.strip().endswith(".")
                 assert len(check.reason) > 15
+
+
+class TestWrappedPrefix:
+    """Regression from the pre-push review, 2026-08-09.
+
+    A line break between GOVERNMENT and WARNING made the capitals check report
+    "the label does not carry a GOVERNMENT WARNING heading at all" while the
+    exact-text check in the same report said PASS. Two checks contradicting
+    each other on one label destroys the agent's trust in both.
+    """
+
+    def test_a_prefix_broken_across_two_lines_still_reads_as_capitals(self) -> None:
+        wrapped = STATUTORY_WARNING.replace("GOVERNMENT WARNING", "GOVERNMENT\nWARNING")
+        report = check_warning(detected=wrapped, layout=GOOD_LAYOUT)
+        assert verdict_for(report.checks, WarningCheckName.CAPS) is Verdict.PASS
+        assert verdict_for(report.checks, WarningCheckName.TEXT_EXACT) is Verdict.PASS
+
+    def test_a_title_case_prefix_broken_across_lines_still_fails(self) -> None:
+        wrapped = STATUTORY_WARNING.replace("GOVERNMENT WARNING", "Government\nWarning")
+        report = check_warning(detected=wrapped, layout=GOOD_LAYOUT)
+        assert verdict_for(report.checks, WarningCheckName.CAPS) is Verdict.FAIL

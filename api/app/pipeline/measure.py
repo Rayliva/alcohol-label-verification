@@ -23,7 +23,7 @@ from PIL import Image
 
 from app.ocr.base import BoundingBox, OcrResult, TextBlock
 from app.rules.types import LayoutMetrics
-from app.rules.warning import WARNING_PREFIX
+from app.rules.warning import STATUTORY_WARNING, WARNING_PREFIX
 
 # OCR engines return blocks at different granularities: a word, a line, or a
 # whole paragraph. Comparing a paragraph's box height against a single line's
@@ -66,6 +66,25 @@ def _median(values: list[float]) -> float | None:
 def warning_blocks(ocr: OcrResult) -> list[TextBlock]:
     """Blocks that carry the government warning."""
     return [b for b in ocr.blocks if WARNING_PREFIX in b.text.upper()]
+
+
+def _warning_statement_blocks(ocr: OcrResult) -> list[TextBlock]:
+    """Every block that is part of the government warning, not just its first line.
+
+    A block belongs to the statement if it carries the prefix, or if its text
+    appears inside the statutory wording. Matching against the statute rather
+    than against geometry means a wrapped warning is recognised whatever block
+    granularity the OCR engine happens to return.
+    """
+    statute = " ".join(STATUTORY_WARNING.split()).casefold()
+    belongs = []
+    for block in ocr.blocks:
+        text = " ".join(block.text.split()).casefold()
+        if not text:
+            continue
+        if WARNING_PREFIX in block.text.upper() or (len(text) > 8 and text in statute):
+            belongs.append(block)
+    return belongs
 
 
 def _relative_luminance(grey_value: float) -> float:
@@ -154,9 +173,13 @@ def _prefix_stroke_ratio(image: Image.Image, block: TextBlock, line_height: floa
     if line_height <= 2 or box.width <= 0:
         return None
 
-    line = image.crop((box.x, box.y, box.right, min(box.y + int(line_height * 1.4), box.bottom)))
-    if line.width < 20 or line.height < 4:
+    left = max(0, min(image.width, box.x))
+    top = max(0, min(image.height, box.y))
+    right = max(left, min(image.width, box.right))
+    bottom = max(top, min(image.height, box.y + int(line_height * 1.4), box.bottom))
+    if right - left < 20 or bottom - top < 4:
         return None
+    line = image.crop((left, top, right, bottom))
 
     histogram = line.convert("L").histogram()
     threshold = (_percentile(histogram, 0.05) + _percentile(histogram, 0.95)) / 2
@@ -221,9 +244,11 @@ def find_block(ocr: OcrResult, value: str) -> TextBlock | None:
     # is. Merge the blocks it spans so the evidence crop shows the whole
     # statement rather than its first line.
     spanning = [
-        b for b in ocr.blocks if " ".join(b.text.split()).casefold() in needle and b.text.strip()
+        b
+        for b in ocr.blocks
+        if len(b.text.strip()) > 3 and " ".join(b.text.split()).casefold() in needle
     ]
-    if len(spanning) > 1:
+    if len(spanning) > 1 and _reconstructs(spanning, needle):
         return _merge(spanning)
 
     # Otherwise fall back to the block sharing the most words.
@@ -233,6 +258,18 @@ def find_block(ocr: OcrResult, value: str) -> TextBlock | None:
     ]
     best_score, best = max(scored, key=lambda pair: pair[0], default=(0, None))
     return best if best_score >= max(1, len(words) // 2) else None
+
+
+def _reconstructs(blocks: list[TextBlock], needle: str) -> bool:
+    """True when these blocks, read in order, actually make up the value.
+
+    Without this a short word that also appears elsewhere on the label — the
+    state in an address matching the state in a class designation — dragged an
+    unrelated block into the merge, and the evidence crop showed a third of the
+    label instead of one line.
+    """
+    ordered = sorted(blocks, key=lambda b: (b.box.y, b.box.x))
+    return " ".join(" ".join(b.text.split()) for b in ordered).casefold() == needle
 
 
 def _merge(blocks: list[TextBlock]) -> TextBlock:
@@ -277,10 +314,15 @@ def measure(
         warning_contrast = contrast_ratio(region)
         stroke_ratio = _prefix_stroke_ratio(image, block, warning_height)
 
-        # The warning's own line height must not skew the baseline it is
-        # compared against, or a shrunken warning drags the median down with it.
+        # Every line of the warning leaves the baseline, not only the line
+        # carrying the prefix. A shrunken warning wraps onto more lines, so
+        # counting the continuations as body text dragged the median down — and
+        # made the check weaker exactly as the violation got worse.
+        statement = {id(block) for block in _warning_statement_blocks(ocr)}
         others = [
-            estimated_line_height(b) for b in ocr.blocks if b.text.strip() and b not in warnings
+            estimated_line_height(b)
+            for b in ocr.blocks
+            if b.text.strip() and id(b) not in statement
         ]
         median_height = _median(others) or median_height
 
@@ -293,13 +335,17 @@ def measure(
     )
 
 
-def crop_box(image: Image.Image, box: BoundingBox, padding: int = 12) -> Image.Image:
-    """A padded crop, clamped to the image."""
-    return image.crop(
-        (
-            max(0, box.x - padding),
-            max(0, box.y - padding),
-            min(image.width, box.right + padding),
-            min(image.height, box.bottom + padding),
-        )
-    )
+def crop_box(image: Image.Image, box: BoundingBox, padding: int = 12) -> Image.Image | None:
+    """A padded crop, clamped to the image, or None if the box falls outside it.
+
+    OCR coordinates and the decoded frame can disagree — an orientation tag, or
+    a provider returning boxes for the pre-rotation image. An inverted rectangle
+    raised ValueError from inside PIL and reached the client as a bare 500.
+    """
+    left = max(0, min(image.width, box.x - padding))
+    top = max(0, min(image.height, box.y - padding))
+    right = max(0, min(image.width, box.right + padding))
+    bottom = max(0, min(image.height, box.bottom + padding))
+    if right - left < 2 or bottom - top < 2:
+        return None
+    return image.crop((left, top, right, bottom))

@@ -16,7 +16,9 @@ were wrong — a beverage type we do not check, a file that is not an image.
 from __future__ import annotations
 
 import base64
+import time
 
+import structlog
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 from app.api.models import (
@@ -37,6 +39,8 @@ from app.rules.beverage_types import (
     rules_for,
 )
 from app.rules.engine import Application
+
+log = structlog.get_logger()
 
 router = APIRouter(prefix="/api", tags=["verification"])
 
@@ -146,6 +150,7 @@ async def verify_label(
     country_of_origin: str | None = Form(None),
 ) -> VerificationResponse:
     """Check one label against the values declared in its application."""
+    started = time.perf_counter()
     image_bytes = await image.read()
     if not image_bytes:
         raise _bad_request(
@@ -194,12 +199,14 @@ async def verify_label(
         )
     except UnreadableImageError as exc:
         # A label outcome, not a request failure. The agent sees the same
-        # screen, carrying a reason they can act on.
+        # screen, carrying a reason they can act on. The elapsed time is real:
+        # batch progress aggregates all four buckets, and reporting zero here
+        # makes its estimate wrong.
         return VerificationResponse(
             label_id=application_id or None,
             beverage_type=beverage_type,
             overall="unreadable",
-            processing_ms=0,
+            processing_ms=round((time.perf_counter() - started) * 1000),
             reviewer=reviewer or None,
             error=ErrorBody(**exc.as_dict(), partial_fields_shown=False),
         )
@@ -211,6 +218,19 @@ async def verify_label(
         ) from exc
     except LabelVerificationError as exc:
         raise HTTPException(status_code=502, detail=exc.as_dict()) from exc
+    except (OSError, RuntimeError, ValueError) as exc:
+        # A provider that is down, unauthenticated, or misconfigured. The
+        # agent's screen has a line for exactly this (ui-spec Screen 7), and it
+        # is not "processing failed".
+        log.error("verification_failed", error=str(exc)[:500])
+        raise HTTPException(
+            status_code=502,
+            detail={
+                "code": "service_unavailable",
+                "message": "Can't reach the label reading service right now.",
+                "what_to_do": "Your entry has been kept — try again in a moment.",
+            },
+        ) from exc
 
     return _to_response(result, application_id=application_id, reviewer=reviewer)
 

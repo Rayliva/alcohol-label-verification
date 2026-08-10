@@ -52,7 +52,7 @@ MIN_CONTRAST = 10.0
 
 # Ink running off the edge of the frame means content was cut off.
 BORDER_BAND_PX = 6
-MAX_BORDER_INK = 0.12
+MAX_BORDER_INK = 0.05
 
 # OCR that comes back this unsure has not read the label.
 MIN_MEAN_OCR_CONFIDENCE = 0.45
@@ -89,15 +89,19 @@ def _border_ink_fraction(grey: Image.Image) -> float:
         grey.crop((0, 0, band, height)),
         grey.crop((width - band, 0, width, height)),
     ]
-    corner = ImageStat.Stat(grey.crop((0, 0, band, band))).mean[0]
     inked = 0
     total = 0
     for edge in edges:
-        histogram = (
-            edge.convert("L").point(lambda v: 255 if abs(v - corner) > 60 else 0).histogram()
-        )
-        inked += histogram[255]
-        total += histogram[0] + histogram[255]
+        # Each edge is measured against its own most common tone, not against
+        # one shared corner. A full-bleed dark band along one side is an
+        # ordinary label design; measuring the other three edges against a patch
+        # inside that band scored all three as ink and called an intact label
+        # cropped.
+        histogram = edge.histogram()
+        reference = max(range(len(histogram)), key=lambda value: histogram[value])
+        marks = edge.point(lambda v, ref=reference: 255 if abs(v - ref) > 60 else 0).histogram()
+        inked += marks[255]
+        total += marks[0] + marks[255]
     return inked / total if total else 0.0
 
 
@@ -213,6 +217,12 @@ GLARE_MIN_LUMINANCE = 250.0
 GLARE_ABOVE_BACKGROUND = 3.0
 GLARE_MAX_CONTRAST = 4.0
 
+# Known limitation: artwork printed on pure white paper leaves no luminance
+# headroom above the background, so a reflection is indistinguishable from paper
+# by this measure. Such an image falls through to the OCR checks and is reported
+# unreadable for a different reason. Published in the README rather than papered
+# over — see .claude/rules/measure-dont-claim.md.
+
 
 def _background_luminance(grey: Image.Image) -> float:
     """The most common tone in the image: the label's own paper."""
@@ -232,21 +242,32 @@ def require_no_glare(image: Image.Image) -> None:
     background = _background_luminance(grey)
     strip_height = max(1, grey.height // GLARE_STRIPS)
 
-    run = 0
-    longest = 0
+    # Clamped, because an 8-bit mean cannot exceed 255. On a label printed on
+    # pure white paper, background + 3 would be 258 and this whole check would
+    # be silently dead code.
+    threshold = min(255.0, max(GLARE_MIN_LUMINANCE, background + GLARE_ABOVE_BACKGROUND))
+
+    washed_strips = []
     for index in range(GLARE_STRIPS // 2, GLARE_STRIPS):
         top = index * strip_height
         strip = grey.crop((0, top, grey.width, min(grey.height, top + strip_height)))
         statistics = ImageStat.Stat(strip)
-        washed = (
-            statistics.mean[0] >= max(GLARE_MIN_LUMINANCE, background + GLARE_ABOVE_BACKGROUND)
-            and statistics.stddev[0] <= GLARE_MAX_CONTRAST
+        washed_strips.append(
+            statistics.mean[0] >= threshold and statistics.stddev[0] <= GLARE_MAX_CONTRAST
         )
-        run = run + 1 if washed else 0
-        longest = max(longest, run)
 
-    if longest >= GLARE_MIN_STRIPS:
-        covered = round(longest / GLARE_STRIPS * 100)
+    # The washed run has to reach the bottom of the frame. A reflection over the
+    # lower part of a bottle covers the bottom edge; the empty margin between
+    # the bottler line and the warning does not, and that margin is flat and
+    # bright on any pale label.
+    trailing = 0
+    for washed in reversed(washed_strips):
+        if not washed:
+            break
+        trailing += 1
+
+    if trailing >= GLARE_MIN_STRIPS:
+        covered = round(trailing / GLARE_STRIPS * 100)
         raise UnreadableImageError(
             code="glare_obscures_text",
             message=(
