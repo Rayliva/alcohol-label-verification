@@ -158,7 +158,7 @@ def run_job(
             outcome, payload = check(image_bytes, declared)
         except LabelVerificationError as exc:
             outcome, payload = "error", {"error": exc.as_dict()}
-        except Exception as exc:  # noqa: BLE001  (recorded, never swallowed)
+        except Exception as exc:
             # The reason travels with the row. "RuntimeError" tells an agent
             # nothing; "ANTHROPIC_API_KEY is not set" tells them everything,
             # and 300 rows all saying the former is 300 wasted minutes.

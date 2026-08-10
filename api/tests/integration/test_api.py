@@ -172,3 +172,21 @@ class TestBeverageTypesRoute:
         wine = next(o for o in body if o["beverage_type"] == "wine")
         assert wine["alcohol_content_required"] is False
         assert "table wine" in wine["alcohol_content_note"]
+
+
+class TestRoutesAreReachable:
+    """A mount at "/" swallows every path beneath it.
+
+    Registering the frontend above /health took the health check off the air in
+    production for the length of one deploy. This is the test that would have
+    caught it.
+    """
+
+    def test_every_named_route_answers_on_its_own_path(self, client) -> None:
+        for path in ("/health", "/api/beverage-types", "/api/batch/template", "/docs"):
+            assert client.get(path).status_code == 200, path
+
+    def test_the_frontend_is_served_at_the_root(self, client) -> None:
+        response = client.get("/")
+        assert response.status_code == 200
+        assert "<!doctype html>" in response.text.lower()
