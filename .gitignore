@@ -45,3 +45,8 @@ Thumbs.db
 # Frontend build output and dependencies
 web/node_modules/
 web/dist/
+
+# The built frontend is committed under api/app/static on purpose: Render's
+# build context is api/, so the container cannot reach web/. Rebuild with
+# `npm run build` in web/ and copy dist over it. See README > Deployment.
+!api/app/static/

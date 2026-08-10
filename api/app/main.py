@@ -14,12 +14,14 @@ from __future__ import annotations
 
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any
 
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.api.batch_routes import router as batch_router
 from app.api.routes import router
@@ -167,6 +169,26 @@ async def unhandled(_request: Request, exc: Exception) -> JSONResponse:
 
 app.include_router(router)
 app.include_router(batch_router)
+
+# The built frontend, served from the same origin as the API.
+#
+# The tech spec puts the frontend on Vercel, and that is still the production
+# shape. Serving the bundle from here as well means the one deployed URL is a
+# working application rather than a JSON endpoint, which is what the brief asks
+# for as a deliverable. Same origin also means no CORS in the demo path.
+#
+# app/static is built by `npm run build` in web/ and copied here; see the README.
+_STATIC = Path(__file__).resolve().parent / "static"
+
+if _STATIC.is_dir():
+
+    @app.get("/", include_in_schema=False)
+    def index() -> FileResponse:
+        return FileResponse(_STATIC / "index.html")
+
+    app.mount("/", StaticFiles(directory=_STATIC, html=True), name="static")
+else:
+    log.warning("frontend_not_built", hint="run npm run build in web/ and copy dist to app/static")
 
 
 @app.get("/health")
