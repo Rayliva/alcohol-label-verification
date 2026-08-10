@@ -19,8 +19,8 @@ import statistics
 import sys
 import time
 import urllib.request
-from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 IMAGES = REPO_ROOT / "corpus" / "out"
@@ -76,7 +76,7 @@ def _one(base: str, entry: dict) -> tuple[float, str, dict]:
 
 def _percentile(values: list[float], fraction: float) -> float:
     ordered = sorted(values)
-    index = min(len(ordered) - 1, int(round(fraction * (len(ordered) - 1))))
+    index = min(len(ordered) - 1, round(fraction * (len(ordered) - 1)))
     return ordered[index]
 
 
@@ -233,7 +233,7 @@ def accuracy(base: str) -> None:
             try:
                 with urllib.request.urlopen(request, timeout=180) as response:
                     return entry, json.loads(response.read())
-            except Exception:  # noqa: BLE001 — retried, then reported
+            except Exception:
                 if attempt == 2:
                     return entry, None
                 time.sleep(2 * (attempt + 1))

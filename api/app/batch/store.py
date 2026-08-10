@@ -143,7 +143,7 @@ def run_job(
             return
         try:
             outcome, payload = check(image_bytes, declared)
-        except Exception as exc:  # noqa: BLE001  (recorded, never swallowed)
+        except Exception as exc:
             outcome, payload = (
                 "error",
                 {
