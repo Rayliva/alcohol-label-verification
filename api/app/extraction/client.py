@@ -97,8 +97,19 @@ def _thinking(model: str, mode: str) -> dict[str, Any] | None:
     return {"type": "disabled"} if mode == "disabled" else {"type": "adaptive"}
 
 
+# Transcription is not a creative task, and a compliance tool that returns two
+# different verdicts for the same label on two runs cannot be defended. Measured
+# against the corpus on 2026-08-09: at the default temperature the long bottler
+# address came back transcribed differently between runs, moving several labels
+# between PASS and NEEDS_REVIEW. Explicit, never inherited.
+EXTRACTION_TEMPERATURE = 0.0
+
+
 def _request_kwargs(model: str, thinking_mode: str, effort: str) -> dict[str, Any]:
-    kwargs: dict[str, Any] = {"output_config": _output_config(model, effort)}
+    kwargs: dict[str, Any] = {
+        "output_config": _output_config(model, effort),
+        "temperature": EXTRACTION_TEMPERATURE,
+    }
     thinking = _thinking(model, thinking_mode)
     if thinking is not None:
         kwargs["thinking"] = thinking
