@@ -126,7 +126,12 @@ export function FieldResultCard({
           className="input"
           placeholder="Note (optional) — goes on the record"
           value={note}
-          onChange={(event) => setNote(event.target.value)}
+          onChange={(event) => {
+            setNote(event.target.value);
+            // The placeholder says this goes on the record, so it has to,
+            // including when it is typed after the decision was made.
+            if (override) onOverride({ ...override, note: event.target.value });
+          }}
         />
       </div>
     </section>

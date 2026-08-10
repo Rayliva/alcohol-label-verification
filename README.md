@@ -16,7 +16,16 @@ agent confirms or overrides. **The tool advises; the agent decides.**
 
 Everything below was measured against the deployed instance on **2026-08-09**,
 with real Google Cloud Vision OCR and real Claude Haiku 4.5 extraction. Nothing
-here is an estimate. Reproduce any of it with `python -m app.bench.latency`.
+here is an estimate.
+
+Reproduce any of it from `api/`, against a running instance with credentials
+and the corpus generated:
+
+```bash
+uv run python -m app.bench.latency --base <url> --count 20    # the latency table
+uv run python -m app.bench.latency --base <url> --accuracy    # end-to-end accuracy
+uv run python -m app.bench.latency --base <url> --batch 200   # throughput
+```
 
 ### Latency — the brief's most emphasised number
 
@@ -91,19 +100,19 @@ minute.
 ```bash
 cd api
 uv sync --extra server
-uv run pytest -q                      # 263 tests, ~9 seconds
+
+# The corpus images are gitignored, so generate them first: the accuracy
+# suite reads them, and five of the tests below fail without them.
+uv run python ../corpus/generate.py --all       # 61 curated labels + fixtures
+uv run python ../corpus/generate.py --batch 200 # the throughput fixture
+
+uv run pytest -q                      # 274 tests, about 9 seconds
+uv run pytest -q -m accuracy          # the corpus accuracy suite on its own
 ```
 
 `OCR_ENGINE=fake` is the default. The entire stack, including the accuracy
-suite, runs with no API keys and no outbound traffic.
-
-To exercise the corpus:
-
-```bash
-python corpus/generate.py --all       # 61 curated labels + fixtures
-python corpus/generate.py --batch 200 # the throughput fixture
-cd api && uv run pytest -q -m accuracy
-```
+suite, runs with no API keys and no outbound traffic. To skip the corpus
+entirely, `uv run pytest -q -m "not accuracy"`.
 
 ### With real OCR and extraction
 
@@ -128,7 +137,8 @@ known rather than actionable.
 cd web
 npm install
 npm run dev        # http://localhost:5173, proxying /api to port 8000
-npm run test       # 19 accessibility and behaviour tests
+npm run test       # 19 accessibility and behaviour tests, single pass
+npm run test:watch # the same, in watch mode
 npm run build
 ```
 
@@ -157,8 +167,8 @@ label image
 Three properties follow. It is fast, because the model reads text rather than
 pixels. Evidence crops are possible at all, because OCR returns bounding boxes.
 And the compliance rules are pure functions over a data structure, so they are
-unit-testable with no network — the rule engine's 200-odd tests run in under a
-second.
+unit-testable with no network — the rule engine's 166 tests run in 0.15
+seconds.
 
 ### Three states, never two
 
@@ -305,7 +315,7 @@ Not built, and named rather than left implied:
 | Extraction | Claude Haiku 4.5, structured outputs, thinking disabled, temperature 0 | Benchmarked against Opus 5 and Sonnet 5 during the spike. Structured outputs remove the parse-and-retry loop; temperature 0 because the same label must get the same verdict twice |
 | Rules | Pure Python, no dependencies | Unit-testable with no network. The whole engine runs in 5 ms |
 | Frontend | React 19, Vite, TypeScript, hand-written CSS tokens | The design specifies exact values throughout, and each is an accessibility decision with a reason |
-| Tests | pytest, Vitest, Testing Library | 263 backend, 19 frontend |
+| Tests | pytest, Vitest, Testing Library | 274 backend, 19 frontend |
 | Hosting | Render, always-on tier, from `api/Dockerfile` | Cold starts sabotage the evaluator's first click |
 
 ---
@@ -320,16 +330,23 @@ docs/
   ui-spec.md             screens, data shape, design resolutions
   build-loop.md          current state and the build procedure
   specs/                 rule-engine, pipeline, batch
+docker-compose.yml       one command, fixtures, no keys, no network
 api/
+  Dockerfile             multi-stage; Render deploys from this
   app/rules/             the compliance engine — pure, no I/O
+  app/ocr/               OcrEngine protocol, Cloud Vision, fixtures
+  app/extraction/        the LLM client, prompt and structured-output schema
   app/pipeline/          quality gate, measurement, crops, orchestration
   app/batch/             manifest parsing, job store, worker pool
   app/api/               HTTP layer
   app/bench/             the measurement harness behind every number above
+  app/static/            the built frontend, served from the same origin
 corpus/
+  render.py              draws a label and records where every line landed
   generate.py            61 curated labels, 200-label batch, malformed manifests
   fixtures/              expected verdicts and ground-truth OCR
 web/                     React frontend
+prompts/                 the prompts this project was bootstrapped from
 ```
 
 `.claude/rules/` holds the constraints this build was written under — verify

@@ -268,3 +268,106 @@ class TestRunningABatch:
         response = client.get("/api/batch/template")
         assert response.status_code == 200
         assert "image" in response.text.splitlines()[0]
+
+
+class TestReviewRegressions(TestRunningABatch):
+    """Defects found by review on 2026-08-09, each with the input that showed it."""
+
+    def test_a_json_null_reads_as_blank_not_as_the_word_none(self) -> None:
+        # "None" is a truthy string. It reached the rule engine as a declared
+        # value and failed a compliant label on a field it never had.
+        rows = parse(
+            json.dumps([{"image": "a.png", "brand_name": "X", "country_of_origin": None}]).encode(),
+            "m.json",
+        )
+        assert rows[0].fields["country_of_origin"] is None
+
+    def test_csv_and_json_agree_on_an_empty_field(self) -> None:
+        csv_rows = parse((HEADER + row("a.png")).encode())
+        json_rows = parse(
+            json.dumps([{"image": "a.png", "brand_name": "X", "country_of_origin": None}]).encode(),
+            "m.json",
+        )
+        assert csv_rows[0].fields["country_of_origin"] == json_rows[0].fields["country_of_origin"]
+
+    def test_one_bad_entry_does_not_condemn_the_whole_json_file(self) -> None:
+        rows = parse(json.dumps([{}, {"image": "a.png", "brand_name": "X"}]).encode(), "m.json")
+        # The empty entry survives as a row with no image, which pre-flight
+        # then reports by row number. What must not happen is the whole file
+        # being rejected as having the wrong columns.
+        assert "a.png" in [r.image for r in rows]
+
+    def test_a_json_object_is_told_it_is_the_wrong_shape(self) -> None:
+        with pytest.raises(ManifestError) as raised:
+            parse(json.dumps({"image": "a.png"}).encode(), "m.json")
+        assert raised.value.code == "manifest_not_a_list"
+
+    def test_progress_polls_do_not_carry_the_full_label_reports(self, client, labels) -> None:
+        # 71 KB per row, 94% of it base64 crops, re-sent every second for the
+        # length of the run.
+        ids = ["t1-clean-classic-1", "t1-clean-modern-1"]
+        job_id = client.post("/api/batch", files=self._upload(client, labels, ids)).json()["job_id"]
+        deadline = time.time() + 30
+        while time.time() < deadline:
+            body = client.get(f"/api/batch/{job_id}").json()
+            if body["state"] == "finished":
+                break
+            time.sleep(0.05)
+        assert body["results"]
+        assert all("label" not in result for result in body["results"])
+        assert len(json.dumps(body)) < 20_000
+
+    def test_one_label_report_is_available_on_demand(self, client, labels) -> None:
+        ids = ["t1-clean-classic-1"]
+        job_id = client.post("/api/batch", files=self._upload(client, labels, ids)).json()["job_id"]
+        deadline = time.time() + 30
+        while time.time() < deadline:
+            if client.get(f"/api/batch/{job_id}").json()["state"] == "finished":
+                break
+            time.sleep(0.05)
+        detail = client.get(f"/api/batch/{job_id}/label/0").json()
+        assert detail["fields"]
+        assert any(field["crop_url"] for field in detail["fields"])
+
+    def test_asking_for_a_label_that_is_not_there_says_the_range(self, client, labels) -> None:
+        ids = ["t1-clean-classic-1"]
+        job_id = client.post("/api/batch", files=self._upload(client, labels, ids)).json()["job_id"]
+        response = client.get(f"/api/batch/{job_id}/label/99")
+        assert response.status_code == 404
+        assert response.json()["detail"]["what_to_do"]
+
+    def test_two_images_with_the_same_name_are_reported(self, client, labels) -> None:
+        files = self._upload(client, labels, ["t1-clean-classic-1"])
+        files.insert(
+            0,
+            (
+                "images",
+                (
+                    labels["t1-clean-classic-1"].variant.image_name,
+                    labels["t1-clean-modern-1"].image_bytes,
+                    "image/png",
+                ),
+            ),
+        )
+        body = client.post("/api/batch/preflight", files=files).json()
+        assert any(p["kind"] == "duplicate_image_name" for p in body["problems"])
+
+    def test_a_failing_label_carries_the_reason_not_the_exception_type(self) -> None:
+        from app.batch.store import Job, run_job
+
+        job = Job(id="test", total=1)
+
+        def explode(_image: bytes, _declared: object) -> tuple[str, dict]:
+            raise RuntimeError("ANTHROPIC_API_KEY is not set. Copy .env.example to .env.")
+
+        run_job(job, [("APP-1", "a.png", b"x", {})], explode, concurrency=1)
+        assert "ANTHROPIC_API_KEY" in job.results[0].payload["error"]["message"]
+
+    def test_the_counts_agree_with_the_number_beside_them(self) -> None:
+        from app.batch.store import Job, LabelOutcome
+
+        job = Job(id="test", total=3)
+        for index in range(3):
+            job.record(LabelOutcome(f"APP-{index}", "a.png", "pass", {}))
+        snapshot = job.snapshot()
+        assert sum(snapshot["counts"].values()) == snapshot["done"]

@@ -22,6 +22,8 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from app.errors import LabelVerificationError
+
 State = Literal["pending", "running", "stopped", "finished"]
 
 # Eight at a time: enough to keep a 200-label run inside a coffee break, few
@@ -65,9 +67,15 @@ class Job:
         with self._lock:
             self.results.append(outcome)
 
-    def counts(self) -> dict[str, int]:
+    def counts(self, results: list[LabelOutcome] | None = None) -> dict[str, int]:
+        """Tally one consistent view of the results, not two.
+
+        Taking a fresh copy here while the caller holds an older one lets a
+        progress screen show "12 of 300 checked" beside filter chips adding up
+        to 93. The counts have to come from the same snapshot as the number.
+        """
         tally = {"pass": 0, "needs_review": 0, "fail": 0, "unreadable": 0, "error": 0}
-        for result in list(self.results):
+        for result in results if results is not None else list(self.results):
             tally[result.outcome] = tally.get(result.outcome, 0) + 1
         return tally
 
@@ -88,14 +96,19 @@ class Job:
             "estimated_seconds_remaining": (
                 round(per_label * remaining, 1) if per_label and remaining > 0 else 0
             ),
-            "counts": self.counts(),
+            "counts": self.counts(results),
             "problems": list(self.problems),
+            # The full per-label report, evidence crops and all, stays out of
+            # this. A progress screen polls every second and needs six fields
+            # per row; carrying the whole report made a 300-label snapshot
+            # about 21 MB and re-sent it on every tick. GET .../label/{index}
+            # serves one label's report when a row is opened.
             "results": [
                 {
                     "application_id": result.application_id,
                     "image": result.image,
                     "outcome": result.outcome,
-                    **result.payload,
+                    **{key: value for key, value in result.payload.items() if key != "label"},
                 }
                 for result in results
             ],
@@ -143,13 +156,18 @@ def run_job(
             return
         try:
             outcome, payload = check(image_bytes, declared)
-        except Exception as exc:
+        except LabelVerificationError as exc:
+            outcome, payload = "error", {"error": exc.as_dict()}
+        except Exception as exc:  # noqa: BLE001  (recorded, never swallowed)
+            # The reason travels with the row. "RuntimeError" tells an agent
+            # nothing; "ANTHROPIC_API_KEY is not set" tells them everything,
+            # and 300 rows all saying the former is 300 wasted minutes.
             outcome, payload = (
                 "error",
                 {
                     "error": {
                         "code": "label_failed",
-                        "message": f"This label could not be checked: {type(exc).__name__}.",
+                        "message": f"This label could not be checked: {exc}",
                         "what_to_do": "Check it on its own to see the full reason.",
                     }
                 },

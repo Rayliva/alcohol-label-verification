@@ -30,13 +30,19 @@ export function highlightDifferences(detected: string): { text: string; differs:
   const actual = detected.trim().split(/\s+/);
   const segments: { text: string; differs: boolean }[] = [];
 
-  for (let index = 0; index < actual.length; index += 1) {
+  // Both lengths, not just the label's. A warning cut short would otherwise
+  // never be compared against the words it is missing, and the screen would
+  // say the wording "matches the required text exactly" about a truncated
+  // statement — a false PASS on the one exact check in the product.
+  const length = Math.max(expected.length, actual.length);
+  for (let index = 0; index < length; index += 1) {
+    const word = index < actual.length ? actual[index] : `[missing: ${expected[index]}]`;
     const differs = expected[index] !== actual[index];
     const last = segments[segments.length - 1];
     if (last && last.differs === differs) {
-      last.text += ` ${actual[index]}`;
+      last.text += ` ${word}`;
     } else {
-      segments.push({ text: actual[index], differs });
+      segments.push({ text: word, differs });
     }
   }
   return segments;

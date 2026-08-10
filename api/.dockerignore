@@ -23,12 +23,10 @@ venv/
 htmlcov/
 
 # Frontend — built separately on Vercel, not needed in the API image
-web/
 node_modules/
 
 # Tests and fixtures — not shipped in the runtime image
-api/tests/
-corpus/
+tests/
 bench-results/
 test-results/
 playwright-report/

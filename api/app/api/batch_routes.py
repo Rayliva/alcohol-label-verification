@@ -56,7 +56,11 @@ async def _collect(images: list[UploadFile], manifest: UploadFile) -> ManifestUp
         filename=manifest.filename or "",
     )
     for image in images:
-        upload.images[image.filename or ""] = await image.read()
+        name = image.filename or ""
+        if name in upload.images:
+            upload.duplicates.append(name)
+            continue
+        upload.images[name] = await image.read()
     return upload
 
 
@@ -168,6 +172,38 @@ def _job_or_404(job_id: str) -> Job:
             },
         )
     return job
+
+
+@router.get("/{job_id}/label/{index}")
+def label_detail(job_id: str, index: int) -> dict[str, object]:
+    """The full report for one label in the batch.
+
+    Served on demand rather than inside every progress poll: the report carries
+    base64 evidence crops, and 300 of those is about 21 MB — re-sent on every
+    tick of a run that lasts minutes.
+    """
+    job = _job_or_404(job_id)
+    results = list(job.results)
+    if not 0 <= index < len(results):
+        raise HTTPException(
+            status_code=404,
+            detail={
+                "code": "label_not_found",
+                "message": f"This batch has no label {index}.",
+                "what_to_do": f"Ask for a label between 0 and {max(0, len(results) - 1)}.",
+            },
+        )
+    payload = results[index].payload.get("label")
+    if payload is None:
+        raise HTTPException(
+            status_code=404,
+            detail={
+                "code": "label_has_no_report",
+                "message": "That label could not be checked, so it has no report.",
+                "what_to_do": "The batch table shows the reason on its row.",
+            },
+        )
+    return payload  # type: ignore[return-value]
 
 
 @router.get("/{job_id}")

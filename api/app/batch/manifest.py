@@ -137,11 +137,26 @@ def parse(content: bytes, filename: str = "") -> list[ManifestRow]:
                 message=f"The JSON file could not be read (line {exc.lineno}, column {exc.colno}).",
                 what_to_do="Fix the file, or upload a CSV instead.",
             ) from exc
+        if isinstance(payload, dict) and "labels" not in payload:
+            raise ManifestError(
+                code="manifest_not_a_list",
+                message="The JSON file holds a single object rather than a list of rows.",
+                what_to_do="Wrap the rows in a list, or in an object with a 'labels' key.",
+            )
         entries = payload if isinstance(payload, list) else payload.get("labels", [])
+        header: set[str] = set()
         for index, entry in enumerate(entries, start=1):
-            if isinstance(entry, dict):
-                rows.append(_row_from({str(k): str(v) for k, v in entry.items()}, index))
-        header = set(entries[0]) if entries and isinstance(entries[0], dict) else set()
+            if not isinstance(entry, dict):
+                continue
+            # A JSON null must read as blank, not as the string "None". That
+            # string is truthy, so it reached the rule engine as a declared
+            # value and failed a compliant label on a field it never had.
+            rows.append(
+                _row_from({str(k): ("" if v is None else str(v)) for k, v in entry.items()}, index)
+            )
+            # Union across every row: one malformed first entry must not make
+            # the whole file look like it has the wrong columns.
+            header |= {str(key) for key in entry}
     else:
         reader = csv.DictReader(io.StringIO(text))
         header = {(name or "").strip().lower() for name in (reader.fieldnames or [])}
@@ -247,6 +262,27 @@ class ManifestUpload:
     manifest: bytes
     filename: str
     images: dict[str, bytes] = field(default_factory=dict)
+    # Two uploads sharing a filename: the second would silently replace the
+    # first, and pre-flight exists precisely so that nothing is silent.
+    duplicates: list[str] = field(default_factory=list)
 
     def preflight(self) -> PreflightReport:
-        return preflight(parse(self.manifest, self.filename), list(self.images))
+        report = preflight(parse(self.manifest, self.filename), list(self.images))
+        if not self.duplicates:
+            return report
+        extra = tuple(
+            Problem(
+                kind="duplicate_image_name",
+                detail=(
+                    f"More than one uploaded image is named {name}. Only the first was "
+                    "kept; rename them so each row matches the right one."
+                ),
+            )
+            for name in dict.fromkeys(self.duplicates)
+        )
+        return PreflightReport(
+            rows=report.rows,
+            matched=report.matched,
+            problems=report.problems + extra,
+            image_count=report.image_count,
+        )

@@ -22,7 +22,7 @@ import { VerdictBadge } from "../components/VerdictBadge";
  * sorted problems-first so nobody hunts for the failures.
  */
 
-type Filter = "all" | "fail" | "needs_review" | "pass" | "unreadable";
+type Filter = "all" | "fail" | "needs_review" | "pass" | "unreadable" | "error";
 
 const FILTERS: { key: Filter; label: string }[] = [
   { key: "all", label: "All" },
@@ -30,6 +30,7 @@ const FILTERS: { key: Filter; label: string }[] = [
   { key: "needs_review", label: "Need review" },
   { key: "pass", label: "Passed" },
   { key: "unreadable", label: "Could not be read" },
+  { key: "error", label: "Could not be checked" },
 ];
 
 const ORDER: Record<string, number> = {
@@ -61,6 +62,7 @@ export function BatchScreen({ onSingle }: { onSingle: () => void }) {
       return;
     }
     let cancelled = false;
+    setReport(null);
     preflight(images, manifest)
       .then((next) => {
         if (!cancelled) {
@@ -69,7 +71,12 @@ export function BatchScreen({ onSingle }: { onSingle: () => void }) {
         }
       })
       .catch((cause) => {
-        if (!cancelled) setError(cause instanceof ApiError ? cause.body : null);
+        if (cancelled) return;
+        // A rejected manifest must not leave the previous summary on screen
+        // with its button still armed — it would submit the file that was
+        // just refused.
+        setReport(null);
+        setError(cause instanceof ApiError ? cause.body : null);
       });
     return () => {
       cancelled = true;
@@ -222,9 +229,14 @@ export function BatchScreen({ onSingle }: { onSingle: () => void }) {
               </>
             ) : (
               <p className="blocked">
-                Still needed before this can start: {images.length ? "" : "label images"}
-                {!images.length && !manifest ? ", " : ""}
-                {manifest ? "" : "an application spreadsheet"}.
+                {images.length && manifest
+                  ? "Checking your files…"
+                  : `Still needed before this can start: ${[
+                      images.length ? null : "label images",
+                      manifest ? null : "an application spreadsheet",
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}.`}
               </p>
             )}
           </section>
