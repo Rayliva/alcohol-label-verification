@@ -41,3 +41,7 @@ bench-results/
 Thumbs.db
 .idea/
 .vscode/
+
+# Frontend build output and dependencies
+web/node_modules/
+web/dist/
