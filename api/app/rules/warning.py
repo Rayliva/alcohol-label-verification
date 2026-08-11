@@ -297,12 +297,34 @@ def _check_field_of_vision(layout: LayoutMetrics | None) -> WarningCheck:
             "None of the three fields 27 CFR 5.63 governs could be located on the "
             "artwork, so this was not checked. Look at the label.",
         )
+    # One field cannot share a field of vision with anything. Saying so anyway
+    # vouched for two fields that were not on the label — and their absence is
+    # already reported by their own checks, so this must not repeat it as a
+    # violation either.
+    if len(known) < 2:
+        present = ", ".join(name.replace("_", " ") for name in known)
+        return WarningCheck(
+            WarningCheckName.FIELD_OF_VISION,
+            Verdict.NEEDS_REVIEW,
+            f"Only {present} could be located on the artwork, so there is nothing "
+            "to compare it against and 27 CFR 5.63 was not checked. The other "
+            "fields are reported above.",
+        )
+
     if len(set(known.values())) == 1:
         return WarningCheck(
             WarningCheckName.FIELD_OF_VISION,
             Verdict.PASS,
-            "Brand name, class or type, and alcohol content all appear on the same "
-            "side of the container, as 27 CFR 5.63 requires.",
+            (
+                "Brand name, class or type, and alcohol content all appear on the "
+                "same side of the container, as 27 CFR 5.63 requires."
+                if len(known) == len(SAME_FIELD_OF_VISION)
+                else (
+                    "The fields found on the artwork ("
+                    + ", ".join(n.replace("_", " ") for n in known)
+                    + ") share one side of the container, as 27 CFR 5.63 requires."
+                )
+            ),
         )
     placements = ", ".join(
         f"{name.replace('_', ' ')} on the {side}" for name, side in known.items()

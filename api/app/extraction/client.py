@@ -168,13 +168,27 @@ def extract_from_text(
         system[0]["cache_control"] = {"type": "ephemeral", "ttl": "1h"}
 
     started = time.perf_counter()
-    response = _client().messages.create(
-        model=model,
-        max_tokens=2048,
-        system=system,
-        messages=[{"role": "user", "content": f"Label text:\n\n{ocr_text}"}],
-        **_request_kwargs(model, thinking_mode, effort_level),
-    )
+    try:
+        response = _client().messages.create(
+            model=model,
+            max_tokens=2048,
+            system=system,
+            messages=[{"role": "user", "content": f"Label text:\n\n{ocr_text}"}],
+            **_request_kwargs(model, thinking_mode, effort_level),
+        )
+    except anthropic.AnthropicError as exc:
+        # Translated at the boundary. Every anthropic error descends straight
+        # from Exception, not from OSError, RuntimeError or ValueError, so an
+        # outage, a 429, an expired key or a timeout sailed past the handler
+        # meant for exactly that and came back as a bare 500 saying something
+        # went wrong while checking this label. It is the provider that is
+        # unavailable, and the agent should be told to try again rather than
+        # left wondering what is wrong with their image.
+        raise ExtractionError(
+            code="extraction_unavailable",
+            message="Can not reach the label reading service right now.",
+            what_to_do="Your entry has been kept - try again in a moment.",
+        ) from exc
     return parse_response(response, model, (time.perf_counter() - started) * 1000)
 
 

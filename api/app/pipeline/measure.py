@@ -246,6 +246,15 @@ def _sides(ocr: OcrResult, image: Image.Image, detected: dict[str, str | None]) 
         if not two_panels:
             sides[field] = "front"
             continue
+        # Wide enough to be two panels. This is a heuristic and it is known to
+        # be imperfect: a single-panel landscape export at 1.75 is treated the
+        # same as the genuinely two-panel artwork the corpus renders at 1.43,
+        # so the same blocks can pass at 1000x1400 and fail at 1400x800.
+        #
+        # Kept, because the alternative costs more than it saves. Declining to
+        # judge whenever the frame is wide would drop a real check on every
+        # genuine two-panel label; an uncalibrated photograph carries no better
+        # signal than this one. Recorded in docs/audit-findings.md as B3.
         centre = block.box.x + block.box.width / 2
         sides[field] = "front" if centre < image.width / 2 else "back"
     return sides

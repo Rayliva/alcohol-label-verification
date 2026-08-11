@@ -318,3 +318,33 @@ class TestApplicationShape:
             extract=lambda _: label.detected,
         )
         assert result.report.fields
+
+
+class TestProviderFailuresAreNotOurFault:
+    """Every anthropic error descends straight from Exception — not OSError,
+    RuntimeError or ValueError — so an outage, a 429, an expired key or a
+    timeout sailed past the handler written for exactly that case and reached
+    the agent as a bare 500 saying something went wrong with their label."""
+
+    def test_a_provider_outage_reads_as_the_service_being_unavailable(self) -> None:
+        import anthropic
+
+        from app.errors import ExtractionError
+        from app.extraction import client as extraction_client
+
+        class Boom:
+            class messages:  # noqa: N801
+                @staticmethod
+                def create(**_: object) -> object:
+                    raise anthropic.APIConnectionError(request=None)  # type: ignore[arg-type]
+
+        original = extraction_client._client
+        extraction_client._client = lambda: Boom()  # type: ignore[assignment]
+        try:
+            with pytest.raises(ExtractionError) as raised:
+                extraction_client.extract_from_text("OLD TOM DISTILLERY 750 mL")
+        finally:
+            extraction_client._client = original  # type: ignore[assignment]
+
+        assert raised.value.code == "extraction_unavailable"
+        assert raised.value.what_to_do
