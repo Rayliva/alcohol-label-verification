@@ -333,6 +333,17 @@ for unreadable images.
 
 ### Known limitations
 
+- **A label running out of frame is refused, even when every field on the
+  visible part is readable.** Being able to read what is in shot says nothing
+  about what is out of it, and the missing strip is exactly where a mandatory
+  element could be hiding. The agent is told which edge is cut and asked for a
+  reframed photo rather than given a verdict computed from part of a label.
+- **A frame that is blurred, underexposed *and* noisy can be misreported.**
+  Grain carries the same edge energy as the attenuated detail of a very dim
+  sharp label — 1.079 against 1.082 — so no threshold separates them. It does
+  not occur anywhere in the degraded test set, and the OCR checks refuse the
+  image regardless; what suffers is the stated cause. Measured in
+  `docs/specs/pipeline.md` 2.1.
 - **The corpus is rendered.** Ground truth is exact, which is why the accuracy
   numbers mean anything — and it does not stress OCR against foil, curved glass,
   or script faces. Real photographs belong in the corpus as an unscored smoke
