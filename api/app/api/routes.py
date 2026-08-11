@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import base64
 import time
+import uuid
 
 import structlog
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
@@ -32,6 +33,7 @@ from app.errors import LabelVerificationError, UnreadableImageError
 from app.extraction.client import extract_from_text
 from app.ocr.factory import get_engine
 from app.pipeline import VerificationResult, verify
+from app.review.store import QueueItem, queue
 from app.rules.beverage_types import (
     BeverageTypeUnavailableError,
     Requirement,
@@ -232,7 +234,23 @@ async def verify_label(
             },
         ) from exc
 
-    return _to_response(result, application_id=application_id, reviewer=reviewer)
+    response = _to_response(result, application_id=application_id, reviewer=reviewer)
+    # A checked label joins the queue, so an agent who uploads one finds it
+    # beside everything else waiting rather than losing it when they navigate
+    # away. It lives for the life of the process, like the rest of the queue.
+    queue.add(
+        QueueItem(
+            id=f"upload-{uuid.uuid4().hex[:8]}",
+            brand=brand_name or application_id or "Uploaded label",
+            beverage_type=beverage_type,
+            outcome=response.overall,
+            processing_ms=response.processing_ms,
+            source="uploaded",
+            received_at=time.time(),
+            result=response.model_dump(mode="json"),
+        )
+    )
+    return response
 
 
 def _bad_request(*, code: str, message: str, what_to_do: str) -> HTTPException:

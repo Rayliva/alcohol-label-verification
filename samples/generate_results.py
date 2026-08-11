@@ -53,7 +53,7 @@ def _as_jpeg(data_uri: str | None, quality: int = 78) -> str | None:
 
 
 def main(limit: int | None = None) -> None:
-    labels = HERE / "labels"
+    labels = HERE.parent / "api" / "app" / "samples"
     manifest = json.loads((labels / "manifest.json").read_text(encoding="utf-8"))
     if limit:
         manifest = manifest[:limit]

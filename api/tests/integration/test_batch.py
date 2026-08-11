@@ -18,6 +18,7 @@ from fastapi.testclient import TestClient
 
 from app.batch.manifest import ManifestError, parse, preflight, template_csv
 from app.main import app
+from tests.conftest import sign_in
 from tests.support import corpus
 
 pytestmark = pytest.mark.integration
@@ -146,6 +147,7 @@ class TestRunningABatch:
             lambda text, **_: _Extraction(by_text[text]),
         )
         with TestClient(app) as test_client:
+            sign_in(test_client)
             yield test_client
 
     def _upload(self, client, labels, ids):

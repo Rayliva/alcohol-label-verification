@@ -18,15 +18,19 @@ from pathlib import Path
 from typing import Any
 
 import structlog
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api.batch_routes import router as batch_router
+from app.api.review_routes import router as review_router
 from app.api.routes import router
+from app.auth import credentials_are_configured, require_agent
 from app.config import settings
+from app.errors import StartupError
 from app.extraction.client import SYSTEM_PROMPT, extract_from_text
+from app.review.store import queue
 
 log = structlog.get_logger()
 
@@ -109,6 +113,14 @@ def _warm_ocr() -> str:
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    if not credentials_are_configured():
+        # Silent misconfiguration here means a public URL with no gate at all,
+        # which is the kind of failure that has to be loud (rules/error-handling.md 3).
+        raise StartupError(
+            "AGENT_USERNAME and AGENT_PASSWORD must both be set. Without them "
+            "the review queue would be served to anyone who finds the URL."
+        )
+
     started = time.perf_counter()
     stages: list[tuple[str, Any]] = [("ocr", _warm_ocr)]
     if settings.anthropic_api_key:
@@ -126,6 +138,10 @@ async def lifespan(_: FastAPI):
             # is open to anyone (.claude/rules/secrets.md).
             _readiness[name] = f"failed: {type(exc).__name__}"
             log.error("warmup_failed", stage=name, error=str(exc)[:500])
+
+    # Recorded results, read from disk. No OCR, no model call, no per-boot
+    # cost — see app/review/store.py for why that is deliberate.
+    _readiness["queue"] = f"seeded:{queue.seed()}"
 
     _readiness["warm_ms"] = round((time.perf_counter() - started) * 1000)
     log.info("startup_complete", **_readiness, ocr_engine=settings.ocr_engine)
@@ -167,8 +183,15 @@ async def unhandled(_request: Request, exc: Exception) -> JSONResponse:
     )
 
 
-app.include_router(router)
-app.include_router(batch_router)
+# Everything that checks a label needs a session. Applied here rather than per
+# route so a new endpoint is guarded by default — forgetting the decorator on
+# one route is exactly how a gate develops a hole. /health stays open: it is
+# how the platform decides whether this instance is alive.
+_signed_in = [Depends(require_agent)]
+app.include_router(router, dependencies=_signed_in)
+app.include_router(batch_router, dependencies=_signed_in)
+# Its own login and logout must stay reachable without a session.
+app.include_router(review_router)
 
 
 @app.get("/health")

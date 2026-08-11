@@ -22,6 +22,7 @@ from app.pipeline.quality import require_readable
 from app.rules.engine import Application
 from app.rules.types import Verdict, WarningCheckName
 from app.rules.warning import STATUTORY_WARNING, check_warning
+from tests.conftest import sign_in
 from tests.support import corpus
 
 pytestmark = pytest.mark.integration
@@ -222,6 +223,7 @@ class TestServiceFailuresAreTyped:
         monkeypatch.setattr("app.api.routes.extract_from_text", explode)
 
         with TestClient(app) as client:
+            sign_in(client)
             response = client.post(
                 "/api/verify",
                 files={"image": ("label.png", label.image_bytes, "image/png")},
@@ -268,6 +270,7 @@ class TestUnreadableResponsesReportTheirCost:
             lambda text, **_: labels["t4-tiny"].detected,
         )
         with TestClient(app) as client:
+            sign_in(client)
             response = client.post(
                 "/api/verify",
                 files={"image": ("tiny.png", labels["t4-tiny"].image_bytes, "image/png")},

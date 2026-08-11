@@ -45,6 +45,18 @@ class Settings(BaseSettings):
     # pairing "disabled" with xhigh/max returns a 400.
     extraction_effort: Literal["low", "medium", "high"] = "low"
 
+    # --- Access ---
+    # One shared agent credential, injected at runtime. There is no user table
+    # and nothing is stored, so there is no password hash to keep — the value
+    # is compared, in constant time, against what the environment supplies.
+    # This is a gate on a public demo URL, not an identity system, and the
+    # README says so.
+    agent_username: str = ""
+    agent_password: str = ""
+    # Signs the session cookie. Unset means a fresh key per boot, which simply
+    # means everyone signs in again after a restart.
+    session_secret: str = ""
+
     # --- Server ---
     cors_origins: str = "http://localhost:5173"
     log_level: str = "INFO"

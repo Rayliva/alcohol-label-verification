@@ -10,6 +10,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from tests.conftest import sign_in
 from tests.support import corpus
 
 pytestmark = pytest.mark.integration
@@ -42,6 +43,7 @@ def client(monkeypatch, labels) -> TestClient:
         lambda text, **_: _Extraction(by_text[text]),
     )
     with TestClient(app) as test_client:
+        sign_in(test_client)
         yield test_client
 
 
