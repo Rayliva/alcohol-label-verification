@@ -47,6 +47,7 @@ Bootstrap is **complete**. Phases 0 through 3 are **complete and deployed**. Pha
 | [`docs/tech-spec.md`](docs/tech-spec.md) | Stack, architecture, deployment |
 | [`docs/ui-spec.md`](docs/ui-spec.md) | Screens, data shape, design-review resolutions |
 | [`docs/build-loop.md`](docs/build-loop.md) | **Current state + build procedure** |
+| [`docs/audit-findings.md`](docs/audit-findings.md) | **Known defects, triaged.** Four independent audits, 2026-08-11. Read before claiming anything works |
 | [`README.md`](README.md) | Approach, measured numbers, limitations |
 
 Quick orientation:
