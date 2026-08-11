@@ -15,11 +15,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import statistics
 import sys
 import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
+from http.cookiejar import CookieJar
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -68,10 +70,41 @@ def _one(base: str, entry: dict) -> tuple[float, str, dict]:
         f"{base}/api/verify", data=body, headers={"Content-Type": content_type}
     )
     started = time.perf_counter()
-    with urllib.request.urlopen(request, timeout=120) as response:
+    with _opener.open(request, timeout=120) as response:
         payload = json.loads(response.read())
     elapsed = (time.perf_counter() - started) * 1000
     return elapsed, payload.get("overall", "?"), payload.get("stage_ms", {})
+
+
+# The deployed instance is behind a sign-in, so the benchmark has to hold a
+# session like any other client. Credentials come from the environment and are
+# never printed (.claude/rules/secrets.md).
+_opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(CookieJar()))
+
+
+def sign_in(base: str) -> None:
+    """Open a session, or explain exactly what is missing."""
+    username = os.environ.get("AGENT_USERNAME", "")
+    password = os.environ.get("AGENT_PASSWORD", "")
+    if not username or not password:
+        raise SystemExit(
+            "AGENT_USERNAME and AGENT_PASSWORD must be set: the API requires a "
+            "session. Use the same values the target instance was deployed with."
+        )
+    request = urllib.request.Request(
+        f"{base}/api/login",
+        data=json.dumps({"username": username, "password": password}).encode(),
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        with _opener.open(request, timeout=30):
+            pass
+    except urllib.error.HTTPError as exc:
+        if exc.code == 401:
+            raise SystemExit(
+                f"{base} rejected AGENT_USERNAME/AGENT_PASSWORD. Check they match that instance."
+            ) from exc
+        raise
 
 
 def _percentile(values: list[float], fraction: float) -> float:
@@ -172,7 +205,7 @@ def batch(base: str, count: int) -> None:
         headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
     )
     started = time.perf_counter()
-    with urllib.request.urlopen(request, timeout=300) as response:
+    with _opener.open(request, timeout=300) as response:
         job = json.loads(response.read())
 
     print(f"Target      {base}")
@@ -180,7 +213,7 @@ def batch(base: str, count: int) -> None:
 
     last = -1
     while True:
-        with urllib.request.urlopen(f"{base}/api/batch/{job['job_id']}", timeout=60) as response:
+        with _opener.open(f"{base}/api/batch/{job['job_id']}", timeout=60) as response:
             progress = json.loads(response.read())
         if progress["done"] != last:
             print(
@@ -231,7 +264,7 @@ def accuracy(base: str) -> None:
         )
         for attempt in range(3):
             try:
-                with urllib.request.urlopen(request, timeout=180) as response:
+                with _opener.open(request, timeout=180) as response:
                     return entry, json.loads(response.read())
             except Exception:
                 if attempt == 2:
@@ -273,6 +306,8 @@ def main() -> None:
     parser.add_argument("--batch", type=int, default=0)
     parser.add_argument("--accuracy", action="store_true")
     args = parser.parse_args()
+
+    sign_in(args.base)
 
     print(f"Measured    {time.strftime('%Y-%m-%d %H:%M')}")
     if args.accuracy:
