@@ -1,8 +1,8 @@
 """Engine selection, driven by OCR_ENGINE.
 
-`OCR_ENGINE=paddle` is the documented answer to TTB's firewall (C-3): the
-pipeline runs with no outbound OCR calls and no other code changes. Keep that
-claim true — see .claude/skills/swap-ocr-engine.md
+The seam exists so that `OCR_ENGINE=paddle` — the documented answer to TTB's
+firewall (C-3) — is one adapter away rather than a rewrite. That adapter is not
+written: selecting it raises below. See .claude/skills/swap-ocr-engine.md
 """
 
 from __future__ import annotations

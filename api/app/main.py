@@ -188,10 +188,14 @@ def health() -> dict[str, Any]:
         notes.append(
             f"Prompt caching is inactive: the system prompt is below "
             f"{settings.extraction_model}'s minimum cacheable prefix. Known and accepted "
-            f"— see README > Performance. Costs a little per request, changes no behaviour."
+            f"— see README > Measured results. Costs a little per request, changes no behaviour."
         )
     if _readiness["ocr"] == "fake":
-        notes.append("OCR is using deterministic fixtures. Set OCR_ENGINE=cloud for real OCR.")
+        notes.append(
+            "OCR is faked: one built-in sample label is returned for every image, "
+            "so checks do not read the artwork supplied. "
+            "Set OCR_ENGINE=cloud for real OCR."
+        )
     if _readiness["prompt_cache"] == "skipped_no_key":
         notes.append("ANTHROPIC_API_KEY is not set; extraction will fail.")
 

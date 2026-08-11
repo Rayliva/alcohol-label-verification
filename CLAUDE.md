@@ -54,7 +54,9 @@ Quick orientation:
 - **Live app:** https://alcohol-label-verification-3sn4.onrender.com — UI, API and batch. Pushing to `main` auto-deploys (two to four minutes)
 - **Run tests:** from `api/`, `.venv/Scripts/python.exe -m pytest -q` (Windows paths; `uv` is `python -m uv`)
 - **Accuracy suite:** `.venv/Scripts/python.exe -m pytest -q -m accuracy` - regenerate the corpus first with `api/.venv/Scripts/python.exe corpus/generate.py --all`
-- **No credentials needed:** `OCR_ENGINE=fake` runs the whole stack offline
+- **`OCR_ENGINE=fake` needs no Cloud Vision account** and keeps OCR offline, but
+  an `ANTHROPIC_API_KEY` is still required to check a label — extraction has no
+  fixture path. The test suite needs neither credential.
 - **Never read, print, or commit `.env`**
 
 Derived requirements, scope decisions, and assumptions belong in `docs/PRD.md` and the README — **never** in `requirements.md`.

@@ -95,7 +95,8 @@ reopening any of them.
 - Render has the same variables plus `OCR_ENGINE=cloud`. **Pushing to `main`
   auto-deploys**, and a deploy takes two to four minutes — measurements taken
   immediately after a push may hit the old build.
-- `OCR_ENGINE=fake` runs the entire stack with no credentials and no network.
+- `OCR_ENGINE=fake` takes OCR off the network and needs no Cloud Vision account.
+  Checking a label still needs an `ANTHROPIC_API_KEY`; the tests need neither.
 
 ## Known and accepted
 

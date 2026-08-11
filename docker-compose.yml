@@ -1,10 +1,21 @@
-# The one-command reviewer path.
+# The one-command path for booting the stack:
 #
-#   docker compose up
+#   ANTHROPIC_API_KEY=sk-ant-... docker compose up
 #
-# Runs the whole stack with deterministic OCR fixtures: no API keys, no
-# outbound network, no accounts to create. The UI is served from the same
-# container at http://localhost:8000.
+# Serves the API and the UI at http://localhost:8000 with OCR_ENGINE=fake, so
+# no Cloud Vision account is needed and no OCR traffic leaves the machine.
+#
+# Two limits, both real, both in the README under Limitations rather than left
+# as a surprise:
+#
+#   1. The Anthropic key is required even here. OCR_ENGINE=fake covers OCR
+#      only; extraction always calls the model, so without a key the container
+#      starts, /health carries a note saying so (status stays ok — the
+#      missing key is not actionable by the container), and checks fail.
+#   2. fake OCR returns one built-in sample label for every image. A check run
+#      this way reports on that sample, not on the artwork uploaded. It proves
+#      the stack is wired together; it does not demonstrate the product. For
+#      that, use OCR_ENGINE=cloud with credentials, or the deployed instance.
 #
 # This is not the daily development workflow — that is `uv run uvicorn
 # app.main:app --reload` in api/, because the reload loop is faster and that is
@@ -18,13 +29,13 @@ services:
     ports:
       - "8000:8000"
     environment:
-      # Fixtures rather than a provider. Everything works; the text comes from
-      # corpus/fixtures instead of from Cloud Vision.
+      # A built-in sample label rather than a provider — the same text for
+      # every image (api/app/ocr/fake.py). Covers OCR only; see the note above.
       OCR_ENGINE: fake
       LOG_LEVEL: INFO
       # Credentials are injected at runtime, never baked into the image
-      # (.claude/rules/secrets.md). Both are optional in this mode: without an
-      # Anthropic key, startup skips the warming calls and /health says so.
+      # (.claude/rules/secrets.md). The Cloud Vision one is genuinely optional
+      # here; the Anthropic one is not — see the note above.
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       GOOGLE_APPLICATION_CREDENTIALS_JSON: ${GOOGLE_APPLICATION_CREDENTIALS_JSON:-}
     healthcheck:

@@ -32,7 +32,7 @@ A deploy that returns 200 is not a deploy that works.
 
 1. **Health check** — `curl https://<api>/health` returns 200.
 2. **Warmup ran** — check startup logs for both calls: prompt cache and schema compilation.
-3. **Cache is actually live** — logs must show `cache_read_input_tokens > 0` on the second warmup call. If it is zero, the prompt is below the model's minimum (512 tokens on Opus 5, **1,024 on Sonnet 5 and Haiku 4.5**) and caching is silently doing nothing.
+3. **Cache is actually live** — logs must show `cache_read_input_tokens > 0` on the second warmup call. If it is zero, the prompt is below the model's minimum (512 tokens on Opus 5, **1,024 on Sonnet 5, and 4,096 on Haiku 4.5**) and caching is silently doing nothing.
 4. **End-to-end** — upload one real label through the deployed UI and time it. Not a curl against the API; the actual path an evaluator takes.
 5. **Cold-ish first click** — wait a few minutes, then click again. This is the evaluator's experience, and the one most easily missed by testing only while warm.
 

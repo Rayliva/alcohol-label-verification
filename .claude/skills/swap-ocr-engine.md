@@ -18,13 +18,13 @@ class OcrEngine(Protocol):
 | Adapter | `OCR_ENGINE` | Role |
 |---|---|---|
 | `CloudVisionEngine` | `cloud` | Default. Fast, strong on stylized type |
-| `PaddleOcrEngine` | `paddle` | On-prem, no outbound calls. Answers C-3 |
-| `FakeOcrEngine` | `fake` | Deterministic fixtures. Default in tests |
+| `PaddleOcrEngine` | `paddle` | **Not written.** The on-prem answer to C-3; selecting it raises |
+| `FakeOcrEngine` | `fake` | One built-in sample label for every image. Default in tests |
 
 Switch with an env var:
 
 ```bash
-OCR_ENGINE=fake uv run uvicorn app.main:app --reload    # no keys, no network
+OCR_ENGINE=fake uv run uvicorn app.main:app --reload    # no Cloud Vision account needed
 OCR_ENGINE=cloud uv run uvicorn app.main:app --reload
 ```
 
@@ -32,7 +32,7 @@ OCR_ENGINE=cloud uv run uvicorn app.main:app --reload
 
 TTB's network blocks outbound traffic to many domains (C-3). That does not affect our hosted prototype — the evaluator's browser talks to our server, and our server makes its own outbound calls — but it would matter for a deployment inside their network.
 
-Rather than hobble the prototype defensively, the adapter makes the constraint an architecture decision: the README states that `OCR_ENGINE=paddle` runs with no outbound calls and no other code changes. Keep that claim true.
+Rather than hobble the prototype defensively, the adapter makes the constraint an architecture decision: an on-prem OCR engine is one adapter behind this `Protocol` rather than a rewrite. The adapter itself is not written, and the README says so — claim the seam, not the engine.
 
 ## Adding an adapter
 

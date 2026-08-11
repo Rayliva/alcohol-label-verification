@@ -27,7 +27,7 @@ uv run python -m app.bench --stages                  # per-stage breakdown
 - **Run against the curated corpus**, not one hand-picked clean label. Latency on a clean render is not the number that matters.
 - **Report p95, not mean.** The PRD target is p95 < 5s. A good mean with a bad tail still fails the agent's experience.
 - **Warm before measuring.** An unwarmed first call includes cache population and schema compilation and is not representative — but *do* record it separately, because it is what an unwarmed deploy would show a user.
-- **Verify caching is live.** Assert `cache_read_input_tokens > 0` after the first call. Minimums are 512 tokens on Opus 5 but **1,024 on Sonnet 5 and Haiku 4.5** — below the minimum, caching silently does nothing and the benchmark measures an uncached path without telling you.
+- **Verify caching is live.** Assert `cache_read_input_tokens > 0` after the first call. Minimums are 512 tokens on Opus 5, **1,024 on Sonnet 5, and 4,096 on Haiku 4.5** — below the minimum, caching silently does nothing and the benchmark measures an uncached path without telling you.
 - **Accuracy alongside latency.** A model that is 800ms faster and 6 points less accurate is not the winner. Report both in one table.
 
 ## Output

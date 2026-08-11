@@ -95,24 +95,32 @@ minute.
 
 ## Running it
 
-### The fast path — no credentials, no network
+### The test suite — no credentials, no network
 
 ```bash
 cd api
 uv sync --extra server
 
 # The corpus images are gitignored, so generate them first: the accuracy
-# suite reads them, and five of the tests below fail without them.
+# suite and most of the integration suite read them, and 81 of the 285
+# tests below fail without them.
 uv run python ../corpus/generate.py --all       # 61 curated labels + fixtures
 uv run python ../corpus/generate.py --batch 200 # the throughput fixture
 
-uv run pytest -q                      # 274 tests, about 9 seconds
+uv run pytest -q                      # 285 tests
 uv run pytest -q -m accuracy          # the corpus accuracy suite on its own
 ```
 
-`OCR_ENGINE=fake` is the default. The entire stack, including the accuracy
-suite, runs with no API keys and no outbound traffic. To skip the corpus
-entirely, `uv run pytest -q -m "not accuracy"`.
+**The test suite needs no credentials and makes no outbound calls** — that
+includes the accuracy suite. `tests/conftest.py` blanks both credentials for
+every test, and the two external boundaries are injected as fakes. To skip the
+corpus entirely, `uv run pytest -q -m "not accuracy"`.
+
+**A running server is a different matter.** `OCR_ENGINE=fake` removes the need
+for Cloud Vision credentials, but field extraction has no equivalent seam: it
+always calls the Anthropic API, so a server started without
+`ANTHROPIC_API_KEY` will boot, serve the UI, and then fail on every check. See
+[OCR modes](#ocr-modes-and-why-the-seam-exists) below.
 
 ### With real OCR and extraction
 
@@ -145,8 +153,23 @@ npm run build
 ### Docker
 
 ```bash
-docker compose up  # whole stack, OCR_ENGINE=fake, no keys, no network
+ANTHROPIC_API_KEY=sk-ant-... docker compose up
 ```
+
+Runs the API and the UI on <http://localhost:8000> with `OCR_ENGINE=fake`, so
+no Cloud Vision credentials are needed and no OCR traffic leaves the machine.
+
+Two things this does **not** give you, both named under
+[Limitations](#known-limitations) rather than left to be discovered:
+
+- **An Anthropic key is still required.** Extraction has no fixture path, so
+  without one the container starts, `/health` carries a note saying so, and a check fails as
+  soon as a readable image reaches the extraction step.
+- **`fake` ignores the image you upload.** It returns one built-in sample label
+  every time, so a check run this way reports on that sample and not on your
+  artwork. It proves the stack is wired together; it does not demonstrate the
+  product. For that, set `OCR_ENGINE=cloud` with Cloud Vision credentials, or
+  use the deployed instance.
 
 ---
 
@@ -167,8 +190,54 @@ label image
 Three properties follow. It is fast, because the model reads text rather than
 pixels. Evidence crops are possible at all, because OCR returns bounding boxes.
 And the compliance rules are pure functions over a data structure, so they are
-unit-testable with no network — the rule engine's 166 tests run in 0.15
-seconds.
+unit-testable with no network — the rule engine's 166 tests need no
+credentials and no fixtures on disk.
+
+### OCR modes, and why the seam exists
+
+`OCR_ENGINE` selects one of three modes behind a single `Protocol`
+(`api/app/ocr/base.py`). Two of the three are implemented; every implementation
+returns the same thing, full text plus per-block bounding boxes.
+
+| Mode | What it is | Needs credentials | Used for |
+|---|---|---|---|
+| `cloud` | Google Cloud Vision | Yes — a service-account JSON | Production, and every published measurement |
+| `fake` | **One built-in sample label, returned for every image** (`api/app/ocr/fake.py`) | No | Booting and exercising the stack with no Cloud Vision account |
+| `paddle` | Local PaddleOCR, no outbound calls | No | **Not implemented.** The documented on-prem path |
+
+The seam is not architectural taste. It answers three separate problems, and
+each would have forced it on its own.
+
+**The firewall.** TTB's IT admin, verbatim:
+
+> "our network blocks outbound traffic to a lot of domains, so keep that in mind
+> if you're thinking about cloud APIs. During the scanning vendor pilot, half
+> their features didn't work because our firewall blocked connections to their
+> ML endpoints."
+
+A hosted OCR provider is therefore a deployment risk, not a settled choice.
+Behind an interface, moving to on-premise OCR is a configuration change rather
+than a rewrite — which is why `paddle` is in the table at all. It is honest to
+say the adapter is unwritten; it would not be honest to claim the problem is
+solved.
+
+**Testability.** The rule engine is where nearly all the logic lives, and it has
+nothing to do with the network. The whole suite runs with no account, no key
+and no quota, and a test that suddenly needs credentials is a signal that
+something has reached past a boundary.
+
+**Attribution.** The accuracy figures depend on holding OCR still. That is
+done by a third engine used only in tests — `CorpusOcrEngine`
+(`api/tests/support/corpus.py`), which replays the bounding boxes the corpus
+renderer actually drew. A wrong verdict is then attributable to a rule rather
+than to a misread character, which is why two accuracy numbers are published
+above rather than one. It is not reachable through `OCR_ENGINE`.
+
+**Extraction has no such seam, and that is a gap.** The LLM call that turns OCR
+text into structured fields always goes to Anthropic. Tests inject a fake at
+that boundary, so they run offline; a *running server* cannot. A fixture
+extractor for the credential-free path is a small piece of work and is not
+built.
 
 ### Three states, never two
 
@@ -269,12 +338,20 @@ for unreadable images.
   or script faces. Real photographs belong in the corpus as an unscored smoke
   set; they are not there yet.
 - **Prompt caching does not engage.** The system prompt is below Haiku 4.5's
-  1,024-token minimum cacheable prefix. Padding the prompt to reach the
+  4,096-token minimum cacheable prefix. Padding the prompt to reach the
   threshold would be gaming a number, so it is reported on `/health` and left
   alone. It costs a little per request and changes no behaviour.
 - **Glare on pure-white artwork is undetectable** by the luminance check, since
   a reflection has no headroom above white paper. Such an image falls through to
   the OCR checks and is reported unreadable for a different reason.
+- **The credential-free path boots the stack but cannot demonstrate it.**
+  `OCR_ENGINE=fake` returns one built-in sample label for every image, and
+  field extraction has no fixture path at all, so `docker compose up` without
+  an Anthropic key fails on every check — and with one, it reports on the
+  built-in sample rather than on the image uploaded. Two pieces of work would
+  close this: registering per-image OCR fixtures, and a fixture extractor.
+  Neither is built. The tests are unaffected; they inject fakes at both
+  boundaries.
 - **The frontend bundle is committed** under `api/app/static`, because Render's
   build context is `api/` and the container cannot reach `web/`. A UI change
   needs `npm run build` and a commit. The production shape is a separate Vercel
@@ -315,7 +392,7 @@ Not built, and named rather than left implied:
 | Extraction | Claude Haiku 4.5, structured outputs, thinking disabled, temperature 0 | Benchmarked against Opus 5 and Sonnet 5 during the spike. Structured outputs remove the parse-and-retry loop; temperature 0 because the same label must get the same verdict twice |
 | Rules | Pure Python, no dependencies | Unit-testable with no network. The whole engine runs in 5 ms |
 | Frontend | React 19, Vite, TypeScript, hand-written CSS tokens | The design specifies exact values throughout, and each is an accessibility decision with a reason |
-| Tests | pytest, Vitest, Testing Library | 274 backend, 19 frontend |
+| Tests | pytest, Vitest, Testing Library | 285 backend, 19 frontend |
 | Hosting | Render, always-on tier, from `api/Dockerfile` | Cold starts sabotage the evaluator's first click |
 
 ---
@@ -330,7 +407,7 @@ docs/
   ui-spec.md             screens, data shape, design resolutions
   build-loop.md          current state and the build procedure
   specs/                 rule-engine, pipeline, batch
-docker-compose.yml       one command, fixtures, no keys, no network
+docker-compose.yml       one command; fixture OCR, still needs an Anthropic key
 api/
   Dockerfile             multi-stage; Render deploys from this
   app/rules/             the compliance engine — pure, no I/O

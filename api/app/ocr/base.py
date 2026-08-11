@@ -72,7 +72,13 @@ class OcrResult:
 
 
 class OcrEngine(Protocol):
-    """Implemented by CloudVisionEngine, PaddleOcrEngine, and FakeOcrEngine."""
+    """Implemented by CloudVisionEngine and FakeOcrEngine.
+
+    A PaddleOcrEngine is the documented on-prem answer to the firewall
+    constraint (C-3) and is not written. OCR_ENGINE=paddle raises
+    NotImplementedError at startup warming, where it is caught and reported on
+    /health as degraded, and again on every check.
+    """
 
     name: str
 

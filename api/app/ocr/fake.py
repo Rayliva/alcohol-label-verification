@@ -1,8 +1,9 @@
 """Deterministic OCR for tests and credential-free local runs.
 
-This is what makes the rule engine testable without a network: the whole
-pipeline can be driven from fixtures, and a test that suddenly needs
-credentials is a signal that something is reaching past the boundary.
+This is what lets the stack run without a network. It returns one sample label
+whatever the image, so a test that suddenly needs credentials is a signal that
+something is reaching past the boundary. Tests that need OCR to track the image
+use CorpusOcrEngine instead — see the class docstring below.
 """
 
 from __future__ import annotations
@@ -59,10 +60,17 @@ def result_from_lines(
 
 
 class FakeOcrEngine:
-    """Returns a fixture keyed by image content, or a compliant default.
+    """One compliant sample label, returned for every image.
 
-    Register fixtures with `register()` so a test can drive the pipeline with
-    exactly the OCR output it wants — including deliberately mangled text.
+    Nothing calls `register()` today, so the fixture map is empty and every
+    image gets `DEFAULT_LINES` back. That is enough to boot the stack without
+    credentials, and it is *not* enough to demonstrate the product: a check run
+    this way reports on the sample below rather than on the artwork supplied.
+    The README says so under Limitations.
+
+    Tests that need OCR to track the image use `CorpusOcrEngine`
+    (`tests/support/corpus.py`), which replays the boxes the corpus renderer
+    drew. `register()` is kept for a test that wants to supply its own.
     """
 
     name = "fake"

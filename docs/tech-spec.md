@@ -76,10 +76,10 @@ class OcrEngine(Protocol):
 | Adapter | Role |
 |---|---|
 | `CloudVisionEngine` | Default. Google Cloud Vision — fast, strong on stylized type, returns boxes |
-| `PaddleOcrEngine` | On-prem path, no egress. Answers C-3 structurally. P2 |
-| `FakeOcrEngine` | Deterministic fixtures. Makes the rule engine testable with no network |
+| `PaddleOcrEngine` | **Not written.** The on-prem path that would answer C-3; selecting it raises. P2 |
+| `FakeOcrEngine` | One built-in sample label for every image. Runs the stack with no Cloud Vision account |
 
-Selected by `OCR_ENGINE` env var. The README documents `OCR_ENGINE=paddle` as the deployment answer to TTB's firewall — the constraint becomes a visible architecture decision rather than an unaddressed risk.
+Selected by the `OCR_ENGINE` env var. What this buys against C-3 is the seam, not the engine: an on-prem OCR adapter is one implementation behind this `Protocol` rather than a rewrite. The adapter is not written, and the README says so — the constraint is a visible architecture decision, not a delivered capability.
 
 ### LLM — Anthropic API
 
@@ -125,9 +125,9 @@ async def lifespan(app):
     yield
 ```
 
-Use `cache_control: {"type": "ephemeral", "ttl": "1h"}` with an hourly re-warm rather than the 5-minute default. The 1h TTL costs 2× on write vs 1.25×, negligible on a ~1.5K-token prompt, and it survives the gaps between an evaluator's visits — which is our actual access pattern.
+Use `cache_control: {"type": "ephemeral", "ttl": "1h"}` with an hourly re-warm rather than the 5-minute default. The 1h TTL costs 2× on write vs 1.25×, negligible on a prompt this size, and it survives the gaps between an evaluator's visits — which is our actual access pattern.
 
-**Startup asserts a cache hit.** Minimum cacheable prefix is **512 tokens on Opus 5 but 1,024 on Sonnet 5 and Haiku 4.5**. Below the minimum, caching silently does nothing — no error, just `cache_creation_input_tokens: 0`. The second warm call checks `cache_read_input_tokens > 0` and fails loudly at boot if the prompt is too short for the selected model. Caches are also per-model, so switching models starts cold.
+**Startup checks for a cache hit.** Minimum cacheable prefix is **512 tokens on Opus 5, 1,024 on Sonnet 5, and 4,096 on Haiku 4.5**. Below the minimum, caching silently does nothing — no error, just `cache_creation_input_tokens: 0`. Warmup checks that the two counters are not both zero; if the prompt is too short for the selected model this is reported on `/health` as a note rather than failing the boot, because it costs a little per request and changes no behaviour. Caches are also per-model, so switching models starts cold.
 
 ### Thinking must always be explicit
 
@@ -181,14 +181,14 @@ uv sync && uv run uvicorn app.main:app --reload
 npm install && npm run dev
 ```
 
-**uv** for Python dependency management. `.env.example` documents every variable. `OCR_ENGINE=fake` runs the whole stack with no API keys and no network — contributors can run the test suite immediately.
+**uv** for Python dependency management. `.env.example` documents every variable. `OCR_ENGINE=fake` takes OCR off the network and needs no Cloud Vision account; checking a label still needs an `ANTHROPIC_API_KEY`, because extraction has no fixture path. The test suite needs neither credential, so contributors can run it immediately.
 
 ### Docker
 
 The API **is** containerized; local dev is not.
 
 ```bash
-docker compose up          # whole stack, OCR_ENGINE=fake, no keys, no network
+ANTHROPIC_API_KEY=sk-ant-... docker compose up   # OCR_ENGINE=fake: no Cloud Vision, no OCR traffic
 ```
 
 The driving reason is OpenCV, not deployment aesthetics: image preprocessing (P1-11) needs system libraries (`libGL`, `libglib2.0`) that Render's native Python runtime doesn't reliably provide, and discovering that at deploy time is expensive. Three things the container buys:
@@ -196,8 +196,8 @@ The driving reason is OpenCV, not deployment aesthetics: image preprocessing (P1
 | Benefit | Why it matters here |
 |---|---|
 | Reliable OpenCV system deps | Preprocessing is a shipped feature, not an optional extra |
-| The on-prem claim becomes an artifact | The README says `OCR_ENGINE=paddle` answers TTB's firewall (C-3). An image makes that deployable rather than merely asserted — and PaddleOCR's native deps effectively require a container anyway |
-| One-command reviewer path | `docker compose up` runs the full stack with fixtures, no API keys |
+| The on-prem path stays open | PaddleOCR's native deps effectively require a container, so shipping one keeps the C-3 answer (P2, not written) a packaging step rather than a re-platforming |
+| One-command reviewer path | `docker compose up` boots the full stack with faked OCR — see the README for what that does and does not prove |
 
 `api/Dockerfile` is multi-stage: a build stage for dependencies, a slim runtime with only the OpenCV libs. Render deploys from it.
 
