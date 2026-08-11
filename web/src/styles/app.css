@@ -691,3 +691,136 @@ a:hover {
   color: var(--pass-text);
   margin: 0 0 12px;
 }
+
+/* --- The review queue -------------------------------------------------- */
+/* A table, because this is tabular data and an agent scanning for the next
+   thing to do reads rows faster than cards. Every target clears 44px and no
+   meaning is carried by colour alone — the verdict badge already spells it. */
+
+.card--narrow {
+  max-width: 30rem;
+  margin: 0 auto;
+}
+
+.queue__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.queue {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+.queue th,
+.queue td {
+  text-align: left;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--divider);
+  vertical-align: middle;
+}
+
+.queue thead th {
+  font-size: 0.9375rem;
+  color: var(--ink-secondary);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+
+.queue tbody tr:nth-child(even) {
+  background: var(--zebra-soft);
+}
+
+.queue__brand {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Decided rows stay legible rather than being greyed into unreadability —
+   "done" is not "unimportant", and low-contrast text fails the bar outright. */
+.queue__row--decided .queue__brand {
+  font-weight: 500;
+}
+
+.queue__tag {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--ink-quiet);
+}
+
+.queue__timing {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-secondary);
+  white-space: nowrap;
+}
+
+.queue__decision {
+  color: var(--ink-secondary);
+}
+
+.queue__decision--none {
+  color: var(--ink-quiet);
+}
+
+/* --- One application under review -------------------------------------- */
+
+.review__artwork {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.review__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.review__action {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 15rem;
+}
+
+/* --- Who is signed in --------------------------------------------------- */
+
+.masthead__agent {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.masthead__who {
+  color: var(--ink-secondary);
+  font-size: 0.9375rem;
+}
+
+@media (max-width: 640px) {
+  .queue thead {
+    display: none;
+  }
+
+  .queue tbody tr {
+    display: block;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--divider);
+  }
+
+  .queue th,
+  .queue td {
+    display: block;
+    border: 0;
+    padding: 4px 0;
+  }
+}

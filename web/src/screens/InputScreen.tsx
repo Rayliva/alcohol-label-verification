@@ -74,6 +74,7 @@ export function InputScreen({
   onImage,
   onSubmit,
   onBatch,
+  onCancel,
 }: {
   beverageTypes: BeverageTypeOption[];
   beverageType: string;
@@ -84,6 +85,8 @@ export function InputScreen({
   onImage: (file: File | null) => void;
   onSubmit: () => void;
   onBatch?: () => void;
+  /** Back to the queue. Absent on the first screen an agent ever sees. */
+  onCancel?: () => void;
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -117,6 +120,11 @@ export function InputScreen({
   return (
     <div className="two-column">
       <div className="stack">
+        {onCancel ? (
+          <button className="button button--quiet" type="button" onClick={onCancel}>
+            ← Back to the queue
+          </button>
+        ) : null}
         <section className="card" aria-labelledby="artwork-heading">
           <h2 id="artwork-heading">1. The label artwork</h2>
           <p className="help">A photograph or an export of the label. JPG or PNG.</p>

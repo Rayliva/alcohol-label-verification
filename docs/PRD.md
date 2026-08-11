@@ -173,10 +173,10 @@ Real photographs serve as qualitative smoke tests only, excluded from the accura
 
 | # | Excluded | Reason |
 |---|---|---|
-| 1 | Authentication, accounts, user management | Not required for a prototype; large build cost |
+| 1 | Accounts, user management, password reset | Not required for a prototype; large build cost. A single shared agent credential *is* built, because the deployed URL is public — a gate, not an identity system |
 | 2 | Persistent storage / document retention | Brief: "not storing anything sensitive." Revisit only if core lands early |
 | 3 | COLA integration | Explicitly ruled out in the brief |
-| 4 | Multi-user, roles, queue assignment | Queue management belongs to COLA, which is out |
+| 4 | Multiple roles, per-agent queue assignment | Assignment belongs to COLA, which is out. One role, one shared queue. No applicant persona: the brief has no such user, and inventing one to justify a portal is scope it cannot defend |
 | 5 | Analytics, reporting, audit history | Not requested |
 | 6 | Native mobile | Desktop web only; agents work at desks |
 | 7 | Absolute millimetre type-size verification | Physically underivable from an uncalibrated image. Proportional check ships instead |

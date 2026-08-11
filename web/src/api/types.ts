@@ -81,3 +81,28 @@ export const EMPTY_DECLARED: DeclaredFields = {
   bottler_address: "",
   country_of_origin: "",
 };
+
+
+/** A row in the review queue. Deliberately without the evidence crops: the
+ * table needs a verdict and a timing, not a megabyte of images per row. */
+export interface QueueRow {
+  id: string;
+  brand: string;
+  beverage_type: string;
+  outcome: "pass" | "needs_review" | "fail" | "unreadable";
+  processing_ms: number | null;
+  source: "seeded" | "uploaded";
+  decision: { action: string; note: string; decided_by: string } | null;
+}
+
+export interface QueueListing {
+  items: QueueRow[];
+  counts: Record<string, number>;
+  awaiting_decision: number;
+}
+
+export interface QueueItemDetail extends QueueRow {
+  result: VerificationResponse | null;
+  unreadable: { code: string; message: string; what_to_do: string } | null;
+  has_image: boolean;
+}

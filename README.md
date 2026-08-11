@@ -324,8 +324,8 @@ for unreadable images.
 | | Why |
 |---|---|
 | **Wine and malt rule content** | Spirits is the type the brief exemplifies and the only one with no ABV conditional. The engine reads all three from configuration and the UI disables the other two *with the reason attached*. Shipping spirits complete beats three types half-finished |
-| **Authentication** | Not requested, and real auth means storing credentials, which contradicts storing nothing. An optional "your name or initials" attributes overrides within a session |
-| **Persistence** | The brief says not to store anything sensitive. Nothing is stored — a restart loses in-flight batch jobs, and the API says so when asked about one |
+| **Real authentication** | The deployed URL is public, so there is a gate: one shared agent credential from the environment, in a signed HttpOnly cookie. That is all it is. No accounts, no password hash at rest, no reset, no roles — none of which the brief asks for, and all of which would mean storing credentials. It keeps the queue off the open web; it is not an identity system, and anyone holding the credential is simply "the agent" |
+| **Persistence** | The brief says not to store anything sensitive. Nothing is stored. The review queue is seeded at boot from results recorded at build time and lives in memory, so a restart loses uploads and decisions and returns it to that seeded state — the screen says so rather than implying otherwise. In-flight batch jobs are lost too, and the API says so when asked about one |
 | **Absolute millimetre type size** | Physically underivable from an uncalibrated image. The proportional proxy ships instead, documented as a proxy |
 | **PDF upload** | The design handoff lists it; the brief does not. A PDF is rejected by name — "This is a PDF… export the artwork as a JPG or PNG" — rather than failing generically |
 | **Image preprocessing (deskew, glare removal)** | The quality gate detects and reports these; correcting them is Phase 4 |

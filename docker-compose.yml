@@ -1,6 +1,6 @@
 # The one-command path for booting the stack:
 #
-#   ANTHROPIC_API_KEY=sk-ant-... docker compose up
+#   AGENT_USERNAME=agent AGENT_PASSWORD=... ANTHROPIC_API_KEY=sk-ant-... docker compose up
 #
 # Serves the API and the UI at http://localhost:8000 with OCR_ENGINE=fake, so
 # no Cloud Vision account is needed and no OCR traffic leaves the machine.
@@ -37,6 +37,10 @@ services:
       # (.claude/rules/secrets.md). The Cloud Vision one is genuinely optional
       # here; the Anthropic one is not — see the note above.
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      # The app will not start without these — see .env.example.
+      AGENT_USERNAME: ${AGENT_USERNAME:-}
+      AGENT_PASSWORD: ${AGENT_PASSWORD:-}
+      SESSION_SECRET: ${SESSION_SECRET:-}
       GOOGLE_APPLICATION_CREDENTIALS_JSON: ${GOOGLE_APPLICATION_CREDENTIALS_JSON:-}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
