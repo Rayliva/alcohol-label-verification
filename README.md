@@ -76,18 +76,38 @@ Two numbers, because one of them would be misleading on its own.
 | **False PASS on a government warning violation** | **0** | The error this product exists to prevent |
 
 All three end-to-end misses are on the warning's *geometric* checks, where the
-measurement degrades before the text does. They are not equally benign, and one
-is worse than the sentence that used to sit here admitted:
+measurement degrades before the text does. All three now land on **needs
+review** — a person is asked to look — rather than on a wrong verdict:
 
 | Label | Expected | Got | |
 |---|---|---|---|
-| `t4-blur-light` | pass | **fail** | A **false FAIL**. Light blur smears the strokes, so bold detection reads 0.90x the surrounding weight and contrast reads 2.8 to 1. Both measurements are describing the photograph, not the label |
+| `t4-blur-light` | pass | needs review | Too soft to measure stroke weight, so it is not measured. Until 2026-08-11 this was a **false FAIL** — see below |
 | `t4-skew` | pass | needs review | Compliant label flagged for a human. The intended behaviour when a measurement is uncertain |
 | `t2-warning-too-small` | fail | needs review | A real violation under-called. Flagged rather than failed, so it still reaches an agent |
 
-Zero false PASS holds: nothing non-compliant was waved through. But a false FAIL
-on a compliant label is the failure Dave Morrison described, and the honest
-reading is that the geometric checks are the weakest part of this build.
+Zero false PASS holds, and there is no false FAIL: nothing non-compliant was
+waved through, and no compliant label was rejected.
+
+**Why `t4-blur-light` used to fail.** Bold is measured as the stroke weight of
+`GOVERNMENT WARNING` relative to the text around it. Blur smears heading and
+body toward the same apparent thickness, so the ratio does not merely degrade —
+it inverts. On this corpus a compliant label reads 1.35, a genuinely un-bold one
+1.06, and a compliant one photographed slightly soft **0.90**, below the real
+defect. A verdict drawn from that describes the photograph, not the label.
+
+Readable and measurable are now separate bars. Focus separates them cleanly —
+the soft label reads 5.19 where every other compliant label sits at 12.11–15.62
+and all three genuine warning defects at 13.51–15.43 — so below 8.0 the fragile
+measurements are simply not reported, and the check asks for a human instead.
+A withheld measurement can only become "look at this", never a pass, so this
+cannot hide a violation; it can only stop inventing one.
+
+Text height is left alone: it survives softness where stroke weight does not.
+
+**These checks remain the weakest part of the build.** They are proxies —
+relative stroke weight for boldness, proportional height for type size — and
+both degrade before the text does. The remaining under-call above
+(`t2-warning-too-small`) is one of them.
 
 ### Against ground truth we did not write
 
@@ -103,7 +123,12 @@ disagreements are worth more than the number:
 - **Three are this tool refusing to guess.** Blurred labels where the warning
   text cannot be read. That set expects a verdict; this tool asks for a better
   photograph, because guessing at warning text is the one thing it must not do.
-- **Three are genuinely open** — the same geometric checks named above.
+- **Three are genuinely open** — the same geometric checks named above. All
+  three are flagged for review rather than decided wrongly: two compliant
+  labels this tool will not commit to (`026_dim` at focus 6.23, below the
+  measurement bar, and `027_curved` whose bold reading lands in the review
+  band), and one real violation under-called (`016_warning_tiny`), which still
+  reaches an agent.
 
 That set also found two real defects on arrival: a country of origin declared
 as `PRODUCT OF ENGLAND` failing against a label reading `ENGLAND`, and an
