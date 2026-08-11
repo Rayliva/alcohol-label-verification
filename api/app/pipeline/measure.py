@@ -22,6 +22,7 @@ import math
 from PIL import Image
 
 from app.ocr.base import BoundingBox, OcrResult, TextBlock
+from app.pipeline.quality import assess
 from app.rules.types import LayoutMetrics
 from app.rules.warning import STATUTORY_WARNING, WARNING_PREFIX
 
@@ -310,12 +311,33 @@ def _merge(blocks: list[TextBlock]) -> TextBlock:
     )
 
 
+# Readable and measurable are different bars. Stroke weight is the most
+# fragile thing here: blur smears the bold heading and the body text toward the
+# same apparent thickness, so the ratio collapses and, past a point, inverts. On
+# the corpus a compliant label reads 1.35, a genuinely un-bold one 1.06, and a
+# compliant one photographed slightly soft 0.90 — below the real defect.
+#
+# Measured focus (app/pipeline/quality.py) separates them cleanly: the soft
+# label reads 5.19 while every other compliant label sits at 12.11-15.62 and all
+# three genuine warning defects at 13.51-15.43. 8.0 is the geometric midpoint of
+# 5.19 and 12.11, ~1.5x either side, and well clear of every real defect.
+MIN_FOCUS_FOR_GEOMETRY = 8.0
+
+
 def measure(
     image: Image.Image, ocr: OcrResult, detected: dict[str, str | None] | None = None
 ) -> LayoutMetrics:
-    """Everything the geometric warning checks need, or None where unavailable."""
+    """Everything the geometric warning checks need, or None where unavailable.
+
+    Fine measurements are withheld from an image too soft to support them. The
+    checks then take the no-measurement path and ask a person to look, which is
+    the honest answer — and cannot become a PASS, so nothing is hidden.
+    """
     line_heights = [estimated_line_height(b) for b in ocr.blocks if b.text.strip()]
     median_height = _median(line_heights)
+
+    # Text height survives softness; stroke weight and contrast do not.
+    fine_detail_is_trustworthy = assess(image).focus >= MIN_FOCUS_FOR_GEOMETRY
 
     warnings = warning_blocks(ocr)
     warning_height: float | None = None
@@ -334,8 +356,9 @@ def measure(
                 min(image.height, box.bottom + 6),
             )
         )
-        warning_contrast = contrast_ratio(region, white_point=_label_white_point(image))
-        stroke_ratio = _prefix_stroke_ratio(image, block, warning_height)
+        if fine_detail_is_trustworthy:
+            warning_contrast = contrast_ratio(region, white_point=_label_white_point(image))
+            stroke_ratio = _prefix_stroke_ratio(image, block, warning_height)
 
         # Every line of the warning leaves the baseline, not only the line
         # carrying the prefix. A shrunken warning wraps onto more lines, so
