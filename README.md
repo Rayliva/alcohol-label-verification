@@ -89,11 +89,19 @@ Zero false PASS holds, and there is no false FAIL: nothing non-compliant was
 waved through, and no compliant label was rejected.
 
 **Why `t4-blur-light` used to fail.** Bold is measured as the stroke weight of
-`GOVERNMENT WARNING` relative to the text around it. Blur smears heading and
-body toward the same apparent thickness, so the ratio does not merely degrade —
-it inverts. On this corpus a compliant label reads 1.35, a genuinely un-bold one
-1.06, and a compliant one photographed slightly soft **0.90**, below the real
-defect. A verdict drawn from that describes the photograph, not the label.
+`GOVERNMENT WARNING` relative to the text around it. Softening the image does
+not merely degrade that ratio, it inverts it: measured on this corpus a
+compliant label reads 1.35, a genuinely un-bold one 1.06, and a compliant one
+photographed slightly soft **0.90** — below the real defect. A verdict drawn
+from that describes the photograph, not the label.
+
+The mechanism is not settled. Convergence toward 1.0 would be unsurprising;
+crossing *below* the un-bold case is not, and the likeliest explanation is that
+blur bridges the tight gaps between lowercase letters in the body text, merging
+them into longer runs and inflating the denominator, while widely-set capitals
+in the heading bridge far less. That has not been measured carefully enough to
+publish as fact, which is why the threshold below rests on the three readings
+above rather than on a theory of why they move.
 
 Readable and measurable are now separate bars. Focus separates them cleanly —
 the soft label reads 5.19 where every other compliant label sits at 12.11–15.62
