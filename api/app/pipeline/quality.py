@@ -12,11 +12,17 @@ Two passes. Image statistics before OCR — resolution, focus, exposure, noise,
 glare, whether the label runs off the frame — then the OCR result itself,
 which is the strongest evidence available about whether text could be read.
 
+Focus and exposure are separate faults. Measuring sharpness on the raw image
+conflates them — dimming a photograph scales its high-frequency energy down
+without moving a single edge — so focus is scaled by the image's white point
+and exposure is judged on its own. Reporting the wrong one sends an agent to
+re-shoot for the wrong reason.
+
 Thresholds were measured against tier 4 of the corpus, which is half
-degraded-but-readable and half unreadable by construction, and against tiers 1-3
-and 5 to confirm they do not fire on labels that are fine. The numbers are
-recorded in docs/specs/pipeline.md and re-derived by
-`python -m app.pipeline.quality --calibrate`.
+degraded-but-readable and half unreadable by construction, and against tiers
+1-3 and 5 to confirm they do not fire on labels that are fine. The numbers and
+the method are recorded in docs/specs/pipeline.md 2.1, along with one figure
+that is not reproducible here and a known limitation of the measure.
 
 See docs/specs/pipeline.md 2.1
 """
@@ -35,10 +41,20 @@ from app.ocr.base import OcrResult
 # downscaled-but-readable variant survives at 770.
 MIN_LONG_EDGE = 700
 
-# High-frequency energy: the standard deviation of (image - blurred image).
-# Sharp text scores 15-20 on this corpus, a light focus miss 5.4, and an image
-# blurred past recovery 0.07.
-MIN_HIGH_FREQUENCY = 3.0
+# Focus, normalised for exposure so a dark photograph is not mistaken for a
+# soft one. Dimming scales high-frequency energy down with everything else, so
+# the raw measure reported sharp-but-underexposed labels as blurry — sending an
+# agent to re-shoot for focus when they needed to turn on a light.
+#
+# Reproducible on corpus/out (see tests/unit/test_quality.py for the synthetic
+# cases): t4-blur-heavy 0.07, t4-blur-light 5.19, t4-low-light 15.62,
+# t1-clean-classic-1 15.57. 2.9 is the geometric midpoint of 1.90 — the worst
+# frame that must be refused — and 4.31, the worst that must still be read.
+# That 4.31 is from an external label set not committed here; on committed data
+# alone the worst must-read is t4-blur-light at 5.19, and sqrt(1.90 x 5.19) is
+# 3.14, so the threshold holds either way. docs/specs/pipeline.md 2.1 records a
+# known limitation: blurred + dim + noisy frames can land on either side.
+MIN_FOCUS = 2.9
 
 # Above this, with the overall contrast to match, the frame is sensor noise
 # rather than detail. Clean labels top out near 20.
@@ -66,6 +82,7 @@ class ImageQuality:
     width: int
     height: int
     high_frequency: float
+    focus: float
     mean_luminance: float
     contrast: float
     border_ink: float
@@ -105,15 +122,42 @@ def _border_ink_fraction(grey: Image.Image) -> float:
     return inked / total if total else 0.0
 
 
+def _white_point(grey: Image.Image, ignore_fraction: float = 0.01) -> int:
+    """The luminance the brightest 1% of pixels sit at or above.
+
+    Underexposure scales the whole signal, and the white point scales with it,
+    so dividing by it removes the exposure term from a sharpness measure.
+
+    Normalising by the full min-to-max range instead — what `autocontrast`
+    does — looks equivalent and is not: that range collapses on any *low
+    contrast* image whatever its exposure, handing enormous gain to sensor
+    noise and scoring a badly blurred photograph as sharp.
+    """
+    histogram = grey.histogram()
+    total = sum(histogram)
+    seen = 0
+    for value in range(255, -1, -1):
+        seen += histogram[value]
+        if seen >= total * ignore_fraction:
+            return max(value, 1)
+    return 255
+
+
 def assess(image: Image.Image) -> ImageQuality:
     """Measure the image. No judgement here — see `require_readable`."""
     grey = image.convert("L")
     blurred = grey.filter(ImageFilter.GaussianBlur(2))
     statistics = ImageStat.Stat(grey)
+    # Speckle removed before focus is measured: a median filter takes out
+    # isolated noisy pixels while leaving real edges, so sensor grain cannot be
+    # counted as detail. Then scaled by the white point (below).
+    denoised = grey.filter(ImageFilter.MedianFilter(3))
+    denoised_edges = ImageChops.difference(denoised, denoised.filter(ImageFilter.GaussianBlur(2)))
     return ImageQuality(
         width=image.width,
         height=image.height,
         high_frequency=ImageStat.Stat(ImageChops.difference(grey, blurred)).stddev[0],
+        focus=ImageStat.Stat(denoised_edges).stddev[0] * 255.0 / _white_point(denoised),
         mean_luminance=statistics.mean[0],
         contrast=statistics.stddev[0],
         border_ink=_border_ink_fraction(grey),
@@ -141,7 +185,7 @@ def require_readable(image: Image.Image) -> ImageQuality:
             what_to_do="Re-photograph the bottle in better light, without a flash on the glass.",
         )
 
-    if quality.high_frequency < MIN_HIGH_FREQUENCY:
+    if quality.focus < MIN_FOCUS:
         raise UnreadableImageError(
             code="image_too_blurry",
             message="The image is too blurry to read the text on the label.",

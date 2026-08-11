@@ -40,11 +40,89 @@ reaches a user** (`.claude/rules/error-handling.md`).
 | Code | Detected by | Message names |
 |---|---|---|
 | `image_too_small` | Long edge below 700 px | The actual size and a working size |
-| `image_too_blurry` | Edge-energy below threshold | That a sharper photo at the same angle works |
+| `image_too_blurry` | Edge energy below threshold, measured after the tonal range is stretched so exposure does not masquerade as focus | That a sharper photo at the same angle works |
 | `glare_obscures_text` | A large near-white region covering part of the label | Which part of the label is covered |
 | `image_too_dark` | Mean luminance below threshold | That the photo is underexposed |
 | `no_text_found` | OCR returned nothing usable | That no text could be read at all |
 | `text_unreadable` | OCR confidence far below normal | That the text present could not be read reliably |
+
+**Focus is measured independently of exposure.** Sharpness was originally the
+standard deviation of `image - blur(image)` on the raw greyscale. That measure
+scales with the image's tonal range, so dimming a photograph lowered it without
+any loss of focus, and a sharp label was reported to the agent as *blurry*. An
+agent acting on that re-shoots for focus and hits the same wall, which is the
+failure mode FR-15 exists to prevent.
+
+Focus is now measured on a median-filtered copy, scaled by the image's white
+point — the luminance the brightest 1% of pixels reach. Two deliberate choices:
+
+- **White point, not full range.** Underexposure scales the whole signal, and
+  the white point scales with it, so dividing by it removes the exposure term.
+  Normalising by the min-to-max range instead (what `autocontrast` does) looks
+  equivalent and is not: that range collapses on any *low contrast* frame
+  whatever its exposure, so the gain grows without bound and sensor grain is
+  counted as detail. Measured, that scored a label blurred past reading at
+  9.27 — well clear of any sane threshold — and would have shipped a new
+  wrong-cause failure pointing the other way.
+- **Median filter first.** It removes isolated noisy pixels and leaves real
+  edges, so the grain every phone JPEG carries cannot be read as sharpness.
+
+Calibration, reproducible from this repo — corpus figures from `corpus/out`
+(`python corpus/generate.py --all`), synthetic figures from the fixtures in
+`api/tests/unit/test_quality.py`:
+
+| Image | Focus | Must be |
+|---|---|---|
+| `t4-noise` | 24.45 | read |
+| `t4-near-black` | 15.88 | *refused, as too dark* — see ordering below |
+| `t4-low-light` | 15.62 | read |
+| `t1-clean-classic-1` | 15.57 | read |
+| `t4-jpeg-artefacts`, `t4-downscale`, `t4-skew`, `t4-glare-*` | 12.11 – 13.70 | read |
+| synthetic sharp, and the same label dimmed to 0.14 or grained | 8.05 – 8.36 | read |
+| `t4-blur-light` | 5.19 | read |
+| synthetic: blurred r11, dim **and** grained | 1.90 | refused |
+| synthetic: blurred r11 + grain | 0.57 | refused |
+| `t4-blur-heavy` | 0.07 | refused |
+
+`MIN_FOCUS = 2.9` is the geometric midpoint of 1.90 — the worst frame that must
+be refused — and 4.31, the worst that must still be read. That 4.31 comes from a
+300-label set of externally authored spirits labels carrying angle, glare, low
+light, blur and curvature. **That set is not committed to this repo**, so the
+figure cannot be re-derived here; it is named because it is one endpoint of the
+calculation, not offered as evidence. On committed data alone the worst
+must-read frame is `t4-blur-light` at 5.19, giving √(1.90 × 5.19) = 3.14 — so
+2.9 holds either way, and every other figure above is reproducible here.
+
+**Known limitation: a frame that is blurred, underexposed *and* noisy can still
+be misreported.** Grain surviving the median filter contributes high-frequency
+energy that is indistinguishable from the attenuated real edges of a very dim
+sharp label. Measured on the raw edge statistic, before any normalisation:
+
+| Image | Raw edge energy |
+|---|---|
+| Sharp label dimmed to 0.14 — must be read | 1.082 |
+| Blurred r11 with grain — must be refused | 1.079 |
+
+They are the same number. No threshold on this statistic separates them, and a
+conjunction of the normalised and raw measures cannot either, so the boundary is
+a property of the measure rather than of the cutoff. Composite degradations of
+this kind land on whichever side the threshold happens to fall.
+
+The consequence is bounded: the OCR-side checks (`no_text_found`,
+`text_unreadable`, below) are the backstop, so the failure mode is a *wrong
+cause* on an image that is refused anyway, not a false PASS. That has not been
+measured against a live OCR provider. Separating these properly needs a measure
+that distinguishes coherent edges from isolated grain — a spectral or
+edge-continuity statistic rather than a scalar — which is more than this gate
+warrants today.
+
+Exposure keeps its own separate test. `image_too_dark` requires *both* low
+luminance and low contrast and is checked **before** focus, which is
+load-bearing rather than cosmetic: `t4-near-black` reads 15.88 on the focus
+measure — normalisation does its job even on a near-black frame — so without
+the dark check running first it would be judged perfectly sharp and passed
+through. The raw edge-energy measure is retained for noise detection, where
+absolute magnitude is the point.
 
 These produce `UnreadableImageError`, which the API renders as
 `overall: "unreadable"` with an `error` object. **Unreadable is not FAIL.** A
