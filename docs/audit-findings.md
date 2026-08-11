@@ -13,9 +13,9 @@ The error class this project exists to prevent. These come first, always.
 
 | # | Status | Finding |
 |---|---|---|
-| A1 | **open** | **Import markers are too narrow.** `rules/engine.py` matches only "IMPORTED BY" and "IMPORTED FROM". Real labels read "IMPORTED AND BOTTLED BY", "SOLE U.S. IMPORTER", "IMPORTED EXCLUSIVELY BY". Those skip the country-of-origin check entirely, and the field never appears in the report, so the agent is not told it was skipped |
+| A1 | **fixed** | **Import markers are too narrow.** `rules/engine.py` matches only "IMPORTED BY" and "IMPORTED FROM". Real labels read "IMPORTED AND BOTTLED BY", "SOLE U.S. IMPORTER", "IMPORTED EXCLUSIVELY BY". Those skip the country-of-origin check entirely, and the field never appears in the report, so the agent is not told it was skipped |
 | A2 | **open** | **A missing warning can be reported as unreadable.** The glare gate in `pipeline/quality.py`: on artwork whose background is pure white the threshold clamps to 255, so a blank bottom margin — a label that simply omits its government warning — satisfies both washed-strip conditions and raises `glare_obscures_text`. The label is never checked and the 16.21 violation is never reported. This is the inversion the module's own comment claims to prevent |
-| A3 | **open** | **Volume tolerance is a real allowance.** `SAME_SYSTEM_TOLERANCE` in `rules/match_volume.py` is relative (0.1%) and the comment calls it float slack. For a 1 L bottle it permits 1 mL: declared 1000 mL against a label printing 1001 mL returns PASS, with a reason asserting the volumes are the same |
+| A3 | **fixed** | **Volume tolerance is a real allowance.** `SAME_SYSTEM_TOLERANCE` in `rules/match_volume.py` is relative (0.1%) and the comment calls it float slack. For a 1 L bottle it permits 1 mL: declared 1000 mL against a label printing 1001 mL returns PASS, with a reason asserting the volumes are the same |
 | A4 | **open** | **`field_of_vision` passes on a false premise.** When two of its three fields are absent the survivor set has one member, so it emits PASS stating all three appear on the same side. Separately, `pipeline/measure.py` stamps every field "front" on any image narrower than 1.25:1, so the check cannot fail on a single-panel photo — a measurement that could not be taken, reported as satisfied |
 | A5 | **open** | **Conditional fields skip silently when both documents are blank.** Unreachable today (wine and malt are unavailable) but becomes a false PASS the moment wine ships: wine over 14% with no ABV anywhere, malt with added nonbeverage alcohol. The corpus already contains `t3-wine-over-14-abv-missing` |
 
@@ -23,8 +23,8 @@ The error class this project exists to prevent. These come first, always.
 
 | # | Status | Finding |
 |---|---|---|
-| B1 | **open** | `parse_net_contents` sums every metric quantity it finds. Intended for "1 L 500 mL"; also doubles "70 cl 700 ml" (one volume, two spellings, a normal convention on imports) to 1400 mL |
-| B2 | **open** | `CROSS_SYSTEM_TOLERANCE` (1%) is too tight for "1 PT 9 FL OZ" = 739.34 mL against a declared 750 mL — 1.42% apart, so it fails. That form is named in the module's own docstring as a real one |
+| B1 | **fixed** | `parse_net_contents` sums every metric quantity it finds. Intended for "1 L 500 mL"; also doubles "70 cl 700 ml" (one volume, two spellings, a normal convention on imports) to 1400 mL |
+| B2 | **fixed** | `CROSS_SYSTEM_TOLERANCE` (1%) is too tight for "1 PT 9 FL OZ" = 739.34 mL against a declared 750 mL — 1.42% apart, so it fails. That form is named in the module's own docstring as a real one |
 | B3 | **open** | Aspect ratio alone flips `field_of_vision`. Identical OCR blocks and text: 1000x1400 passes, 1400x800 fails with a confident citation invented by the frame |
 
 ## C. Wrong status or inconsistent output

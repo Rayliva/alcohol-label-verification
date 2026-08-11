@@ -15,6 +15,8 @@ with its country of origin.
 
 from __future__ import annotations
 
+import pytest
+
 from app.rules.engine import Application, LabelObservation, evaluate
 from app.rules.types import Verdict
 
@@ -85,5 +87,59 @@ class TestAnImportMustNameItsCountry:
         report = evaluate(
             Application(beverage_type="spirits", fields=COMPLETE),
             LabelObservation(fields=COMPLETE, layout=None),
+        )
+        assert not [f for f in report.fields if f.field == "country_of_origin"]
+
+
+class TestImportIsRecognisedHoweverItIsWorded:
+    """The first version matched two exact phrases, so a label reading
+    "IMPORTED AND BOTTLED BY" skipped the country check and passed — and the
+    field never appeared in the report, so the agent was not told it had been
+    skipped. Real labels use many wordings."""
+
+    @pytest.mark.parametrize(
+        "bottler",
+        [
+            "IMPORTED BY MERIDIAN SPIRITS IMPORTS, NEWARK, NJ",
+            "IMPORTED AND BOTTLED BY ACME SPIRITS, NEW YORK, NY",
+            "IMPORTED EXCLUSIVELY BY ACME SPIRITS, NEW YORK, NY",
+            "SOLE U.S. IMPORTER: ACME SPIRITS, NEW YORK, NY",
+            "Imported from Scotland by Acme Spirits",
+            "BOTTLED IN SCOTLAND, IMPORTER ACME SPIRITS",
+        ],
+    )
+    def test_an_import_with_no_country_named_fails(self, bottler: str) -> None:
+        label = {**COMPLETE, "bottler_address": bottler}
+        application = {k: v for k, v in label.items() if k != "country_of_origin"}
+        assert (
+            verdict_for("country_of_origin", label=label, application=application) is Verdict.FAIL
+        )
+
+    @pytest.mark.parametrize(
+        "bottler",
+        [
+            "BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+            "DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+            "PRODUCED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+        ],
+    )
+    def test_a_domestic_label_is_still_not_asked_for_a_country(self, bottler: str) -> None:
+        # The reason the field is conditional at all. Demanding a country of
+        # origin of a Kentucky bourbon is a false violation on every domestic
+        # label in the queue.
+        label = {**COMPLETE, "bottler_address": bottler}
+        report = evaluate(
+            Application(beverage_type="spirits", fields=label),
+            LabelObservation(fields=label, layout=None),
+        )
+        assert not [f for f in report.fields if f.field == "country_of_origin"]
+
+    def test_the_word_is_only_looked_for_where_it_means_something(self) -> None:
+        # A brand called "Importers Reserve" is not a customs declaration. The
+        # statement lives on the bottler line, so that is where it is read.
+        label = {**COMPLETE, "brand_name": "IMPORTERS RESERVE"}
+        report = evaluate(
+            Application(beverage_type="spirits", fields=label),
+            LabelObservation(fields=label, layout=None),
         )
         assert not [f for f in report.fields if f.field == "country_of_origin"]

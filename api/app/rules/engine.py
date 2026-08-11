@@ -15,6 +15,7 @@ of a change to three dataclasses and a migration.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 
@@ -85,15 +86,26 @@ class LabelReport:
 
 
 # A label that says who imported it has told us it is an import, whatever the
-# application left blank. Kept to explicit phrases: "importer" alone appears in
-# company names on domestic labels.
-_IMPORT_MARKERS = ("IMPORTED BY", "IMPORTED FROM")
+# application left blank. The first version matched two exact phrases and so
+# missed "IMPORTED AND BOTTLED BY", "IMPORTED EXCLUSIVELY BY" and "SOLE U.S.
+# IMPORTER" — all ordinary wordings — which skipped the country check and
+# passed the label.
+#
+# Matched on the word stem instead, and only on the bottler statement, which is
+# where a customs declaration appears. Searching the whole label would read a
+# brand called "Importers Reserve" as a declaration of foreign origin.
+_IMPORT_WORDS = re.compile(r"\bIMPORT(?:ED|ER|ERS)\b", re.IGNORECASE)
+
+# Only these fields can carry the statement. Kept explicit rather than scanning
+# everything, so a new field cannot silently start triggering customs rules.
+_IMPORT_STATEMENT_FIELDS = ("bottler_address", "country_of_origin")
 
 
 def _declares_an_import(observation: LabelObservation) -> bool:
     """Whether the label itself says the product was imported."""
-    text = " ".join(str(v) for v in observation.fields.values() if v).upper()
-    return any(marker in text for marker in _IMPORT_MARKERS)
+    return any(
+        _IMPORT_WORDS.search(str(observation.get(name) or "")) for name in _IMPORT_STATEMENT_FIELDS
+    )
 
 
 def _applies(

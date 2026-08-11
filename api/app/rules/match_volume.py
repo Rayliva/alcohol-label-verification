@@ -65,12 +65,26 @@ _QUANTITY = re.compile(
     re.IGNORECASE,
 )
 
-# Two statements in the same system should be the same printed number; this is
-# float slack, not a real allowance.
-SAME_SYSTEM_TOLERANCE = 0.001
+# Two statements in the same system should be the same printed number, so this
+# is float slack and nothing more — an absolute half-millilitre, not a fraction.
+# As a relative 0.1% it grew with the bottle: on a litre it permitted a whole
+# millilitre, so a label printing 1001 mL passed against a declared 1000 mL
+# under a reason asserting the two were the same volume.
+SAME_SYSTEM_EPSILON_ML = 0.5
+
+# Two parsed quantities within this of each other are the same statement
+# written twice rather than two volumes to add together.
+SAME_VOLUME_EPSILON_ML = 0.5
 # Across systems the label is a rounded conversion of the same bottle:
 # 750 mL prints as "25.4 fl oz", which is 751.17 mL.
 CROSS_SYSTEM_TOLERANCE = 0.01
+# Beyond that but still close, a customary statement may be a different
+# rounding convention rather than a different bottle. Too far to call a match,
+# too close to accuse — so a person decides. Two real forms fix the boundary:
+# "1 PT 9 FL OZ" is 25 fl oz = 739.3 mL against a declared 750 mL, 1.4% out and
+# a form this module's docstring names; "26 fl oz" is 768.9 mL, 2.5% out and
+# past any rounding explanation. 2% sits between them.
+CROSS_SYSTEM_REVIEW_TOLERANCE = 0.02
 
 
 @dataclass(frozen=True)
@@ -112,7 +126,17 @@ def parse_net_contents(text: str | None) -> NetContents:
     # One statement can carry several units: "1 PT 9 FL OZ" is a real net
     # contents form, and so is "1 L 500 mL". Keeping only the first quantity
     # read that bottle as 473 mL instead of 739 mL.
-    millilitres = sum(quantity * factor for quantity, factor, _ in chosen)
+    #
+    # But summing everything doubles a label that prints one volume in two
+    # spellings — "70 cl 700 ml", "1.75 L (1750 mL)" — which is ordinary on
+    # imported spirits. Equal quantities are the same statement restated, so
+    # they are counted once; genuinely different ones still add.
+    amounts = [quantity * factor for quantity, factor, _ in chosen]
+    distinct: list[float] = []
+    for amount in amounts:
+        if not any(abs(amount - seen) <= SAME_VOLUME_EPSILON_ML for seen in distinct):
+            distinct.append(amount)
+    millilitres = sum(distinct)
 
     return NetContents(text=text, millilitres=millilitres, system=system)
 
@@ -216,7 +240,6 @@ def match_volume(field: str, *, declared: str | None, detected: str | None) -> F
         )
 
     mixed_systems = application.system is not label.system
-    tolerance = CROSS_SYSTEM_TOLERANCE if mixed_systems else SAME_SYSTEM_TOLERANCE
     largest = max(application.millilitres, label.millilitres)
     difference = abs(application.millilitres - label.millilitres)
 
@@ -225,7 +248,26 @@ def match_volume(field: str, *, declared: str | None, detected: str | None) -> F
         f"{_describe(label)}."
     )
 
-    if difference > largest * tolerance:
+    if mixed_systems:
+        # A rounded conversion of the same bottle, a different rounding
+        # convention, or a different fill — in that order of distance.
+        if difference > largest * CROSS_SYSTEM_REVIEW_TOLERANCE:
+            return _result(
+                field, declared, detected, Verdict.FAIL, 1.0, f"{both} These are different volumes."
+            )
+        if difference > largest * CROSS_SYSTEM_TOLERANCE:
+            return _result(
+                field,
+                declared,
+                detected,
+                Verdict.NEEDS_REVIEW,
+                0.5,
+                f"{both} That is close enough to be a rounding convention and far "
+                "enough to be a different fill. Compare it against the bottle.",
+            )
+    elif difference > SAME_SYSTEM_EPSILON_ML:
+        # Same system, so the same bottle prints the same number. Any real gap
+        # is two different volumes, however small.
         return _result(
             field, declared, detected, Verdict.FAIL, 1.0, f"{both} These are different volumes."
         )
