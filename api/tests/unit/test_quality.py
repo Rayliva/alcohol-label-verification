@@ -138,3 +138,60 @@ class TestNoiseIsNotDetail:
 
     def test_grain_alone_does_not_make_a_sharp_label_unreadable(self) -> None:
         require_readable(speckled(sharp_label()))
+
+
+def on_white_stock(warning_present: bool) -> Image.Image:
+    """A label printed on pure white, with or without its warning.
+
+    Carries dense body copy in its upper half so that removing the warning
+    leaves the image sharp — otherwise the focus gate fires first and the case
+    under test never runs.
+    """
+    image = Image.new("RGB", (1000, 1400), "white")
+    draw = ImageDraw.Draw(image)
+    draw.text((80, 120), "OLD TOM DISTILLERY", fill="black")
+    draw.text((80, 200), "Kentucky Straight Bourbon Whiskey", fill="black")
+    draw.text((80, 260), "45% Alc./Vol. (90 Proof)", fill="black")
+    draw.text((80, 320), "750 mL", fill="black")
+    for index in range(18):
+        draw.text((80, 380 + index * 22), WARNING[:96], fill="black")
+    draw.text((80, 800), "Bottled by Old Tom Distillery, Bardstown, Kentucky", fill="black")
+    if warning_present:
+        for index in range(10):
+            draw.text((80, 1120 + index * 22), WARNING[:96], fill="black")
+    return image
+
+
+class TestBlankPaperIsNotAReflection:
+    """A missing warning must reach the rule engine as a violation.
+
+    The glare threshold was clamped to 255 so the check would not be dead code
+    on white stock. That made it worse than dead: a blank bottom margin has
+    mean 255 and no variation, which satisfies both washed-strip conditions —
+    so a label that simply omits its government warning was reported as an
+    image problem and never checked at all. The 16.21 violation disappeared
+    behind a complaint about the photograph.
+
+    Glare is light *brighter than the label's own background*. On pure white
+    there is no headroom above the background, so it cannot be detected, and
+    the README says so. Not detecting it is the honest outcome; inventing it is
+    not.
+    """
+
+    def test_a_white_label_missing_its_warning_is_not_called_glare(self) -> None:
+        require_readable(on_white_stock(warning_present=False))
+
+    def test_a_white_label_with_its_warning_is_readable_too(self) -> None:
+        require_readable(on_white_stock(warning_present=True))
+
+    def test_glare_is_still_caught_where_there_is_headroom_to_see_it(self) -> None:
+        # Cream stock, so a blown-out white band is genuinely brighter than the
+        # label around it and the check has something to measure. Built on the
+        # sharp label so focus is not what fails first.
+        image = on_white_stock(warning_present=True)
+        # Tint the stock so a blown-out band is genuinely brighter than it.
+        image = Image.blend(image, Image.new("RGB", image.size, "#e8e4d8"), 0.35)
+        ImageDraw.Draw(image).rectangle((0, 980, 1000, 1400), fill="white")
+        with pytest.raises(UnreadableImageError) as raised:
+            require_readable(image)
+        assert raised.value.code == "glare_obscures_text"

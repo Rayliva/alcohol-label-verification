@@ -286,10 +286,20 @@ def require_no_glare(image: Image.Image) -> None:
     background = _background_luminance(grey)
     strip_height = max(1, grey.height // GLARE_STRIPS)
 
-    # Clamped, because an 8-bit mean cannot exceed 255. On a label printed on
-    # pure white paper, background + 3 would be 258 and this whole check would
-    # be silently dead code.
-    threshold = min(255.0, max(GLARE_MIN_LUMINANCE, background + GLARE_ABOVE_BACKGROUND))
+    # Glare is light brighter than the label's own background. On stock this
+    # pale there is no headroom left to be brighter in, so it cannot be seen —
+    # and the README records that as a limitation.
+    #
+    # This used to clamp to 255 instead, to stop the check becoming dead code.
+    # That made it worse than dead. A blank margin has mean 255 and no
+    # variation, which satisfies both washed-strip conditions, so a label that
+    # simply *omitted its government warning* was reported as a reflection and
+    # never checked — the violation hidden behind a complaint about the
+    # photograph, which is the inversion this module exists to prevent.
+    if background + GLARE_ABOVE_BACKGROUND > 255.0:
+        return
+
+    threshold = max(GLARE_MIN_LUMINANCE, background + GLARE_ABOVE_BACKGROUND)
 
     washed_strips = []
     for index in range(GLARE_STRIPS // 2, GLARE_STRIPS):
