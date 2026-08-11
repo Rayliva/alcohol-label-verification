@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import statistics
 import sys
 import time
@@ -23,6 +22,8 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from http.cookiejar import CookieJar
 from pathlib import Path
+
+from app.config import settings
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 IMAGES = REPO_ROOT / "corpus" / "out"
@@ -84,12 +85,16 @@ _opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(CookieJ
 
 def sign_in(base: str) -> None:
     """Open a session, or explain exactly what is missing."""
-    username = os.environ.get("AGENT_USERNAME", "")
-    password = os.environ.get("AGENT_PASSWORD", "")
+    # Through settings, not os.environ: pydantic-settings loads .env into the
+    # former only. Reading the environment directly gave a benchmark that saw
+    # nothing locally while the app it was benchmarking saw everything.
+    username = settings.agent_username
+    password = settings.agent_password
     if not username or not password:
         raise SystemExit(
-            "AGENT_USERNAME and AGENT_PASSWORD must be set: the API requires a "
-            "session. Use the same values the target instance was deployed with."
+            "AGENT_USERNAME and AGENT_PASSWORD must be set, in .env or the "
+            "environment: the API requires a session. Use the same values the "
+            "target instance was deployed with."
         )
     request = urllib.request.Request(
         f"{base}/api/login",

@@ -14,9 +14,10 @@ agent confirms or overrides. **The tool advises; the agent decides.**
 
 ## Measured results
 
-Everything below was measured against the deployed instance on **2026-08-09**,
+Everything below was measured against the deployed instance on **2026-08-11**,
 with real Google Cloud Vision OCR and real Claude Haiku 4.5 extraction. Nothing
-here is an estimate.
+here is an estimate. Re-measured that day because the rule engine changed four
+times: published numbers that describe an older build are not measurements.
 
 Reproduce any of it from `api/`, against a running instance with credentials
 and the corpus generated:
@@ -25,7 +26,11 @@ and the corpus generated:
 uv run python -m app.bench.latency --base <url> --count 20    # the latency table
 uv run python -m app.bench.latency --base <url> --accuracy    # end-to-end accuracy
 uv run python -m app.bench.latency --base <url> --batch 200   # throughput
+uv run pytest -q -m accuracy                                  # the rule engine alone
 ```
+
+The first three sign in, so `AGENT_USERNAME` and `AGENT_PASSWORD` must be set
+for the instance being measured.
 
 ### Latency — the brief's most emphasised number
 
@@ -34,9 +39,9 @@ pilot took 30–40 seconds and agents abandoned it.
 
 | | Measured | Target |
 |---|---|---|
-| p50 | **2,430 ms** | — |
-| **p95** | **4,525 ms** | < 5,000 ms |
-| min / max | 1,991 / 4,954 ms | — |
+| p50 | **2,136 ms** | — |
+| **p95** | **2,882 ms** | < 5,000 ms |
+| min / max | 2,004 / 3,110 ms | — |
 
 n = 20 curated labels, sequential, warm instance.
 
@@ -44,15 +49,20 @@ Where the time goes, median per stage, server-side:
 
 | Stage | Median |
 |---|---|
-| Decode | 20 ms |
-| Quality gate | 24 ms |
-| OCR (Cloud Vision) | 227 ms |
-| **Field extraction (LLM)** | **1,664 ms** |
-| Rule engine | 5 ms |
-| Evidence crops | 89 ms |
+| Decode | 21 ms |
+| Quality gate | 74 ms |
+| OCR (Cloud Vision) | 208 ms |
+| **Field extraction (LLM)** | **1,401 ms** |
+| Rule engine | 4 ms |
+| Evidence crops | 64 ms |
 
-The LLM call is 70% of the budget, which is why it never sees pixels — it reads
+The LLM call is 79% of the budget, which is why it never sees pixels — it reads
 OCR text. A vision-model-first design would spend this three to five times over.
+
+The quality gate went from 24 ms to 74 ms when focus and contrast were made
+independent of exposure — a median filter and two histogram passes. Fifty
+milliseconds against a five-second budget, to stop reporting underexposed
+labels as blurry ones and compliant labels as warning violations.
 
 ### Accuracy
 
@@ -62,23 +72,53 @@ Two numbers, because one of them would be misleading on its own.
 |---|---|---|
 | **End to end** | **99.0%** — 291 of 294 field verdicts | Real OCR, real extraction, real verdicts across 49 curated labels |
 | Rule engine alone | **100.0%** — 258 of 258 | OCR and extraction held perfect, so a wrong verdict is attributable to a rule |
+| **Independently authored set** | **22 of 31** | Ground truth this project did not write — see below |
 | **False PASS on a government warning violation** | **0** | The error this product exists to prevent |
 
-All three end-to-end misses are on tier-4 degraded-but-readable images — light
-blur, underexposure, and a photograph at an angle — and all three are on the
-warning's *geometric* checks, where the measurement degrades before the text
-does. None is a missed violation: each is a compliant label flagged for review.
+All three end-to-end misses are on the warning's *geometric* checks, where the
+measurement degrades before the text does. They are not equally benign, and one
+is worse than the sentence that used to sit here admitted:
+
+| Label | Expected | Got | |
+|---|---|---|---|
+| `t4-blur-light` | pass | **fail** | A **false FAIL**. Light blur smears the strokes, so bold detection reads 0.90x the surrounding weight and contrast reads 2.8 to 1. Both measurements are describing the photograph, not the label |
+| `t4-skew` | pass | needs review | Compliant label flagged for a human. The intended behaviour when a measurement is uncertain |
+| `t2-warning-too-small` | fail | needs review | A real violation under-called. Flagged rather than failed, so it still reaches an agent |
+
+Zero false PASS holds: nothing non-compliant was waved through. But a false FAIL
+on a compliant label is the failure Dave Morrison described, and the honest
+reading is that the geometric checks are the weakest part of this build.
+
+### Against ground truth we did not write
+
+The figures above are measured on a corpus this project generated, which is a
+real limitation however carefully it was built. A second set of 31 labels with
+independent ground truth (`samples/`) agrees with **22**. The nine
+disagreements are worth more than the number:
+
+- **Three are a deliberate difference.** `STONE'S THROW` against `Stone's Throw`,
+  `750ML` against `750 mL`, `47%` against `47.0%` — this tool passes them, that
+  set wants them surfaced for review. Dave Morrison's interview is the argument
+  for passing them; caution is the argument for surfacing them.
+- **Three are this tool refusing to guess.** Blurred labels where the warning
+  text cannot be read. That set expects a verdict; this tool asks for a better
+  photograph, because guessing at warning text is the one thing it must not do.
+- **Three are genuinely open** — the same geometric checks named above.
+
+That set also found two real defects on arrival: a country of origin declared
+as `PRODUCT OF ENGLAND` failing against a label reading `ENGLAND`, and an
+imported label naming no country passing clean.
 
 ### Batch throughput
 
 | | Measured |
 |---|---|
-| 200 labels | **69 seconds**, 0 errors |
-| Throughput | 174 labels per minute at 8-way concurrency |
+| 200 labels | **81 seconds**, 0 errors |
+| Throughput | 147.5 labels per minute at 8-way concurrency |
 | Progress | determinate throughout: "47 of 200 checked" |
 
-Peak season sends 200–300 applications at once. That run now takes about a
-minute.
+Peak season sends 200–300 applications at once. Two hundred takes 81 seconds;
+three hundred would take a little over two minutes.
 
 ### What was not measured
 
