@@ -1,0 +1,702 @@
+[
+ {
+  "image": "bulk/B0001_none.jpg",
+  "id": "B0001_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": "dim",
+  "label_printed": {
+   "brand": "COPPER ORCHARD",
+   "class_type": "Bottled in Bond Bourbon Whiskey",
+   "abv": "53.5% Alc./Vol. (107 Proof)",
+   "net_contents": "50 mL",
+   "bottler": "BOTTLED BY COPPER ORCHARD DISTILLERY, MIDDLEBURY, VT",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "COPPER ORCHARD",
+   "class_type": "Bottled in Bond Bourbon Whiskey",
+   "abv": "53.5% Alc./Vol. (107 Proof)",
+   "net_contents": "50 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0002_none.jpg",
+  "id": "B0002_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": "angle",
+  "label_printed": {
+   "brand": "OLD FURROW",
+   "class_type": "Overproof Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "200 mL",
+   "bottler": "DISTILLED BY OLD FURROW SPIRITS CO., WALLA WALLA, WA",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "OLD FURROW",
+   "class_type": "Overproof Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "200 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0003_none.jpg",
+  "id": "B0003_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "label_printed": {
+   "brand": "COPPER RIDGE",
+   "class_type": "Cachaca",
+   "abv": "41.5% Alc./Vol. (83 Proof)",
+   "net_contents": "50 mL",
+   "bottler": "IMPORTED BY VIEUX PORT SELECTIONS, CHICAGO, IL",
+   "origin": "PRODUCT OF BRAZIL",
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "COPPER RIDGE",
+   "class_type": "Cachaca",
+   "abv": "41.5% Alc./Vol. (83 Proof)",
+   "net_contents": "50 mL",
+   "origin": "PRODUCT OF BRAZIL"
+  }
+ },
+ {
+  "image": "bulk/B0004_none.jpg",
+  "id": "B0004_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": "blur",
+  "label_printed": {
+   "brand": "GREY RIDGE",
+   "class_type": "Aged Caribbean Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "50 mL",
+   "bottler": "DISTILLED AND BOTTLED BY GREY RIDGE DISTILLING CO., BROOKLYN, NY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "GREY RIDGE",
+   "class_type": "Aged Caribbean Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "50 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0005_net_contents_format.jpg",
+  "id": "B0005_net_contents_format",
+  "beverage": "spirits",
+  "expected_verdict": "REVIEW",
+  "defect": "net_contents_format",
+  "photo_effect": null,
+  "label_printed": {
+   "brand": "AMBER ORCHARD",
+   "class_type": "Aged Caribbean Rum",
+   "abv": "57.1% Alc./Vol. (114.2 Proof)",
+   "net_contents": "750ML",
+   "bottler": "DISTILLED BY AMBER ORCHARD RUM CO., ASHEVILLE, NC",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "AMBER ORCHARD",
+   "class_type": "Aged Caribbean Rum",
+   "abv": "57.1% Alc./Vol. (114.2 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0006_class_type_mismatch.jpg",
+  "id": "B0006_class_type_mismatch",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "class_type_mismatch",
+  "photo_effect": "angle",
+  "label_printed": {
+   "brand": "BROKEN HAND",
+   "class_type": "Barrel Rested Gin",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "1.75 L",
+   "bottler": "PRODUCED AND BOTTLED BY BROKEN HAND DISTILLERY, BROOKLYN, NY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "BROKEN HAND",
+   "class_type": "Distilled Gin",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "1.75 L",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0007_warning_missing.jpg",
+  "id": "B0007_warning_missing",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "warning_missing",
+  "photo_effect": "angle",
+  "label_printed": {
+   "brand": "NORTH GATE",
+   "class_type": "Aged Dark Rum",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "50 mL",
+   "bottler": "DISTILLED BY NORTH GATE DISTILLING CO., LOUISVILLE, KENTUCKY",
+   "origin": null,
+   "warning_present": false,
+   "warning_text": null,
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "NORTH GATE",
+   "class_type": "Aged Dark Rum",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "50 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0008_warning_low_contrast.jpg",
+  "id": "B0008_warning_low_contrast",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "warning_low_contrast",
+  "photo_effect": "glare",
+  "label_printed": {
+   "brand": "AMBER QUILL",
+   "class_type": "Overproof Rum",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "50 mL",
+   "bottler": "PRODUCED AND BOTTLED BY AMBER QUILL DISTILLING CO., LOUISVILLE, KENTUCKY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "AMBER QUILL",
+   "class_type": "Overproof Rum",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "50 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0009_warning_text_altered.jpg",
+  "id": "B0009_warning_text_altered",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "warning_text_altered",
+  "photo_effect": "dim",
+  "label_printed": {
+   "brand": "WILD LANTERN",
+   "class_type": "Flavored Vodka (Citrus)",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "200 mL",
+   "bottler": "DISTILLED AND BOTTLED BY WILD LANTERN DISTILLERY, BROOKLYN, NY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "WILD LANTERN",
+   "class_type": "Flavored Vodka (Citrus)",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "200 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0010_none.jpg",
+  "id": "B0010_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": "angle",
+  "label_printed": {
+   "brand": "THISTLE CREEK",
+   "class_type": "Aged Dark Rum",
+   "abv": "46% Alc./Vol. (92 Proof)",
+   "net_contents": "375 mL",
+   "bottler": "DISTILLED AND BOTTLED BY THISTLE CREEK RUM CO., LYNCHBURG, TN",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "THISTLE CREEK",
+   "class_type": "Aged Dark Rum",
+   "abv": "46% Alc./Vol. (92 Proof)",
+   "net_contents": "375 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0011_class_type_mismatch.jpg",
+  "id": "B0011_class_type_mismatch",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "class_type_mismatch",
+  "photo_effect": null,
+  "label_printed": {
+   "brand": "BLUE MILL",
+   "class_type": "Reposado Tequila",
+   "abv": "46% Alc./Vol. (92 Proof)",
+   "net_contents": "50 mL",
+   "bottler": "IMPORTED BY WINDWARD SPIRITS CO., MIAMI, FL",
+   "origin": "PRODUCT OF MEXICO",
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "BLUE MILL",
+   "class_type": "Anejo Tequila",
+   "abv": "46% Alc./Vol. (92 Proof)",
+   "net_contents": "50 mL",
+   "origin": "PRODUCT OF MEXICO"
+  }
+ },
+ {
+  "image": "bulk/B0012_none.jpg",
+  "id": "B0012_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "label_printed": {
+   "brand": "GREY HERON",
+   "class_type": "Tennessee Whiskey",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "700 mL",
+   "bottler": "BOTTLED BY GREY HERON DISTILLING CO., BEND, OR",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "GREY HERON",
+   "class_type": "Tennessee Whiskey",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "700 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0013_none.jpg",
+  "id": "B0013_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "label_printed": {
+   "brand": "BLACK FURROW",
+   "class_type": "Blended Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "50 mL",
+   "bottler": "DISTILLED AND BOTTLED BY BLACK FURROW WHISKEY CO., BARDSTOWN, KENTUCKY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "BLACK FURROW",
+   "class_type": "Blended Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "50 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0014_none.jpg",
+  "id": "B0014_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "label_printed": {
+   "brand": "PINE REACH",
+   "class_type": "White Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "1 L",
+   "bottler": "DISTILLED BY PINE REACH RUM CO., AUSTIN, TX",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "PINE REACH",
+   "class_type": "White Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "1 L",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0015_none.jpg",
+  "id": "B0015_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "label_printed": {
+   "brand": "THISTLE FOX",
+   "class_type": "Cachaca",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "375 mL",
+   "bottler": "IMPORTED BY MERIDIAN SPIRITS IMPORTS, NEWARK, NJ",
+   "origin": "PRODUCT OF BRAZIL",
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "THISTLE FOX",
+   "class_type": "Cachaca",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "375 mL",
+   "origin": "PRODUCT OF BRAZIL"
+  }
+ },
+ {
+  "image": "bulk/B0016_warning_illegible_size.jpg",
+  "id": "B0016_warning_illegible_size",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "warning_illegible_size",
+  "photo_effect": null,
+  "label_printed": {
+   "brand": "ELDER MILL",
+   "class_type": "Vodka Distilled from Grain",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "1.75 L",
+   "bottler": "PRODUCED AND BOTTLED BY ELDER MILL DISTILLERY, BETHLEHEM, PA",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 4.0
+  },
+  "cola_application": {
+   "brand": "ELDER MILL",
+   "class_type": "Vodka Distilled from Grain",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "1.75 L",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0017_none.jpg",
+  "id": "B0017_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": "dim",
+  "label_printed": {
+   "brand": "MARSH FURROW",
+   "class_type": "Spiced Rum",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "50 mL",
+   "bottler": "DISTILLED BY MARSH FURROW DISTILLING CO., LYNCHBURG, TN",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "MARSH FURROW",
+   "class_type": "Spiced Rum",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "50 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0018_warning_not_bold.jpg",
+  "id": "B0018_warning_not_bold",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "warning_not_bold",
+  "photo_effect": "dim",
+  "label_printed": {
+   "brand": "OLD RIDGE",
+   "class_type": "Navy Strength Gin",
+   "abv": "37.5% Alc./Vol. (75 Proof)",
+   "net_contents": "1 L",
+   "bottler": "DISTILLED BY OLD RIDGE GIN CO., MIDDLEBURY, VT",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": false,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "OLD RIDGE",
+   "class_type": "Navy Strength Gin",
+   "abv": "37.5% Alc./Vol. (75 Proof)",
+   "net_contents": "1 L",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0019_class_type_mismatch.jpg",
+  "id": "B0019_class_type_mismatch",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "class_type_mismatch",
+  "photo_effect": "blur",
+  "label_printed": {
+   "brand": "RED REACH",
+   "class_type": "Navy Strength Gin",
+   "abv": "46% Alc./Vol. (92 Proof)",
+   "net_contents": "200 mL",
+   "bottler": "PRODUCED AND BOTTLED BY RED REACH SPIRITS CO., HOOD RIVER, OR",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "RED REACH",
+   "class_type": "Old Tom Gin",
+   "abv": "46% Alc./Vol. (92 Proof)",
+   "net_contents": "200 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0020_none.jpg",
+  "id": "B0020_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "label_printed": {
+   "brand": "GOLDEN HOLLOW",
+   "class_type": "Tennessee Whiskey",
+   "abv": "41.5% Alc./Vol. (83 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "PRODUCED AND BOTTLED BY GOLDEN HOLLOW WHISKEY CO., ST. HELENA, CA",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "GOLDEN HOLLOW",
+   "class_type": "Tennessee Whiskey",
+   "abv": "41.5% Alc./Vol. (83 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0021_none.jpg",
+  "id": "B0021_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "label_printed": {
+   "brand": "FAR QUILL",
+   "class_type": "Overproof Rum",
+   "abv": "40% Alc./Vol. (80 Proof)",
+   "net_contents": "375 mL",
+   "bottler": "DISTILLED AND BOTTLED BY FAR QUILL DISTILLING CO., BARDSTOWN, KENTUCKY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "FAR QUILL",
+   "class_type": "Overproof Rum",
+   "abv": "40% Alc./Vol. (80 Proof)",
+   "net_contents": "375 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0022_abv_mismatch.jpg",
+  "id": "B0022_abv_mismatch",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "abv_mismatch",
+  "photo_effect": "curved",
+  "label_printed": {
+   "brand": "Copper Quill",
+   "class_type": "Aged Grape Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "375 mL",
+   "bottler": "BOTTLED BY COPPER QUILL BRANDY CO., LOUISVILLE, KENTUCKY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "Copper Quill",
+   "class_type": "Aged Grape Brandy",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "375 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0023_none.jpg",
+  "id": "B0023_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "label_printed": {
+   "brand": "Green Gate",
+   "class_type": "Apple Brandy",
+   "abv": "41.5% Alc./Vol. (83 Proof)",
+   "net_contents": "1 L",
+   "bottler": "DISTILLED AND BOTTLED BY GREEN GATE BRANDY CO., MIDDLEBURY, VT",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "Green Gate",
+   "class_type": "Apple Brandy",
+   "abv": "41.5% Alc./Vol. (83 Proof)",
+   "net_contents": "1 L",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0024_none.jpg",
+  "id": "B0024_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": "angle",
+  "label_printed": {
+   "brand": "SALT BRIDGE",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "46% Alc./Vol. (92 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED BY SALT BRIDGE DISTILLING CO., ST. HELENA, CA",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "SALT BRIDGE",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "46% Alc./Vol. (92 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "bulk/B0025_none.jpg",
+  "id": "B0025_none",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "label_printed": {
+   "brand": "STONE CREEK",
+   "class_type": "Irish Whiskey",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "1.75 L",
+   "bottler": "IMPORTED BY VIEUX PORT SELECTIONS, CHICAGO, IL",
+   "origin": "PRODUCT OF IRELAND",
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "STONE CREEK",
+   "class_type": "Irish Whiskey",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "1.75 L",
+   "origin": "PRODUCT OF IRELAND"
+  }
+ }
+]

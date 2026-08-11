@@ -1,0 +1,901 @@
+[
+ {
+  "image": "001_bourbon_clean.jpg",
+  "id": "001_bourbon_clean",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "notes": "Baseline: all fields match, warning verbatim.",
+  "label_printed": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "002_brandy_clean.jpg",
+  "id": "002_brandy_clean",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "notes": "Baseline brandy label.",
+  "label_printed": {
+   "brand": "Stone's Throw",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY STONE'S THROW DISTILLERY, ST. HELENA, CA",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "Stone's Throw",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "003_rum_clean.jpg",
+  "id": "003_rum_clean",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "notes": "Baseline rum label. Dark background, light text - inverted contrast for OCR.",
+  "label_printed": {
+   "brand": "HALF-LIGHT",
+   "class_type": "Aged Dark Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY HALF-LIGHT DISTILLING CO., PORTLAND, OR",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "HALF-LIGHT",
+   "class_type": "Aged Dark Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "004_gin_clean.jpg",
+  "id": "004_gin_clean",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "notes": "Baseline import with country of origin present.",
+  "label_printed": {
+   "brand": "NORTHFIELD",
+   "class_type": "London Dry Gin",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "700 mL",
+   "bottler": "DISTILLED BY NORTHFIELD DISTILLERY CO., LONDON, ENGLAND",
+   "origin": "PRODUCT OF ENGLAND",
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "NORTHFIELD",
+   "class_type": "London Dry Gin",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "700 mL",
+   "origin": "PRODUCT OF ENGLAND"
+  }
+ },
+ {
+  "image": "005_scotch_clean.jpg",
+  "id": "005_scotch_clean",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": null,
+  "notes": "Baseline imported single malt.",
+  "label_printed": {
+   "brand": "GLEN MIRAVAL",
+   "class_type": "Single Malt Scotch Whisky",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "IMPORTED BY MERIDIAN SPIRITS IMPORTS, NEWARK, NJ",
+   "origin": "PRODUCT OF SCOTLAND",
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "GLEN MIRAVAL",
+   "class_type": "Single Malt Scotch Whisky",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "origin": "PRODUCT OF SCOTLAND"
+  }
+ },
+ {
+  "image": "006_abv_mismatch.jpg",
+  "id": "006_abv_mismatch",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "abv_mismatch",
+  "photo_effect": null,
+  "notes": "Label says 45%/90 proof; application says 40%/80 proof.",
+  "label_printed": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "40% Alc./Vol. (80 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "007_proof_inconsistent.jpg",
+  "id": "007_proof_inconsistent",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "internal_proof_inconsistency",
+  "photo_effect": null,
+  "notes": "Proof does not equal 2x ABV. Internal inconsistency on the label itself.",
+  "label_printed": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (80 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "008_brand_mismatch.jpg",
+  "id": "008_brand_mismatch",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "brand_mismatch",
+  "photo_effect": null,
+  "notes": "Genuinely different brand name, not a formatting difference.",
+  "label_printed": {
+   "brand": "Stone's Throw",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY STONE'S THROW DISTILLERY, ST. HELENA, CA",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "Stonesthrow Distillery",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "009_missing_net_contents.jpg",
+  "id": "009_missing_net_contents",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "missing_net_contents",
+  "photo_effect": null,
+  "notes": "Net contents absent from the label entirely.",
+  "label_printed": {
+   "brand": "HALF-LIGHT",
+   "class_type": "Aged Dark Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": null,
+   "bottler": "DISTILLED AND BOTTLED BY HALF-LIGHT DISTILLING CO., PORTLAND, OR",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "HALF-LIGHT",
+   "class_type": "Aged Dark Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": null,
+   "origin": null
+  }
+ },
+ {
+  "image": "010_missing_bottler.jpg",
+  "id": "010_missing_bottler",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "missing_bottler",
+  "photo_effect": null,
+  "notes": "No name and address of bottler/producer.",
+  "label_printed": {
+   "brand": "Stone's Throw",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "bottler": null,
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "Stone's Throw",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "011_missing_origin.jpg",
+  "id": "011_missing_origin",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "missing_country_of_origin",
+  "photo_effect": null,
+  "notes": "Imported Scotch with no country of origin statement.",
+  "label_printed": {
+   "brand": "GLEN MIRAVAL",
+   "class_type": "Single Malt Scotch Whisky",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "IMPORTED BY MERIDIAN SPIRITS IMPORTS, NEWARK, NJ",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "GLEN MIRAVAL",
+   "class_type": "Single Malt Scotch Whisky",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "012_class_type_mismatch.jpg",
+  "id": "012_class_type_mismatch",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "class_type_mismatch",
+  "photo_effect": null,
+  "notes": "Label says London Dry Gin; application declares Old Tom Gin.",
+  "label_printed": {
+   "brand": "NORTHFIELD",
+   "class_type": "London Dry Gin",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "700 mL",
+   "bottler": "DISTILLED BY NORTHFIELD DISTILLERY CO., LONDON, ENGLAND",
+   "origin": "PRODUCT OF ENGLAND",
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "NORTHFIELD",
+   "class_type": "Old Tom Gin",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "700 mL",
+   "origin": "PRODUCT OF ENGLAND"
+  }
+ },
+ {
+  "image": "013_warning_missing.jpg",
+  "id": "013_warning_missing",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "warning_missing",
+  "photo_effect": null,
+  "notes": "No health warning statement at all.",
+  "label_printed": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+   "origin": null,
+   "warning_present": false,
+   "warning_text": null,
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "014_warning_titlecase.jpg",
+  "id": "014_warning_titlecase",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "warning_not_all_caps",
+  "photo_effect": null,
+  "notes": "'Government Warning:' in title case. Jenny's real-world rejection.",
+  "label_printed": {
+   "brand": "Stone's Throw",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY STONE'S THROW DISTILLERY, ST. HELENA, CA",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "Government Warning: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": false,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "Stone's Throw",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "015_warning_not_bold.jpg",
+  "id": "015_warning_not_bold",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "warning_not_bold",
+  "photo_effect": null,
+  "notes": "Warning present and verbatim but the heading is not bold.",
+  "label_printed": {
+   "brand": "HALF-LIGHT",
+   "class_type": "Aged Dark Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY HALF-LIGHT DISTILLING CO., PORTLAND, OR",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": false,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "HALF-LIGHT",
+   "class_type": "Aged Dark Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "016_warning_tiny.jpg",
+  "id": "016_warning_tiny",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "warning_illegible_size",
+  "photo_effect": null,
+  "notes": "Warning shrunk below legible size.",
+  "label_printed": {
+   "brand": "WINDFALL",
+   "class_type": "Vodka Distilled from Grain",
+   "abv": "40% Alc./Vol. (80 Proof)",
+   "net_contents": "1 L",
+   "bottler": "DISTILLED AND BOTTLED BY WINDFALL DISTILLERY, HOOD RIVER, OR",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 4.0
+  },
+  "cola_application": {
+   "brand": "WINDFALL",
+   "class_type": "Vodka Distilled from Grain",
+   "abv": "40% Alc./Vol. (80 Proof)",
+   "net_contents": "1 L",
+   "origin": null
+  }
+ },
+ {
+  "image": "017_warning_truncated.jpg",
+  "id": "017_warning_truncated",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "warning_text_altered",
+  "photo_effect": null,
+  "notes": "Dropped 'because of the risk of birth defects'.",
+  "label_printed": {
+   "brand": "NORTHFIELD",
+   "class_type": "London Dry Gin",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "700 mL",
+   "bottler": "DISTILLED BY NORTHFIELD DISTILLERY CO., LONDON, ENGLAND",
+   "origin": "PRODUCT OF ENGLAND",
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "NORTHFIELD",
+   "class_type": "London Dry Gin",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "700 mL",
+   "origin": "PRODUCT OF ENGLAND"
+  }
+ },
+ {
+  "image": "018_warning_paraphrased.jpg",
+  "id": "018_warning_paraphrased",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "warning_text_altered",
+  "photo_effect": null,
+  "notes": "Reworded but semantically similar. Exact-match check must still reject.",
+  "label_printed": {
+   "brand": "GLEN MIRAVAL",
+   "class_type": "Single Malt Scotch Whisky",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "IMPORTED BY MERIDIAN SPIRITS IMPORTS, NEWARK, NJ",
+   "origin": "PRODUCT OF SCOTLAND",
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) Per the Surgeon General, pregnant women should avoid alcoholic beverages due to the risk of birth defects. (2) Drinking alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "GLEN MIRAVAL",
+   "class_type": "Single Malt Scotch Whisky",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "origin": "PRODUCT OF SCOTLAND"
+  }
+ },
+ {
+  "image": "019_warning_faint.jpg",
+  "id": "019_warning_faint",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "warning_low_contrast",
+  "photo_effect": null,
+  "notes": "Warning printed in pale gray - readable by OCR but not conspicuous.",
+  "label_printed": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "020_brand_case_only.jpg",
+  "id": "020_brand_case_only",
+  "beverage": "spirits",
+  "expected_verdict": "REVIEW",
+  "defect": "brand_case_difference",
+  "photo_effect": null,
+  "notes": "Dave's case: same brand, different capitalization. Should not hard-fail.",
+  "label_printed": {
+   "brand": "STONE'S THROW",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY STONE'S THROW DISTILLERY, ST. HELENA, CA",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "Stone's Throw",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "021_net_contents_format.jpg",
+  "id": "021_net_contents_format",
+  "beverage": "spirits",
+  "expected_verdict": "REVIEW",
+  "defect": "net_contents_format",
+  "photo_effect": null,
+  "notes": "Same quantity, different formatting.",
+  "label_printed": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750ML",
+   "bottler": "DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "022_abv_rounding.jpg",
+  "id": "022_abv_rounding",
+  "beverage": "spirits",
+  "expected_verdict": "REVIEW",
+  "defect": "abv_precision",
+  "photo_effect": null,
+  "notes": "47 vs 47.0 - numerically identical, textually different.",
+  "label_printed": {
+   "brand": "NORTHFIELD",
+   "class_type": "London Dry Gin",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "700 mL",
+   "bottler": "DISTILLED BY NORTHFIELD DISTILLERY CO., LONDON, ENGLAND",
+   "origin": "PRODUCT OF ENGLAND",
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "NORTHFIELD",
+   "class_type": "London Dry Gin",
+   "abv": "47.0% Alc./Vol. (94 Proof)",
+   "net_contents": "700 mL",
+   "origin": "PRODUCT OF ENGLAND"
+  }
+ },
+ {
+  "image": "023_punctuation_diff.jpg",
+  "id": "023_punctuation_diff",
+  "beverage": "spirits",
+  "expected_verdict": "REVIEW",
+  "defect": "brand_punctuation",
+  "photo_effect": null,
+  "notes": "Hyphen present in the application, absent on the label.",
+  "label_printed": {
+   "brand": "HALF LIGHT",
+   "class_type": "Aged Dark Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY HALF-LIGHT DISTILLING CO., PORTLAND, OR",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "HALF-LIGHT",
+   "class_type": "Aged Dark Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "024_angle.jpg",
+  "id": "024_angle",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": "angle",
+  "notes": "Clean label photographed off-axis.",
+  "label_printed": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "025_glare.jpg",
+  "id": "025_glare",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": "glare",
+  "notes": "Clean label with specular glare across the upper third.",
+  "label_printed": {
+   "brand": "Stone's Throw",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY STONE'S THROW DISTILLERY, ST. HELENA, CA",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "Stone's Throw",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "026_dim.jpg",
+  "id": "026_dim",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": "dim",
+  "notes": "Clean label, underexposed and slightly blurred.",
+  "label_printed": {
+   "brand": "NORTHFIELD",
+   "class_type": "London Dry Gin",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "700 mL",
+   "bottler": "DISTILLED BY NORTHFIELD DISTILLERY CO., LONDON, ENGLAND",
+   "origin": "PRODUCT OF ENGLAND",
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "NORTHFIELD",
+   "class_type": "London Dry Gin",
+   "abv": "47% Alc./Vol. (94 Proof)",
+   "net_contents": "700 mL",
+   "origin": "PRODUCT OF ENGLAND"
+  }
+ },
+ {
+  "image": "027_curved.jpg",
+  "id": "027_curved",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": "curved",
+  "notes": "Clean label wrapped around a curved can.",
+  "label_printed": {
+   "brand": "HALF-LIGHT",
+   "class_type": "Aged Dark Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY HALF-LIGHT DISTILLING CO., PORTLAND, OR",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "HALF-LIGHT",
+   "class_type": "Aged Dark Rum",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "029_blur.jpg",
+  "id": "029_blur",
+  "beverage": "spirits",
+  "expected_verdict": "PASS",
+  "defect": "none",
+  "photo_effect": "blur",
+  "notes": "Clean label, out of focus with slight camera shake. Still legible.",
+  "label_printed": {
+   "brand": "WINDFALL",
+   "class_type": "Vodka Distilled from Grain",
+   "abv": "40% Alc./Vol. (80 Proof)",
+   "net_contents": "1 L",
+   "bottler": "DISTILLED AND BOTTLED BY WINDFALL DISTILLERY, HOOD RIVER, OR",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "WINDFALL",
+   "class_type": "Vodka Distilled from Grain",
+   "abv": "40% Alc./Vol. (80 Proof)",
+   "net_contents": "1 L",
+   "origin": null
+  }
+ },
+ {
+  "image": "030_blur_heavy.jpg",
+  "id": "030_blur_heavy",
+  "beverage": "spirits",
+  "expected_verdict": "REVIEW",
+  "defect": "image_illegible",
+  "photo_effect": "blur_heavy",
+  "notes": "Too blurred to verify. App should ask for a better image rather than guess - Jenny: agents reject and request a resubmission.",
+  "label_printed": {
+   "brand": "Stone's Throw",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY STONE'S THROW DISTILLERY, ST. HELENA, CA",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "Stone's Throw",
+   "class_type": "Apple Brandy",
+   "abv": "42% Alc./Vol. (84 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "031_blur_warning_titlecase.jpg",
+  "id": "031_blur_warning_titlecase",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "warning_not_all_caps",
+  "photo_effect": "blur",
+  "notes": "Hard case: casing defect must still be caught in a soft-focus photo.",
+  "label_printed": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+   "origin": null,
+   "warning_present": true,
+   "warning_text": "Government Warning: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": false,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "OLD TOM DISTILLERY",
+   "class_type": "Kentucky Straight Bourbon Whiskey",
+   "abv": "45% Alc./Vol. (90 Proof)",
+   "net_contents": "750 mL",
+   "origin": null
+  }
+ },
+ {
+  "image": "028_angle_glare_abv_mismatch.jpg",
+  "id": "028_angle_glare_abv_mismatch",
+  "beverage": "spirits",
+  "expected_verdict": "FAIL",
+  "defect": "abv_mismatch",
+  "photo_effect": "angle",
+  "notes": "Hard case: real defect that must still be caught in a poor photo.",
+  "label_printed": {
+   "brand": "GLEN MIRAVAL",
+   "class_type": "Single Malt Scotch Whisky",
+   "abv": "43% Alc./Vol. (86 Proof)",
+   "net_contents": "750 mL",
+   "bottler": "IMPORTED BY MERIDIAN SPIRITS IMPORTS, NEWARK, NJ",
+   "origin": "PRODUCT OF SCOTLAND",
+   "warning_present": true,
+   "warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+   "warning_all_caps_heading": true,
+   "warning_heading_bold": true,
+   "warning_size_pt": 9.0
+  },
+  "cola_application": {
+   "brand": "GLEN MIRAVAL",
+   "class_type": "Single Malt Scotch Whisky",
+   "abv": "12.5% Alc./Vol.",
+   "net_contents": "750 mL",
+   "origin": "PRODUCT OF SCOTLAND"
+  }
+ }
+]
