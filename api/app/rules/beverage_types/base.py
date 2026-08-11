@@ -41,6 +41,8 @@ class Matcher(StrEnum):
     ABV = "abv"
     VOLUME = "volume"
     WARNING = "warning"
+    # Text, but a "product of"-style preamble is not part of the country.
+    ORIGIN = "origin"
 
 
 @dataclass(frozen=True)

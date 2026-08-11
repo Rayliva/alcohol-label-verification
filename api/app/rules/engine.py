@@ -27,6 +27,7 @@ from app.rules.beverage_types import (
     rules_for,
 )
 from app.rules.match_abv import match_abv
+from app.rules.match_origin import match_origin
 from app.rules.match_text import match_text
 from app.rules.match_volume import match_volume
 from app.rules.types import (
@@ -133,6 +134,8 @@ def evaluate(
             results.append(match_abv(rule.field, declared=declared, detected=detected))
         elif rule.matcher is Matcher.VOLUME:
             results.append(match_volume(rule.field, declared=declared, detected=detected))
+        elif rule.matcher is Matcher.ORIGIN:
+            results.append(match_origin(rule.field, declared=declared, detected=detected))
         else:
             results.append(match_text(rule.field, declared=declared, detected=detected))
 
