@@ -58,9 +58,11 @@ def login(credentials: Credentials, response: Response) -> SessionBody:
         issue_session(credentials.username),
         httponly=True,
         samesite="lax",
-        # Render terminates TLS, so the deployed app is always https. Local
-        # development is not, and a Secure cookie would never be sent.
-        secure=not settings.cors_origins.startswith("http://localhost"),
+        # Secure unless explicitly switched off for local http. This was
+        # derived from the CORS origin string, which on the deployed instance
+        # still began with http://localhost — so the flag was off in
+        # production, over HTTPS, which is exactly where it matters.
+        secure=not settings.insecure_cookies,
         path="/",
     )
     return SessionBody(username=credentials.username)

@@ -146,7 +146,7 @@ class TestRunningABatch:
             "app.api.batch_routes.extract_from_text",
             lambda text, **_: _Extraction(by_text[text]),
         )
-        with TestClient(app) as test_client:
+        with TestClient(app, base_url="https://testserver") as test_client:
             sign_in(test_client)
             yield test_client
 

@@ -30,6 +30,11 @@ from app.pipeline.measure import crop_box, find_block, measure
 from app.rules.engine import Application, LabelObservation, LabelReport, evaluate
 from app.rules.types import FieldResult, Verdict, worst
 
+# Pillow only *raises* above twice its own limit; between one and two times it
+# warns and proceeds, so a ~200M-pixel PNG well under the upload cap would
+# still allocate about a gigabyte on convert. No label needs this many pixels.
+Image.MAX_IMAGE_PIXELS = 50_000_000
+
 # Fields the rule engine knows, in the order the extraction schema supplies them.
 EXTRACTED_FIELDS = (
     "brand_name",

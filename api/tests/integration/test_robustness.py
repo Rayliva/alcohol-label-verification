@@ -222,7 +222,7 @@ class TestServiceFailuresAreTyped:
         monkeypatch.setattr("app.api.routes.get_engine", lambda: ocr)
         monkeypatch.setattr("app.api.routes.extract_from_text", explode)
 
-        with TestClient(app) as client:
+        with TestClient(app, base_url="https://testserver") as client:
             sign_in(client)
             response = client.post(
                 "/api/verify",
@@ -269,7 +269,7 @@ class TestUnreadableResponsesReportTheirCost:
             "app.api.routes.extract_from_text",
             lambda text, **_: labels["t4-tiny"].detected,
         )
-        with TestClient(app) as client:
+        with TestClient(app, base_url="https://testserver") as client:
             sign_in(client)
             response = client.post(
                 "/api/verify",

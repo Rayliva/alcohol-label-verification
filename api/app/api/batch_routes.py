@@ -40,6 +40,18 @@ from app.rules.engine import Application
 router = APIRouter(prefix="/api/batch", tags=["batch"])
 
 
+# Excel and Sheets treat a cell opening with any of these as a formula. Both
+# ends of this file are attacker-reachable: the manifest comes from whoever
+# submitted the batch, and brand_name is OCR of text printed on the artwork.
+# An agent then opens the export.
+_FORMULA_LEAD = ("=", "+", "-", "@", "\t", "\r")
+
+
+def _csv_safe(value: object) -> str:
+    text = "" if value is None else str(value)
+    return "'" + text if text.startswith(_FORMULA_LEAD) else text
+
+
 @router.get("/template", response_class=PlainTextResponse)
 def template() -> PlainTextResponse:
     """The spreadsheet an agent should start from, with one example row."""
@@ -133,7 +145,9 @@ async def start(
     background: BackgroundTasks,
     images: list[UploadFile] = File(default_factory=list),
     manifest: UploadFile = File(...),
-    concurrency: int = Form(8),
+    # Bounded: 0 or negative killed the pool after the request had already
+    # returned 200, and large values remove the deliberate cap on provider calls.
+    concurrency: int = Form(8, ge=1, le=16),
 ) -> dict[str, object]:
     """Start a run. Returns immediately with a job id to poll."""
     upload = await _collect(images, manifest)
@@ -237,12 +251,12 @@ def export(job_id: str) -> PlainTextResponse:
     for row in rows:
         writer.writerow(
             [
-                row.get("application_id", ""),
-                row.get("image", ""),
-                row.get("outcome", ""),
-                row.get("brand_name") or "",
-                row.get("issues", ""),
-                (row.get("error") or {}).get("message", ""),
+                _csv_safe(row.get("application_id", "")),
+                _csv_safe(row.get("image", "")),
+                _csv_safe(row.get("outcome", "")),
+                _csv_safe(row.get("brand_name") or ""),
+                _csv_safe(row.get("issues", "")),
+                _csv_safe((row.get("error") or {}).get("message", "")),
             ]
         )
     return PlainTextResponse(

@@ -45,9 +45,19 @@ def credentials_are_configured() -> bool:
 
 
 def check_credentials(username: str, password: str) -> bool:
-    """Constant-time comparison, so a wrong answer takes as long as a right one."""
-    user_ok = hmac.compare_digest(username or "", settings.agent_username)
-    password_ok = hmac.compare_digest(password or "", settings.agent_password)
+    """Constant-time comparison, so a wrong answer takes as long as a right one.
+
+    Compared as bytes: `compare_digest` raises TypeError on a str holding any
+    non-ASCII character, which turned one accented letter in a username into a
+    500 — and would have locked everyone out permanently had the deployed
+    password contained one.
+    """
+    user_ok = hmac.compare_digest(
+        (username or "").encode("utf-8"), settings.agent_username.encode("utf-8")
+    )
+    password_ok = hmac.compare_digest(
+        (password or "").encode("utf-8"), settings.agent_password.encode("utf-8")
+    )
     return user_ok and password_ok
 
 

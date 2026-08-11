@@ -57,6 +57,11 @@ class Settings(BaseSettings):
     # means everyone signs in again after a restart.
     session_secret: str = ""
 
+    # Drops the Secure flag so a session works over plain http, for local
+    # development only. Its own switch: deriving a cookie flag from an
+    # unrelated setting is how the flag ends up off in production.
+    insecure_cookies: bool = False
+
     # --- Server ---
     cors_origins: str = "http://localhost:5173"
     log_level: str = "INFO"
