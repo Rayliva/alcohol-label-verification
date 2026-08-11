@@ -108,11 +108,34 @@ def _percentile(histogram: list[int], fraction: float) -> float:
     return 255.0
 
 
-def contrast_ratio(region: Image.Image) -> float | None:
-    """WCAG contrast between the darkest and lightest tones present."""
+def _label_white_point(image: Image.Image) -> float:
+    """What white reads as on this photograph, ignoring the brightest 1%."""
+    return max(_percentile(image.convert("L").histogram(), 0.99), 1.0)
+
+
+def contrast_ratio(region: Image.Image, white_point: float | None = None) -> float | None:
+    """WCAG contrast between the darkest and lightest tones present.
+
+    27 CFR 16.22 asks whether the warning separates from its background *on the
+    label*. What we have is a photograph, and WCAG's (L1+0.05)/(L2+0.05) is not
+    scale-invariant: dim the same label and both luminances fall toward zero
+    while the constant stays put, so the ratio collapses toward 1. Measured on
+    one compliant label, exposure alone moved it 4.18 -> 1.48 and turned a
+    correct PASS into a government-warning FAIL — a violation that does not
+    exist, invented by the lighting.
+
+    `white_point` rescales the region as though the label had been exposed
+    properly. It must come from the **whole label**, never from this region:
+    normalising a region against its own range would stretch a genuinely faint
+    warning into a crisp one and delete the very defect this check exists to
+    find.
+    """
     grey = region.convert("L")
     if grey.width < 4 or grey.height < 4:
         return None
+    if white_point and white_point > 0:
+        gain = 255.0 / white_point
+        grey = grey.point(lambda value: min(255, int(value * gain)))
     histogram = grey.histogram()
     dark = _relative_luminance(_percentile(histogram, 0.05))
     light = _relative_luminance(_percentile(histogram, 0.95))
@@ -311,7 +334,7 @@ def measure(
                 min(image.height, box.bottom + 6),
             )
         )
-        warning_contrast = contrast_ratio(region)
+        warning_contrast = contrast_ratio(region, white_point=_label_white_point(image))
         stroke_ratio = _prefix_stroke_ratio(image, block, warning_height)
 
         # Every line of the warning leaves the baseline, not only the line
