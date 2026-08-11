@@ -84,7 +84,24 @@ class LabelReport:
     counts: Mapping[Verdict, int] = field(default_factory=dict)
 
 
-def _applies(rule: FieldRule, declared: str | None, detected: str | None) -> bool:
+# A label that says who imported it has told us it is an import, whatever the
+# application left blank. Kept to explicit phrases: "importer" alone appears in
+# company names on domestic labels.
+_IMPORT_MARKERS = ("IMPORTED BY", "IMPORTED FROM")
+
+
+def _declares_an_import(observation: LabelObservation) -> bool:
+    """Whether the label itself says the product was imported."""
+    text = " ".join(str(v) for v in observation.fields.values() if v).upper()
+    return any(marker in text for marker in _IMPORT_MARKERS)
+
+
+def _applies(
+    rule: FieldRule,
+    declared: str | None,
+    detected: str | None,
+    observation: LabelObservation,
+) -> bool:
     """Whether a conditional field should be checked at all.
 
     Imports, wine above 14%, malt with added nonbeverage ingredients — the
@@ -92,10 +109,25 @@ def _applies(rule: FieldRule, declared: str | None, detected: str | None) -> boo
     conditional field is checked when either document mentions it and skipped
     when neither does. Demanding a country of origin on a Kentucky bourbon would
     be a false violation on every domestic label in the queue.
+
+    One exception, because the label answers the question itself: a bottler
+    statement reading "IMPORTED BY ..." establishes that this *is* an import, so
+    the country of origin is owed even though neither document names one. Left
+    out, an imported label that states no country passes silently — a false
+    PASS on a missing mandatory marking.
     """
     if rule.requirement is not Requirement.CONDITIONAL:
         return True
-    return bool((declared or "").strip() or (detected or "").strip())
+    if (declared or "").strip() or (detected or "").strip():
+        return True
+    return rule.field == "country_of_origin" and _declares_an_import(observation)
+
+
+def _is_owed_on_the_label(rule: FieldRule, observation: LabelObservation) -> bool:
+    """Whether regulation requires this element to appear on the label itself."""
+    if rule.requirement is Requirement.REQUIRED:
+        return True
+    return rule.field == "country_of_origin" and _declares_an_import(observation)
 
 
 def evaluate(
@@ -119,7 +151,33 @@ def evaluate(
 
     for rule in rules.fields:
         declared, detected = application.get(rule.field), observation.get(rule.field)
-        if not _applies(rule, declared, detected):
+        if not _applies(rule, declared, detected, observation):
+            continue
+
+        # A label is not judged against the application alone. Parts of it are
+        # required by regulation whatever the application happens to say, so an
+        # element that is simply not on the label is a violation — not the
+        # "nothing to compare" shrug that comparing two blanks would produce.
+        # The warning has its own matcher, which reports *which* of its
+        # requirements failed; collapsing that to one FAIL would lose the detail.
+        if (
+            rule.matcher is not Matcher.WARNING
+            and not (detected or "").strip()
+            and _is_owed_on_the_label(rule, observation)
+        ):
+            results.append(
+                FieldResult(
+                    field=rule.field,
+                    declared=declared,
+                    detected=detected,
+                    verdict=Verdict.FAIL,
+                    confidence=1.0,
+                    reason=(
+                        f"{rule.display_name} is required on the label "
+                        f"({rule.citation}) and does not appear anywhere on it."
+                    ),
+                )
+            )
             continue
 
         if rule.matcher is Matcher.WARNING:

@@ -36,6 +36,13 @@ Confirmed against Cornell LII, 2026-08-09:
 | Wine ABV | 4.36 | Optional ≤14% if "table wine"/"light wine"; ±1.5 / ±1.0 tolerance |
 | Malt ABV | 7.63 | Required only with added nonbeverage alcohol |
 
+Confirmed against Cornell LII, 2026-08-11:
+
+| Item | Section | Value |
+|---|---|---|
+| Country of origin | 27 CFR 5.69 | **States no requirement.** Its entire text is a cross-reference: "For U.S. Customs and Border Protection (CBP) rules regarding country of origin marking requirements, see the CBP regulations at 19 CFR parts 102 and 134." Citing 5.69 alone as the source of the requirement is misleading |
+| Country of origin marking | 19 CFR 134.11 | "every article of foreign origin (or its container) imported into the United States shall be marked in a conspicuous place as legibly, indelibly, and permanently as the nature of the article (or container) will permit" — in the English name of the country of origin. Exceptions exist under section 304, Tariff Act of 1930, and are not enumerated there |
+
 ## Examples
 
 **Do** — verify before implementing, and record the date:

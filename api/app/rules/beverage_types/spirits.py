@@ -64,7 +64,7 @@ SPIRITS = BeverageRules(
             display_name="Country of origin",
             matcher=Matcher.ORIGIN,
             requirement=Requirement.CONDITIONAL,
-            citation="27 CFR 5.69",
+            citation="27 CFR 5.69, which points to 19 CFR 134.11",
             condition="Required on imported spirits only.",
         ),
         FieldRule(
