@@ -16,8 +16,8 @@ See docs/specs/pipeline.md 2.4
 from __future__ import annotations
 
 import time
-from collections.abc import Callable, Mapping
-from dataclasses import dataclass, field
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass, field, replace
 from io import BytesIO
 
 from PIL import Image, ImageOps, UnidentifiedImageError
@@ -28,6 +28,7 @@ from app.ocr.base import OcrEngine, OcrResult
 from app.pipeline import quality
 from app.pipeline.measure import crop_box, find_block, measure
 from app.rules.engine import Application, LabelObservation, LabelReport, evaluate
+from app.rules.types import FieldResult, Verdict, worst
 
 # Fields the rule engine knows, in the order the extraction schema supplies them.
 EXTRACTED_FIELDS = (
@@ -159,6 +160,50 @@ def _crops(
     return crops, tuple(missing)
 
 
+# Below this, the text behind a field was not read well enough to decide
+# anything on. Measured over the sample set with Cloud Vision: a clean label's
+# worst block reads 0.94-0.96, while degraded ones carry blocks at 0.54 and
+# 0.61. 0.85 sits in that gap with room on both sides.
+MIN_READ_CONFIDENCE = 0.85
+
+
+def temper_by_reading(results: Sequence[FieldResult], ocr: OcrResult) -> list[FieldResult]:
+    """Downgrade verdicts whose evidence was barely legible.
+
+    A verdict means the check ran. If the text it ran against was a guess, the
+    honest answer is that a person should look — not a confident FAIL, which
+    accuses a compliant label, and not a confident PASS, which is worse still
+    because a false PASS is the error this tool exists to prevent.
+
+    Only fields with text to doubt are touched. Whether an *absent* field is a
+    violation is the matcher's business, not this function's.
+    """
+    tempered: list[FieldResult] = []
+    for result in results:
+        block = find_block(ocr, result.detected) if result.detected else None
+        confidence = block.confidence if block else None
+        if (
+            confidence is None
+            or confidence >= MIN_READ_CONFIDENCE
+            or result.verdict is Verdict.NEEDS_REVIEW
+        ):
+            tempered.append(result)
+            continue
+        tempered.append(
+            replace(
+                result,
+                verdict=Verdict.NEEDS_REVIEW,
+                reason=(
+                    f"{result.reason} This text could not be read confidently "
+                    f"({confidence:.0%}), so the finding may be about the "
+                    "photograph rather than the label — compare it against the "
+                    "artwork before deciding."
+                ),
+            )
+        )
+    return tempered
+
+
 def verify(
     image_bytes: bytes,
     application: Application,
@@ -195,6 +240,21 @@ def verify(
     mark = time.perf_counter()
     layout = measure(image, ocr_result, detected)
     report = evaluate(application, LabelObservation(fields=detected, layout=layout))
+    # The rule engine judges text; it has no idea how well that text was read.
+    # Temper its verdicts here, where the OCR result is still in hand, and
+    # recompute the roll-up so the headline follows the tempered fields.
+    tempered = tuple(temper_by_reading(report.fields, ocr_result))
+    if tempered != report.fields:
+        report = replace(
+            report,
+            fields=tempered,
+            overall=worst(
+                [f.verdict for f in tempered] + [c.verdict for c in report.warning_checks]
+            ),
+            counts={
+                verdict: sum(1 for f in tempered if f.verdict is verdict) for verdict in Verdict
+            },
+        )
     rules_ms = (time.perf_counter() - mark) * 1000
 
     mark = time.perf_counter()
