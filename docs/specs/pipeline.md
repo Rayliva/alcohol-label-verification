@@ -15,6 +15,7 @@ sees data.
 
 ```
 image bytes
+  ├─ decode            upright RGB; resample if over MAX_WORKING_EDGE
   ├─ quality gate      readable? if not, stop with a specific reason   (FR-15)
   ├─ OCR               text + bounding boxes
   ├─ extraction        OCR text -> structured fields (LLM, text only)
@@ -22,6 +23,10 @@ image bytes
   ├─ rule engine       fields + metrics -> FieldResult[]               (pure)
   └─ evidence crops    bounding boxes -> one PNG per field             (FR-13)
 ```
+
+Everything after decode sees the same pixels, OCR included. That is the point
+of doing it once and at the front: a quality gate measuring one image while OCR
+reads another is a tool that can report a blur nothing else can see.
 
 The vision model is **not** on this path. It is the escalation route for images
 the quality gate flags as marginal, and it costs seconds we do not have on the
@@ -31,9 +36,42 @@ hot path (tech-spec §Architecture).
 
 ## 2. Behaviour
 
+### 2.0 Decode and resample — `run.py::_decode`
+
+An upload is opened, uprighted from its EXIF orientation tag, and converted to
+RGB. If its long edge is above `MAX_WORKING_EDGE` (2,000 px) it is resampled to
+that edge once, and the resampled bytes are what the OCR engine receives.
+
+**Why 2,000.** It is the top of the range every threshold in this pipeline was
+calibrated against, not a number above it: the largest curated label is 2,000 px
+on its long edge and the largest sample label 1,932. So nothing any threshold
+was measured on is resampled, and anything that is resampled lands inside the
+range the thresholds have evidence for.
+
+**Why at all.** Measured against the deployed instance on 2026-08-11, the same
+label at 1372x1852 and at 4116x5556 came back in 2.7 s and 9.3 s. The quality
+gate went from 302 ms to 2,923 ms and measurement from 299 ms to 2,602 ms, both
+at a resolution neither can use, and both reached the verdict they reach now.
+Afterwards the 22-megapixel photograph has a server-side p50 of 3,313 ms and a
+p95 of 4,231 ms (n=10).
+
+Oversized JPEGs are handed to libjpeg with a draft size first, so they are
+decoded at a half, quarter or eighth of stored size rather than decoded whole
+and then shrunk: 88 ms against 256 ms locally on that photograph.
+
+**Acceptance criteria**
+
+- Given an image at or below 2,000 px on its long edge, when it is decoded,
+  then the pixels and the bytes passed to OCR are unchanged.
+- Given a 4116x5556 photograph, when it is decoded, then the working image is
+  1482x2000 and OCR receives bytes of that size.
+- Given one photograph measured at its native size and after resampling, when
+  the cropped-label check runs on each, then both give the same answer.
+
 ### 2.1 The quality gate — `quality.py`
 
-Runs before OCR, on the decoded image, and again after OCR on what came back.
+Runs before OCR, on the decoded image as §2.0 leaves it, and again after OCR
+on what came back.
 Each failure names its cause and what to do about it. **No generic failure ever
 reaches a user** (`.claude/rules/error-handling.md`).
 
@@ -176,6 +214,15 @@ do not measure.
   request (PRD C-2).
 - **No preprocessing that changes the verdict.** Deskew and contrast help OCR;
   they never rewrite what the label says.
+
+  Resampling (§2.0) is the one exception, and it is stated rather than hidden.
+  It cannot change what the label *says*, but it does change two measurements
+  that are counted in pixels: focus, and the border-ink fraction. Both were
+  brought into line rather than left implicit. The border band is a fraction of
+  the long edge, so the cropped-label check asks the same question at every
+  resolution. Focus is deliberately measured on the resampled image, because
+  the question worth answering is whether the text OCR is about to read is
+  sharp, not whether pixels nobody reads were.
 - **No absolute type-size measurement.** See `rule-engine.md` §4.
 - **No batch orchestration here.** Batch is a layer above, calling `verify` once
   per label.

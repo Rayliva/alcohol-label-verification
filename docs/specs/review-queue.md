@@ -1,6 +1,6 @@
 # Spec: password gate and agent review queue
 
-Status: **draft, awaiting sign-off.** No code written against this yet.
+Status: **implemented and deployed.** Updated 2026-08-11 to match what ships.
 
 Traces to `requirements.md` (Sarah Chen: "An agent pulls up an application, looks
 at the label artwork, and checks that what's on the label matches what's in the
@@ -61,19 +61,29 @@ This spec makes the queue the front door and keeps upload as a secondary action.
 ### 3. Queue screen — the landing screen after sign-in
 
 - A table, one row per application: brand, beverage type, verdict chip, and the
-  measured time ("verified in 3.2 s").
+  decision, if one has been made.
+
+  **No timing column.** These verdicts were recorded at build time rather than
+  computed when the row was opened, so a stopwatch beside them reports the
+  machine that made the recording. The five-second budget is demonstrated where
+  it is actually spent, on the upload screen.
 - **Default sort surfaces `NEEDS_REVIEW` first** — the rows needing human
   judgment are the ones an agent is uniquely needed for.
 - Verdict is carried by icon *and* text *and* colour, never colour alone
   (`.claude/rules/accessibility.md` 5).
-- A "+ Check a label" action leads to the existing upload flow.
+- A "+ Submit new application" action in the masthead leads to the existing
+  upload flow. It sits in the chrome rather than in the queue because it is
+  reachable from every screen, and it is the page's one dominant action.
 
 ### 4. Detail screen
 
 - Reuses the existing `ResultsScreen`: label image with evidence crops, declared
   versus observed side by side, per-field verdict, warning statement called out
   separately.
-- Adds a decision control — approve / reject / override — with an optional note.
+- Adds a decision control, approve or reject, with one optional note that is
+  saved with whichever is pressed. `override` is still what the API records
+  when a flagged label is approved, but it is inferred from the verdict rather
+  than offered as a third button an agent has to choose between.
   Decisions live in the same in-memory store as batch jobs and are lost on
   restart; the UI states this rather than implying durability.
 - Back to the queue returns to the same sort position.
@@ -97,10 +107,11 @@ This spec makes the queue the front door and keeps upload as a secondary action.
 4. Given the seeded queue, when it first renders, then every `NEEDS_REVIEW` row
    sorts above every `PASS` and `FAIL` row.
 5. Given the seeded queue, when the app starts with no `ANTHROPIC_API_KEY` and
-   no Cloud Vision credential, then every seeded row still shows its verdict and
-   its timing.
-6. Given a label uploaded through "+ Check a label", when it completes, then the
-   elapsed time is shown on screen and the row joins the queue.
+   no Cloud Vision credential, then every seeded row still shows its verdict,
+   because nothing about it is recomputed.
+6. Given a label uploaded through "+ Submit new application", when it completes,
+   then the elapsed time is shown on screen and the row joins the queue. That
+   elapsed time is shown for uploads only, never for a seeded row.
 7. Given a restart, when the agent signs in again, then the queue is back to its
    seeded state and any decisions made earlier are gone.
 8. Every control is reachable by Tab, activatable by Enter or Space, and

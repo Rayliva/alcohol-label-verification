@@ -39,17 +39,17 @@ The error class this project exists to prevent. These come first, always.
 
 | # | Status | Finding |
 |---|---|---|
-| D1 | **open** | README Docker command cannot start the app — it predates the agent credentials that `main.py` requires at boot. `docker-compose.yml` already carries the correct form. This is the first thing an evaluator tries |
-| D2 | **open** | README setup omits `AGENT_USERNAME`/`AGENT_PASSWORD` from the env-var table, so following it produces an app that will not boot |
-| D3 | **open** | Test counts wrong throughout: README says 285 and 166 rule-engine, `build-loop.md` says 283. Actual 361 collected, 181 rule-engine |
-| D4 | **open** | `docs/tech-spec.md`, `docs/ui-spec.md` and `docs/build-loop.md` all still state "no authentication, no accounts, no sessions". `CLAUDE.md` points at build-loop as the current state |
+| D1 | **fixed** | README Docker command cannot start the app — it predates the agent credentials that `main.py` requires at boot. `docker-compose.yml` already carries the correct form. This is the first thing an evaluator tries |
+| D2 | **fixed** | README setup omits `AGENT_USERNAME`/`AGENT_PASSWORD` from the env-var table, so following it produces an app that will not boot |
+| D3 | **fixed** | Test counts wrong throughout: README said 285 and 166 rule-engine, `build-loop.md` 283. Now 415 collected, 212 rule-engine, 20 frontend, corrected in both |
+| D4 | **partly fixed** | `docs/ui-spec.md` and `docs/build-loop.md` corrected. `docs/tech-spec.md` still states "no authentication, no accounts, no sessions" |
 | D5 | **open** | `CLAUDE.md`: "`OCR_ENGINE=fake` runs the whole stack offline" — false twice over. Only the test suite is credential-free |
 | D6 | **open** | `docs/tech-spec.md` claims Tailwind and TanStack Query (neither installed), OpenCV as the driving reason for the container (never imported), GitHub Actions, `/metrics`, Playwright, pre-commit, ESLint — none exist. `.claude/skills/add-ui-component.md` repeats the Tailwind error |
 | D7 | **open** | `.claude/skills/` — `run-tests.md`, `generate-corpus.md`, `benchmark-latency.md`, `deploy.md` carry wrong paths, flags that do not exist, and a Render env-var table missing the credentials that gate startup |
 | D8 | **open** | `samples/README.md` and README point at `samples/labels/`; the 31 labels live in `api/app/samples/` |
-| D9 | **open** | `docs/specs/review-queue.md` still says "draft, awaiting sign-off. No code written against this yet" — it is fully implemented |
+| D9 | **fixed** | `docs/specs/review-queue.md` said "draft, awaiting sign-off. No code written against this yet" while fully implemented |
 | D10 | **open** | ~50 citations (`FR-15`, `C-2`, `NFR-1`, `D-5`) reference a PRD numbering scheme the PRD does not define. `.claude/rules/trace-to-brief.md` requires tracing to numbered PRD items and its own example cites two that do not exist |
-| D11 | **open** | README Approach diagram carries superseded stage timings against its own measured table; `build-loop.md` publishes the pre-2026-08-11 p95 and throughput |
+| D11 | **fixed** | README Approach diagram carried superseded stage timings against its own measured table; `build-loop.md` published a stale p95. Both republished from the 2026-08-11 run |
 
 ## E. Gaps the requirements audit named
 
@@ -60,7 +60,7 @@ The error class this project exists to prevent. These come first, always.
 | E3 | **open** | The frontend uploads every image twice — preflight posts the full FormData, then start posts it again, and preflight re-fires on every input change |
 | E4 | **open** | `extract_from_image` is dead code. Its own module advertises two paths; the vision escalation path has no callers. The README is honest about this; the code is not |
 | E5 | **open** | Degraded-image accuracy is unmeasured. The accuracy suite excludes degraded labels by construction, and the one test covering them swallows `CorpusMissingError` and passes without executing an assertion |
-| E6 | **open** | UI: a green PASS badge renders on a field the agent just rejected; field overrides say "goes on the record" but are component state discarded on navigation |
+| E6 | **fixed** | UI: a green PASS badge rendered on a field the agent had just rejected, and field overrides claimed a note "goes on the record" in a product that keeps no record. The badge is now an agent mark naming the decision, the controls appear only on flagged fields, and the copy says the decision reaches the CSV export and nothing else. Still component state, and now says so |
 | E7 | **open** | The queue screen does not disclose that seeded verdicts were pre-computed. The README does; the screen an evaluator lands on does not |
 
 ## F. Fixed on 2026-08-11
@@ -119,6 +119,16 @@ serves the UI and the API from one origin and needs no CORS at all. The fix
 belongs in code — default to empty, and carry the localhost value in
 `.env.example` where local development picks it up — rather than as another
 variable to remember to set on a host.
+
+## Session 5, 2026-08-11 — found while fixing the UI
+
+Recorded here because both were live defects, not cosmetics.
+
+| # | Status | Finding |
+|---|---|---|
+| S1 | **fixed** | **A phone photograph missed the headline requirement.** A 4116x5556 label took 9.3 s server-side against 2.7 s for the same label at 1372x1852. None of the difference was spent reading anything: the quality gate took 2,923 ms and geometric measurement 2,602 ms at a resolution neither uses, reaching the same verdict. Images above 2,000 px on the long edge are resampled once before the quality gate, and oversized JPEGs are decoded at a scaled size. Now p50 3,313 ms, p95 4,231 ms (n=10) |
+| S2 | **fixed** | **The cropped-label check was never scale-invariant.** A fixed 6 px border band is 0.15% of a 4116 px frame and 1.1% of a 560 px one. Resampling turned that latent inconsistency into a live false FAIL: a border printed 10 px inside a large frame landed inside the band of the resampled image, and an intact label was rejected as running off the edge. The band is a fraction of the long edge now. Verified across all 95 curated and sample labels: no outcome moved |
+| S3 | **fixed** | **The progress screen invented where the time went.** Three named stages advanced on fixed offsets from an old benchmark, so "checking each field against the application" was on screen whenever the wait ran long, whether or not anything was being checked. Two stages now, the first measured from real upload progress events |
 
 ## Standing note
 

@@ -77,7 +77,11 @@ Rationale for the asymmetry: false FAILs cost an agent seconds. False PASSes let
 ### P1 — Required by the brief
 
 9. **Batch mode.** Multi-image upload plus CSV/JSON manifest pairing images to application records. Live progress. Results table sorted problems-first.
-10. **Agent override.** Accept or reject any verdict, attach a note.
+10. **Agent override.** Accept or reject any verdict the tool flagged, attach
+    a note. A verdict of `pass` carries no control: there is nothing to
+    disagree with, and asking made an agent confirm five settled fields before
+    reaching the one in question. The decision travels with the CSV export and
+    is not stored (C-2).
 11. **Imperfect image handling.** Preprocessing for skew, low light, and glare. When a label genuinely cannot be read, report the specific reason rather than failing generically.
 
 ### P2 — Deliberate additions beyond the brief

@@ -8,22 +8,27 @@
 
 # CURRENT STATE — read before doing anything
 
-Last updated: 2026-08-09, end of session 3.
+Last updated: 2026-08-11, end of session 5.
 
 ## Where we are
 
-**Phases 0–3 are complete and deployed.** Phase 4 is the only phase left, and
-every item in it is a documented scope decision rather than an oversight.
+**Phases 0 to 3 are complete and deployed.** Phase 4 is the only phase left,
+and every item in it is a documented scope decision rather than an oversight.
 
-283 backend tests and 19 frontend tests, all green, all offline. Lint, format
-and mypy clean. Pushed to `main`; Render is serving it.
+415 backend tests and 20 frontend tests, all green, all offline. Lint, format
+and mypy clean (mypy carries 8 long-standing errors in three files). Pushed to
+`main`; Render is serving it.
+
+Four independent audits ran on 2026-08-11. Every false-PASS, false-FAIL and
+wrong-status finding is closed. What remains is in
+[`audit-findings.md`](audit-findings.md), which is the list to work from.
 
 | Stopping condition | Result |
 |---|---|
-| p95 < 5s, measured and published | **4,525 ms**, n=20, against the deployed instance |
+| p95 < 5s, measured and published | **2,889 ms**, n=20, against the deployed instance, 2026-08-11 |
 | Zero false PASS on warning violations | **0** |
 | ≥95% field-verdict accuracy | **99.0% end to end**, 100.0% for the rules alone |
-| 200-label batch with visible progress | **69 s**, 174/min, determinate throughout |
+| 200-label batch with visible progress | **69 s**, 174/min, determinate throughout (measured 2026-08-09, before the resampling change; unaffected, no corpus image reaches the cap) |
 | All P0 and P1 features shipped | Yes |
 | Deployed URL live and verified | <https://alcohol-label-verification-3sn4.onrender.com> — UI, API and batch all verified live |
 | README with setup, approach, numbers, limitations | Yes |
@@ -111,13 +116,20 @@ reopening any of them.
   no headroom above white paper. Documented in `quality.py` and the README.
 - **Extraction temperature is pinned at 0.** At the default, the same label got
   different verdicts on different runs.
+- **Photographs above 2,000 px on the long edge are resampled once**, before
+  the quality gate, and every stage after it sees those pixels including OCR.
+  2,000 is the top of the range the thresholds were calibrated against. Without
+  it a 22-megapixel phone photograph took 9.3 s server-side, none of it spent
+  reading anything.
 
 ## Decisions already made — do not relitigate
 
 - **Spirits first**, engine config-driven from day one, wine and malt buttons
   disabled *with the reason attached*.
-- **No authentication.** An optional "your name or initials" attributes
-  overrides within a session.
+- **One shared agent credential**, from the environment, in a signed HttpOnly
+  cookie. The app refuses to start without it. Not an identity system: no
+  accounts, no reset, no roles. An optional "your name or initials" attributes
+  field-level decisions within a session.
 - **Nothing is stored.** A restart loses in-flight batch jobs and the API says
   so when asked about one.
 - **`unreadable` is a fourth label-level outcome**, produced by the pipeline and

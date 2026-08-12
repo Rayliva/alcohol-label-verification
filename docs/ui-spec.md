@@ -110,10 +110,20 @@ Labels are plain language. Help text sits **under** the field, always visible �
 
 Visible for ~2–5 seconds. Its job is to make the wait legible.
 
-- Show the stage in plain words: *Reading the label… → Checking each field…*
+- Show the stage in plain words: *Sending the image → Reading the label and
+  checking every field*
 - Show elapsed seconds
 - Keep the uploaded image visible
 - **No indeterminate spinner alone**
+
+**Only claim what is measured.** This screen originally ran three named stages
+off fixed offsets taken from an old benchmark, so "checking each field against
+the application" was the stage on screen whenever the wait ran long, whether or
+not anything was being checked. It made a slow model call look like a slow rule
+engine. The browser can honestly measure exactly two things, how much of the
+image has gone up and how long it has been, so those are the two the screen
+reports. The second stage is paced by the published median and held short of
+full until the answer arrives.
 
 If it exceeds 10 seconds, say so and offer to cancel. Silence reads as broken.
 
@@ -138,7 +148,7 @@ One row or card per field. **Each shows four things side by side, always visible
 | Detected | What we read from the label |
 | Evidence | The cropped region of the image the value came from |
 
-Plus the verdict badge, a confidence indicator, and a one-sentence plain-language reason.
+Plus the verdict badge, the reading confidence as a number and a word, and a one-sentence plain-language reason. The confidence bar that once sat beside them was removed: it repeated the number without adding a fact, and the vertical space cost more than it was worth on a screen with six of these.
 
 **The evidence crop is the heart of this screen.** It lets an agent distinguish "the label is genuinely wrong" from "we misread it" in about a second, and it is the entire answer to the experienced agent's skepticism. **Never put it behind a click or a hover.**
 
@@ -165,9 +175,13 @@ It is the only exact-match check and has the most failure modes. Show the full d
 
 **Agent override**
 
-Every field row carries `Accept` and `Reject` controls plus an optional note. Overridden rows are visibly marked as agent-decided, showing both the original verdict and the override — never silently replaced.
+**Only the rows the tool flagged carry a decision.** A field verdicted `pass` has nothing to disagree with, and asking about it made an agent confirm five verdicts that were never in doubt before reaching the one that was. `needs_review` and `fail` rows, and the government warning block, carry the question the controls are actually asking, `The tool flagged this as X. Do you agree?`, with `No, accept this field` and `Yes, it is a problem`. The note is enabled once a decision is picked, so it is never typed into a void.
 
-**Screen actions:** `Export results` (CSV/JSON) and `Check another label`.
+Decided rows are visibly marked as agent-decided, showing both the original verdict and the decision, never silently replaced. A rejected row must not render a `pass` badge, which it did until 2026-08-11.
+
+**Say where the decision goes.** These decisions travel with the CSV export and nowhere else, because nothing about an application is stored (PRD C-2). The control used to say a note "goes on the record", which was false in a product that has no record.
+
+**Screen actions:** `Export results` (CSV) and `Back to the queue`. When the results are embedded in the review screen, that screen owns the page's one dominant action and the back button is suppressed rather than duplicated.
 
 ---
 
@@ -291,11 +305,13 @@ When `overall == "unreadable"`:
 
 Six items reconciled between the design handoff and the requirements. All are small additions; none require redesign.
 
-### 1. No login — optional reviewer name instead
+### 1. One shared credential, and an optional reviewer name
 
-The product has **no authentication, no accounts, no user records** (PRD OS-1). The brief never asks for auth, and real auth would require storing credentials — contradicting the no-persistence constraint.
+**Superseded on 2026-08-11.** This section originally read "no login": the brief never asks for auth, and real auth would mean storing credentials, which contradicts the no-persistence constraint.
 
-So `Reviewed by R. Delgado` and `Decided by R. Delgado` are **not** populated from a login. Add a single optional **"Your name or initials"** field, entered once and held in session state. Blank is valid and common — when blank, omit the attribution clause entirely rather than showing "Reviewed by —".
+What changed is that the prototype is deployed at a public URL. A review queue of applications served to anyone who finds it is worse than the small amount of auth needed to close it, so there is **one shared agent credential**, read from the environment, carried in a signed HttpOnly cookie. The app refuses to start without it. That is the whole of it: no accounts, no password hash at rest, no reset, no roles, nothing stored.
+
+The optional **"Your name or initials"** field stays, and is still what populates `Reviewed by R. Delgado`. Blank is valid and common; when blank, omit the attribution clause entirely rather than showing a dangling "Reviewed by".
 
 Production auth (agency SSO / PIV, role separation, audit logging) is documented in the README as a production consideration, not built.
 
@@ -313,7 +329,7 @@ A field absent from the label has no region to crop. `crop_url` may be `null`, a
 
 > **Not found anywhere on the label**
 
-Same panel size, border, and caption slot as a real crop, so row height doesn't jump. The caption line reads `no crop — field not present`.
+Same panel size and border as a real crop, so row height does not jump. There is no caption line under the crop: it printed a filename that told an agent nothing the panel had not already told them, in the smallest type in the product.
 
 ### 4. Alcohol content: required for spirits only
 
@@ -353,3 +369,27 @@ Spirits only — hide the row for wine and malt. This is a P2 feature; reserve t
 4. **The empty, loading, and error state** for each screen.
 
 **Self-check before handing back:** walk the nine hard constraints against every screen. A design that fails one of them costs more to rework than it saved.
+
+---
+
+## Where the implementation diverges from the design handoff (2026-08-11)
+
+`docs/design/design_handoff_label_check/README.md` is a received artifact and is
+not edited, in the same way `requirements.md` is not. It asks to be recreated
+pixel-accurately. Four things are deliberately not, and this is the record of
+why.
+
+| Handoff | Shipped | Why |
+|---|---|---|
+| h1 34px, h2 26px, h3 23px | 29 / 22 / 20 | Body stays at 19px and nothing goes below 16px, so every accessibility constraint still holds. The headings were consuming the screen an agent needed for the results |
+| Page padding `32px 40px 96px`, card padding `26–28px`, card gap 18px | `22px 32px 56px`, `18px 20px`, gap 14px | Same reason. An agent could see roughly one field result at a time |
+| Crop panel 110px / 150px | 92px / 170px | The warning crop is the one that repays being larger; the field crops do not |
+| One column of field results | Two columns above 1500px | The single largest gain in how much of a result is visible at once, and it costs nothing below that width |
+
+Everything else in the handoff, every colour, every contrast ratio, the
+three-state encoding, the evidence crop being inline and never behind a
+control, is implemented as specified.
+
+The handoff also specifies an `Undo my decision` control and a confidence bar.
+Neither shipped: pressing the chosen decision again clears it, which is what
+`aria-pressed` already communicates, and the bar repeated the number beside it.
