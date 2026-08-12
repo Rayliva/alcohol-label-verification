@@ -177,8 +177,12 @@ imported label naming no country passing clean.
 `api/app/samples/` holds 31 sample labels **and** `batch-manifest.csv`, which
 names exactly those images. Select all 31 JPGs from that folder and that CSV
 on the batch half of the submit page; preflight matches 31 of 31 with no
-skips. Using images from anywhere else with this CSV will report every row as
-unmatched, because rows name files by their exact filename.
+skips. `samples/batch/` is a second, externally authored set with its own
+`batch-manifest.csv` beside it (25 of 25; its `manifest.json` is ground
+truth in another vocabulary and is not uploadable). In either case select
+the CSV that sits beside the images: rows name files by exact filename, so
+pairing a CSV with any other folder reports every row as unmatched. A test
+keeps each shipped CSV matched to its own folder.
 
 ### Batch throughput
 

@@ -19,6 +19,16 @@ application and the verdict the tool should reach. Its `expected_verdict` values
 are `PASS` / `FAIL` / `REVIEW`, which map onto this project's `pass` / `fail` /
 `needs_review`.
 
+**To run `batch/` through the app's batch upload, use
+`batch/batch-manifest.csv`**, not `manifest.json`. The JSON is ground truth in
+its authors' vocabulary (`brand`, `abv`, `bottler`, `bulk/`-prefixed paths) and
+the upload will match none of it. The CSV is the same 25 applications
+translated into the upload's own columns; select all 25 images and that CSV.
+The external application section omits the bottler line, so the CSV declares
+the printed one; no defect in this set involves the bottler, so no verdict
+turns on it. A test (`api/tests/unit/test_shipped_manifests.py`) keeps every
+shipped CSV matched to the images beside it.
+
 ## What these are good for, and what they are not
 
 They carry photographic degradation — angle, glare, low light, blur, curvature —

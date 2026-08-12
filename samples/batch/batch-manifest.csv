@@ -1,0 +1,26 @@
+application_id,image,beverage_type,brand_name,class_type,alcohol_content,net_contents,bottler_address,country_of_origin
+B0001_none,B0001_none.jpg,spirits,COPPER ORCHARD,Bottled in Bond Bourbon Whiskey,53.5% Alc./Vol. (107 Proof),50 mL,"BOTTLED BY COPPER ORCHARD DISTILLERY, MIDDLEBURY, VT",
+B0002_none,B0002_none.jpg,spirits,OLD FURROW,Overproof Rum,43% Alc./Vol. (86 Proof),200 mL,"DISTILLED BY OLD FURROW SPIRITS CO., WALLA WALLA, WA",
+B0003_none,B0003_none.jpg,spirits,COPPER RIDGE,Cachaca,41.5% Alc./Vol. (83 Proof),50 mL,"IMPORTED BY VIEUX PORT SELECTIONS, CHICAGO, IL",PRODUCT OF BRAZIL
+B0004_none,B0004_none.jpg,spirits,GREY RIDGE,Aged Caribbean Rum,43% Alc./Vol. (86 Proof),50 mL,"DISTILLED AND BOTTLED BY GREY RIDGE DISTILLING CO., BROOKLYN, NY",
+B0005_net_contents_format,B0005_net_contents_format.jpg,spirits,AMBER ORCHARD,Aged Caribbean Rum,57.1% Alc./Vol. (114.2 Proof),750 mL,"DISTILLED BY AMBER ORCHARD RUM CO., ASHEVILLE, NC",
+B0006_class_type_mismatch,B0006_class_type_mismatch.jpg,spirits,BROKEN HAND,Distilled Gin,45% Alc./Vol. (90 Proof),1.75 L,"PRODUCED AND BOTTLED BY BROKEN HAND DISTILLERY, BROOKLYN, NY",
+B0007_warning_missing,B0007_warning_missing.jpg,spirits,NORTH GATE,Aged Dark Rum,47% Alc./Vol. (94 Proof),50 mL,"DISTILLED BY NORTH GATE DISTILLING CO., LOUISVILLE, KENTUCKY",
+B0008_warning_low_contrast,B0008_warning_low_contrast.jpg,spirits,AMBER QUILL,Overproof Rum,42% Alc./Vol. (84 Proof),50 mL,"PRODUCED AND BOTTLED BY AMBER QUILL DISTILLING CO., LOUISVILLE, KENTUCKY",
+B0009_warning_text_altered,B0009_warning_text_altered.jpg,spirits,WILD LANTERN,Flavored Vodka (Citrus),47% Alc./Vol. (94 Proof),200 mL,"DISTILLED AND BOTTLED BY WILD LANTERN DISTILLERY, BROOKLYN, NY",
+B0010_none,B0010_none.jpg,spirits,THISTLE CREEK,Aged Dark Rum,46% Alc./Vol. (92 Proof),375 mL,"DISTILLED AND BOTTLED BY THISTLE CREEK RUM CO., LYNCHBURG, TN",
+B0011_class_type_mismatch,B0011_class_type_mismatch.jpg,spirits,BLUE MILL,Anejo Tequila,46% Alc./Vol. (92 Proof),50 mL,"IMPORTED BY WINDWARD SPIRITS CO., MIAMI, FL",PRODUCT OF MEXICO
+B0012_none,B0012_none.jpg,spirits,GREY HERON,Tennessee Whiskey,43% Alc./Vol. (86 Proof),700 mL,"BOTTLED BY GREY HERON DISTILLING CO., BEND, OR",
+B0013_none,B0013_none.jpg,spirits,BLACK FURROW,Blended Whiskey,45% Alc./Vol. (90 Proof),50 mL,"DISTILLED AND BOTTLED BY BLACK FURROW WHISKEY CO., BARDSTOWN, KENTUCKY",
+B0014_none,B0014_none.jpg,spirits,PINE REACH,White Rum,43% Alc./Vol. (86 Proof),1 L,"DISTILLED BY PINE REACH RUM CO., AUSTIN, TX",
+B0015_none,B0015_none.jpg,spirits,THISTLE FOX,Cachaca,43% Alc./Vol. (86 Proof),375 mL,"IMPORTED BY MERIDIAN SPIRITS IMPORTS, NEWARK, NJ",PRODUCT OF BRAZIL
+B0016_warning_illegible_size,B0016_warning_illegible_size.jpg,spirits,ELDER MILL,Vodka Distilled from Grain,43% Alc./Vol. (86 Proof),1.75 L,"PRODUCED AND BOTTLED BY ELDER MILL DISTILLERY, BETHLEHEM, PA",
+B0017_none,B0017_none.jpg,spirits,MARSH FURROW,Spiced Rum,42% Alc./Vol. (84 Proof),50 mL,"DISTILLED BY MARSH FURROW DISTILLING CO., LYNCHBURG, TN",
+B0018_warning_not_bold,B0018_warning_not_bold.jpg,spirits,OLD RIDGE,Navy Strength Gin,37.5% Alc./Vol. (75 Proof),1 L,"DISTILLED BY OLD RIDGE GIN CO., MIDDLEBURY, VT",
+B0019_class_type_mismatch,B0019_class_type_mismatch.jpg,spirits,RED REACH,Old Tom Gin,46% Alc./Vol. (92 Proof),200 mL,"PRODUCED AND BOTTLED BY RED REACH SPIRITS CO., HOOD RIVER, OR",
+B0020_none,B0020_none.jpg,spirits,GOLDEN HOLLOW,Tennessee Whiskey,41.5% Alc./Vol. (83 Proof),750 mL,"PRODUCED AND BOTTLED BY GOLDEN HOLLOW WHISKEY CO., ST. HELENA, CA",
+B0021_none,B0021_none.jpg,spirits,FAR QUILL,Overproof Rum,40% Alc./Vol. (80 Proof),375 mL,"DISTILLED AND BOTTLED BY FAR QUILL DISTILLING CO., BARDSTOWN, KENTUCKY",
+B0022_abv_mismatch,B0022_abv_mismatch.jpg,spirits,Copper Quill,Aged Grape Brandy,47% Alc./Vol. (94 Proof),375 mL,"BOTTLED BY COPPER QUILL BRANDY CO., LOUISVILLE, KENTUCKY",
+B0023_none,B0023_none.jpg,spirits,Green Gate,Apple Brandy,41.5% Alc./Vol. (83 Proof),1 L,"DISTILLED AND BOTTLED BY GREEN GATE BRANDY CO., MIDDLEBURY, VT",
+B0024_none,B0024_none.jpg,spirits,SALT BRIDGE,Kentucky Straight Bourbon Whiskey,46% Alc./Vol. (92 Proof),750 mL,"DISTILLED BY SALT BRIDGE DISTILLING CO., ST. HELENA, CA",
+B0025_none,B0025_none.jpg,spirits,STONE CREEK,Irish Whiskey,43% Alc./Vol. (86 Proof),1.75 L,"IMPORTED BY VIEUX PORT SELECTIONS, CHICAGO, IL",PRODUCT OF IRELAND

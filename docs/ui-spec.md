@@ -517,6 +517,11 @@ All decided by the product owner in review of the running app.
   always join the queue, and the measured wait back on the results screen.**
   Specified in full in `docs/specs/review-queue.md`, "Amendments,
   2026-08-12".
+- **Micro-labels lose the all-caps.** "Declared in application", "Detected
+  on label", "Evidence from the image" were uppercase with letterspacing, a
+  second voice next to every other label in the product. Now sentence case,
+  matching the queue's column headers. Verdict badges stay uppercase; they
+  are the same on every screen.
 - **One typeface outside the evidence.** The submit flow had four faces in
   view at once: mono inputs for the "exact" fields, a mono filename line, a
   mono application-ID column in the batch table, and a prose sentence on the

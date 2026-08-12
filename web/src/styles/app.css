@@ -65,11 +65,12 @@ a:hover {
   margin: 6px 0 0;
 }
 
+/* Sentence case, like the queue's column headers. These were all-caps with
+   letterspacing, which read as a second voice next to every other label in
+   the product (product owner, 2026-08-12). */
 .micro-label {
   font-size: var(--size-micro);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: var(--ink-secondary);
   margin: 0 0 6px;
 }
