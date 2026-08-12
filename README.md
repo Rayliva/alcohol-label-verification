@@ -466,7 +466,9 @@ batch upload with pre-flight, live progress and CSV export · specific reasons
 for unreadable images · a review queue with search, decision and result
 filters, and an opt-in "Start reviewing" run where each decision opens the
 next undecided application · uploads join the queue whatever their outcome,
-with the wall-clock wait ("Checked in 4.2 seconds") shown on the result.
+searchable by their declared application ID, with the wall-clock wait
+("Checked in 4.2 seconds") shown on the result and Approve/Reject offered
+right there.
 
 ### Deliberately not built
 

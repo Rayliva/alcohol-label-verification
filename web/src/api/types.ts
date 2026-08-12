@@ -32,6 +32,8 @@ export interface WarningSubCheck {
 
 export interface VerificationResponse {
   label_id: string | null;
+  /** The queue row this upload became; null on recorded seeded results. */
+  queue_id?: string | null;
   beverage_type: string;
   overall: Outcome;
   processing_ms: number;
@@ -71,6 +73,9 @@ export const EMPTY_DECLARED: DeclaredFields = {
 export interface QueueRow {
   id: string;
   brand: string;
+  /** The COLA application number the agent declared, if any. What they
+   * will search for, distinct from the row's own id. */
+  application_id: string | null;
   beverage_type: string;
   outcome: "pass" | "needs_review" | "fail" | "unreadable";
   processing_ms: number | null;

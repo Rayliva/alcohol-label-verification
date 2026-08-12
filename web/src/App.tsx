@@ -221,6 +221,12 @@ export default function App() {
               setImage(null);
               setStep("queue");
             }}
+            onDecided={() => {
+              setQueueVersion((version) => version + 1);
+              setResponse(null);
+              setImage(null);
+              setStep("queue");
+            }}
           />
         ) : null}
           </>

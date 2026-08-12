@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import type { VerificationResponse, Verdict } from "../api/types";
+import { DecisionCard } from "../components/DecisionCard";
 import { FieldResultCard } from "../components/FieldResultCard";
 import { verdictGlyph } from "../components/VerdictBadge";
 import { WarningBlock } from "../components/WarningBlock";
@@ -49,6 +50,9 @@ export function ResultsScreen({
    * caller. Fresh uploads only: a seeded row opened from the queue was
    * checked long ago, and a stopwatch there would report the wrong machine. */
   elapsedSeconds = null,
+  /** Present on a fresh upload: lets the agent decide right here, against
+   * the queue row the upload became. */
+  onDecided = null,
   /** True when this sits inside the review screen, which owns the page's one
    * dominant action and its own back button. */
   embedded = false,
@@ -57,8 +61,11 @@ export function ResultsScreen({
   reviewer: string;
   onCheckAnother: () => void;
   elapsedSeconds?: number | null;
+  onDecided?: ((nextId: string | null) => void) | null;
   embedded?: boolean;
 }) {
+  // The decision owns the screen when it is offered; other actions demote.
+  const decidable = !embedded && Boolean(response.queue_id) && onDecided !== null;
   const ordered = useMemo(
     () =>
       [...response.fields]
@@ -112,7 +119,11 @@ export function ResultsScreen({
             Export results (CSV)
           </button>
           {embedded ? null : (
-            <button type="button" className="button button--primary" onClick={onCheckAnother}>
+            <button
+              type="button"
+              className={decidable ? "button" : "button button--primary"}
+              onClick={onCheckAnother}
+            >
               Back to the queue
             </button>
           )}
@@ -133,6 +144,14 @@ export function ResultsScreen({
       </div>
 
       {warning ? <WarningBlock field={warning} checks={response.warning_checks} /> : null}
+
+      {decidable ? (
+        <DecisionCard
+          queueId={response.queue_id!}
+          flagged={response.overall !== "pass"}
+          onDecided={onDecided!}
+        />
+      ) : null}
     </div>
   );
 }

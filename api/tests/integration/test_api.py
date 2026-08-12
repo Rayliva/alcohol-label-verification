@@ -153,6 +153,21 @@ class TestUploadsJoinTheQueue:
         assert decided.status_code == 200
         assert decided.json()["decision"]["action"] == "approve"
 
+    def test_the_declared_application_id_is_on_the_queue_row(self, client, labels) -> None:
+        # The owner's bug: an upload declared as application 1234 was
+        # unfindable, because the row only knew its internal upload- id.
+        before = {row["id"] for row in client.get("/api/queue").json()["items"]}
+        post(client, labels["t1-clean-classic-1"])
+        after = client.get("/api/queue").json()["items"]
+        new = next(row for row in after if row["id"] not in before)
+        assert new["application_id"] == "t1-clean-classic-1"
+
+    def test_the_response_names_the_queue_row_it_became(self, client, labels) -> None:
+        body = post(client, labels["t1-clean-classic-1"]).json()
+        assert body["queue_id"]
+        detail = client.get(f"/api/queue/{body['queue_id']}").json()
+        assert detail["outcome"] == body["overall"]
+
     def test_an_unreadable_upload_still_joins_the_queue(self, client, labels) -> None:
         before = {row["id"] for row in client.get("/api/queue").json()["items"]}
         post(client, labels["t4-tiny"])

@@ -91,7 +91,8 @@ export function QueueScreen({
     const matchesText =
       !needle ||
       row.brand.toLowerCase().includes(needle) ||
-      row.id.toLowerCase().includes(needle);
+      row.id.toLowerCase().includes(needle) ||
+      Boolean(row.application_id?.toLowerCase().includes(needle));
     const matchesState =
       decidedFilter === "all" || (decidedFilter === "decided") === Boolean(row.decision);
     const matchesOutcome = outcomeFilter === "all" || row.outcome === outcomeFilter;
@@ -195,8 +196,12 @@ export function QueueScreen({
             <tr key={row.id} className={row.decision ? "queue__row--decided" : undefined}>
               <th scope="row" className="queue__brand">
                 {row.brand}
-                {row.source === "uploaded" ? (
-                  <span className="queue__tag">Uploaded by you</span>
+                {row.application_id || row.source === "uploaded" ? (
+                  <span className="queue__tag">
+                    {row.application_id ? `Application ${row.application_id}` : ""}
+                    {row.application_id && row.source === "uploaded" ? " · " : ""}
+                    {row.source === "uploaded" ? "Uploaded by you" : ""}
+                  </span>
                 ) : null}
               </th>
               <td>

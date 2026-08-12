@@ -15,6 +15,7 @@ def item(item_id: str, *, outcome: str = "pass", received_at: float = 0.0) -> Qu
     return QueueItem(
         id=item_id,
         brand=item_id,
+        application_id=None,
         beverage_type="spirits",
         outcome=outcome,
         processing_ms=1000,

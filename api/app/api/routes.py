@@ -216,7 +216,12 @@ async def verify_label(
         # the other three — shaped like a seeded unreadable row: a reason, no
         # result. Returning before the insert here is how uploads used to
         # vanish.
-        _join_queue(response, brand=brand_name or application_id, unreadable=exc.as_dict())
+        _join_queue(
+            response,
+            brand=brand_name or application_id,
+            application_id=application_id or None,
+            unreadable=exc.as_dict(),
+        )
         return response
     except BeverageTypeUnavailableError as exc:
         raise _bad_request(
@@ -241,7 +246,11 @@ async def verify_label(
         ) from exc
 
     response = _to_response(result, application_id=application_id, reviewer=reviewer)
-    _join_queue(response, brand=brand_name or application_id)
+    _join_queue(
+        response,
+        brand=brand_name or application_id,
+        application_id=application_id or None,
+    )
     return response
 
 
@@ -249,18 +258,23 @@ def _join_queue(
     response: VerificationResponse,
     *,
     brand: str | None,
+    application_id: str | None,
     unreadable: dict[str, str] | None = None,
 ) -> None:
     """A checked label joins the queue, whatever its outcome.
 
     An agent who uploads a label finds it beside everything else waiting
     rather than losing it when they navigate away. It lives for the life of
-    the process, like the rest of the queue.
+    the process, like the rest of the queue. The response learns the row's id
+    so the results screen can record a decision against it directly.
     """
+    item_id = f"upload-{uuid.uuid4().hex[:8]}"
+    response.queue_id = item_id
     queue.add(
         QueueItem(
-            id=f"upload-{uuid.uuid4().hex[:8]}",
+            id=item_id,
             brand=brand or "Uploaded label",
+            application_id=application_id,
             beverage_type=response.beverage_type,
             outcome=response.overall,
             processing_ms=response.processing_ms,

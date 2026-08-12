@@ -39,6 +39,9 @@ class Decision:
 class QueueItem:
     id: str
     brand: str
+    # What the agent declared on the COLA form, distinct from the row's own
+    # id. It is what they will search for.
+    application_id: str | None
     beverage_type: str
     # "pass" | "needs_review" | "fail" | "unreadable"
     outcome: str
@@ -55,6 +58,7 @@ class QueueItem:
         return {
             "id": self.id,
             "brand": self.brand,
+            "application_id": self.application_id,
             "beverage_type": self.beverage_type,
             "outcome": self.outcome,
             "processing_ms": self.processing_ms,
@@ -150,6 +154,9 @@ def _from_record(record: dict[str, Any], offset: int) -> QueueItem:
     return QueueItem(
         id=record["id"],
         brand=brand,
+        # Seeded rows answer to their record id; there is no separate COLA
+        # number in the seed data to show or search.
+        application_id=None,
         beverage_type=record.get("beverage_type", "spirits"),
         outcome=outcome,
         processing_ms=processing_ms,

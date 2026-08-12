@@ -123,6 +123,21 @@ This spec makes the queue the front door and keeps upload as a secondary action.
     top.
   - The decision response still carries `next_id` (first undecided in queue
     order, or null); the client decides whether it is in a run.
+- **The declared application ID is searchable and visible.** An upload's
+  queue row keeps the application ID the agent typed (rows carry
+  `application_id`; the search matches it alongside brand and row id, and
+  the row shows it under the brand). Seeded rows already answer to their id.
+  This was the owner's bug report: an upload declared as application 1234
+  was unfindable, because the row only knew its internal `upload-` id.
+- **The decision is offered where the result is.** A fresh upload's results
+  screen ends with the same decision card the review screen has — approve
+  (recorded as an override when anything is flagged) or reject, with the
+  optional note. The verify response carries `queue_id`, the queue row the
+  upload became, and the card records the decision against it; deciding
+  returns to the queue. Rule 4 holds: when the card is present it owns the
+  screen's dominant action, and "Back to the queue" demotes to a plain
+  button. Opened later from the queue, the same result shows the review
+  screen's own card instead, exactly as before.
 - **Every upload joins the queue, including unreadable ones.** The
   unreadable path returned before the queue insert, so those uploads
   vanished. An unreadable upload is a queue item shaped like a seeded

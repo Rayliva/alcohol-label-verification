@@ -50,6 +50,10 @@ class VerificationResponse(BaseModel):
     """One label, checked. Mirrors ui-spec → Data shape."""
 
     label_id: str | None = None
+    # The queue row this upload became, so the client can record a decision
+    # against it without a trip through the queue. None on recorded seeded
+    # results, which already live in the queue under their own id.
+    queue_id: str | None = None
     beverage_type: str
     overall: Outcome
     processing_ms: int

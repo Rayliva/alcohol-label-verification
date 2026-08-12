@@ -7,7 +7,7 @@ import { QueueScreen } from "../src/screens/QueueScreen";
 import { ReviewScreen } from "../src/screens/ReviewScreen";
 import { SignInScreen } from "../src/screens/SignInScreen";
 import { ResultsScreen } from "../src/screens/ResultsScreen";
-import { fetchQueue, fetchQueueItem } from "../src/api/client";
+import { fetchQueue, fetchQueueItem, recordDecision } from "../src/api/client";
 import { EMPTY_DECLARED } from "../src/api/types";
 import type {
   DeclaredFields,
@@ -18,7 +18,7 @@ import type {
 
 vi.mock("../src/api/client", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../src/api/client")>();
-  return { ...actual, fetchQueue: vi.fn(), fetchQueueItem: vi.fn() };
+  return { ...actual, fetchQueue: vi.fn(), fetchQueueItem: vi.fn(), recordDecision: vi.fn() };
 });
 
 // jsdom has no layout, so the review screen's scroll reset is a no-op stub.
@@ -329,6 +329,7 @@ const LISTING: QueueListing = {
     {
       id: "001_bourbon_clean",
       brand: "OLD TOM DISTILLERY",
+      application_id: null,
       beverage_type: "spirits",
       outcome: "pass",
       processing_ms: 1900,
@@ -336,12 +337,13 @@ const LISTING: QueueListing = {
       decision: null,
     },
     {
-      id: "014_stones_throw",
+      id: "upload-9f3a2c1d",
       brand: "STONE'S THROW",
+      application_id: "1234",
       beverage_type: "spirits",
       outcome: "needs_review",
       processing_ms: 2100,
-      source: "seeded",
+      source: "uploaded",
       decision: { action: "approve", note: "", decided_by: "agent" },
     },
   ],
@@ -364,6 +366,21 @@ describe("The queue is searchable and filterable", () => {
     await user.clear(search);
     await user.type(search, "zzz");
     expect(screen.getByRole("status")).toHaveTextContent(/no applications match/i);
+  });
+
+  it("finds an upload by the application ID the agent declared", async () => {
+    // The owner's bug: an upload declared as application 1234 only answered
+    // to its internal upload- id.
+    vi.mocked(fetchQueue).mockResolvedValue(LISTING);
+    const user = userEvent.setup();
+    render(<QueueScreen onOpen={vi.fn()} onStart={vi.fn()} reloadKey={0} />);
+
+    expect(await screen.findByText("OLD TOM DISTILLERY")).toBeInTheDocument();
+    await user.type(screen.getByLabelText(/search/i), "1234");
+    expect(screen.getByText("STONE'S THROW")).toBeInTheDocument();
+    expect(screen.queryByText("OLD TOM DISTILLERY")).toBeNull();
+    // And the ID is visible on the row, so the match is explicable.
+    expect(screen.getByText(/application 1234/i)).toBeInTheDocument();
   });
 
   it("filters by decision state and by result, each behind a labelled dropdown", async () => {
@@ -438,6 +455,40 @@ describe("Two ways into an application", () => {
 
     expect(await screen.findByText(/your decision/i)).toBeInTheDocument();
     expect(screen.queryByText(/now reviewing/i)).toBeNull();
+  });
+});
+
+describe("A fresh upload can be decided on the spot", () => {
+  it("offers Approve and Reject against the queue row the upload became", async () => {
+    vi.mocked(recordDecision).mockResolvedValue({ nextId: null });
+    const user = userEvent.setup();
+    const onDecided = vi.fn();
+    render(
+      <ResultsScreen
+        response={{ ...RESPONSE, queue_id: "upload-9f3a2c1d" }}
+        reviewer=""
+        onCheckAnother={vi.fn()}
+        onDecided={onDecided}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: /approve this application/i }));
+    // A flagged label approved is recorded as an override.
+    expect(recordDecision).toHaveBeenCalledWith("upload-9f3a2c1d", "override", "");
+    expect(onDecided).toHaveBeenCalledWith(null);
+  });
+
+  it("offers no decision inside the review screen, which has its own card", () => {
+    render(
+      <ResultsScreen
+        response={{ ...RESPONSE, queue_id: "upload-9f3a2c1d" }}
+        reviewer=""
+        onCheckAnother={vi.fn()}
+        onDecided={vi.fn()}
+        embedded
+      />,
+    );
+    expect(screen.queryByRole("button", { name: /approve this application/i })).toBeNull();
   });
 });
 

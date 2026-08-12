@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
-import { ApiError, fetchQueueItem, labelImageUrl, recordDecision } from "../api/client";
+import { ApiError, fetchQueueItem, labelImageUrl } from "../api/client";
 import type { QueueItemDetail } from "../api/types";
+import { DecisionCard } from "../components/DecisionCard";
 import { Lightbox } from "../components/Lightbox";
 import { ResultsScreen } from "./ResultsScreen";
 
@@ -41,19 +42,15 @@ export function ReviewScreen({
 }) {
   const [item, setItem] = useState<QueueItemDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [note, setNote] = useState("");
-  const [saving, setSaving] = useState<Action | null>(null);
   const [artworkOpen, setArtworkOpen] = useState(false);
 
   useEffect(() => {
     let live = true;
-    // A new application starts fresh: no leftover note, no disabled buttons,
-    // and the page back at the top — in a run the previous application left
-    // the scroll at its decision buttons, which is exactly where a new one
-    // would be mistaken for the old.
+    // A new application starts fresh, and the page back at the top — in a
+    // run the previous application left the scroll at its decision buttons,
+    // which is exactly where a new one would be mistaken for the old. The
+    // decision card resets itself: it unmounts while the next item loads.
     setItem(null);
-    setNote("");
-    setSaving(null);
     setError(null);
     setArtworkOpen(false);
     window.scrollTo(0, 0);
@@ -72,19 +69,6 @@ export function ReviewScreen({
       live = false;
     };
   }, [id]);
-
-  const decide = async (action: Action) => {
-    setSaving(action);
-    try {
-      const { nextId } = await recordDecision(id, action, note);
-      onDecided(nextId);
-    } catch (cause) {
-      setError(
-        cause instanceof ApiError ? cause.body.message : "Could not save that decision.",
-      );
-      setSaving(null);
-    }
-  };
 
   // One persistent node across loading and loaded states, so the change of
   // application is announced by the live region rather than left to be
@@ -177,47 +161,17 @@ export function ReviewScreen({
         />
       ) : null}
 
-      <section className="card">
-        <h2>Your decision</h2>
-        {item.decision ? (
+      {item.decision ? (
+        <section className="card">
+          <h2>Your decision</h2>
           <p className="help">
             {DECISION_LABEL[item.decision.action]} by {item.decision.decided_by}.
             {item.decision.note ? ` Note: ${item.decision.note}` : ""}
           </p>
-        ) : (
-          <>
-            <label className="field">
-              <span className="field__label">Note (optional)</span>
-              <textarea
-                className="textarea"
-                rows={2}
-                value={note}
-                onChange={(event) => setNote(event.target.value)}
-              />
-            </label>
-            <div className="review__actions">
-              <button
-                className="button button--primary"
-                type="button"
-                disabled={saving !== null}
-                onClick={() => decide(flagged ? "override" : "approve")}
-              >
-                {saving === "approve" || saving === "override"
-                  ? "Saving…"
-                  : "Approve this application"}
-              </button>
-              <button
-                className="button button--danger"
-                type="button"
-                disabled={saving !== null}
-                onClick={() => decide("reject")}
-              >
-                {saving === "reject" ? "Saving…" : "Reject this application"}
-              </button>
-            </div>
-          </>
-        )}
-      </section>
+        </section>
+      ) : (
+        <DecisionCard queueId={item.id} flagged={flagged} onDecided={onDecided} />
+      )}
     </>
   );
 }
