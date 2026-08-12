@@ -18,7 +18,12 @@ function headline(response: VerificationResponse): string {
   if (response.overall === "unreadable") return "This label could not be read";
   const issues = response.fields.filter((field) => field.verdict !== "pass").length;
   if (issues === 0) return "Everything on this label matches the application";
-  return `${issues} ${issues === 1 ? "issue" : "issues"} found on this label`;
+  // The outcome is a word, not just a count: without it, one flagged field
+  // and one failing field both read "1 issue found", identical to a screen
+  // reader since the glyph is aria-hidden, and different only by colour to
+  // everyone else (rule 5).
+  const outcome = response.overall === "fail" ? "This label fails." : "This label needs review.";
+  return `${issues} ${issues === 1 ? "issue" : "issues"} found. ${outcome}`;
 }
 
 function toCsv(response: VerificationResponse): string {
@@ -58,8 +63,6 @@ export function ResultsScreen({
   );
   const warning = response.fields.find((field) => field.field === "government_warning");
 
-  const counts = response.counts ?? {};
-
   const download = () => {
     const blob = new Blob([toCsv(response)], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -78,12 +81,6 @@ export function ResultsScreen({
         </span>
         <div>
           <h1 id="summary-heading">{headline(response)}</h1>
-          {response.overall === "unreadable" ? null : (
-            <p className="summary__counts">
-              {counts.pass ?? 0} fields pass · {counts.needs_review ?? 0} need review ·{" "}
-              {counts.fail ?? 0} fail
-            </p>
-          )}
           {response.label_id || reviewer ? (
             <p className="summary__meta">
               {response.label_id ? `Application ${response.label_id}` : ""}

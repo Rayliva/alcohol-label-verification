@@ -189,6 +189,27 @@ describe("Constraint 5 — no meaning carried by colour alone", () => {
     expect(screen.getAllByText("Needs review").length).toBeGreaterThan(0);
   });
 
+  it("names the overall outcome in the headline, not just a count", () => {
+    // One flagged field and one failing field must not both read "1 issue
+    // found": the glyph is aria-hidden, so without a word the two summaries
+    // are identical to a screen reader and differ only by colour to everyone
+    // else.
+    const { unmount } = render(
+      <ResultsScreen response={RESPONSE} reviewer="" onCheckAnother={vi.fn()} />,
+    );
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/this label needs review/i);
+    unmount();
+
+    render(
+      <ResultsScreen
+        response={{ ...RESPONSE, overall: "fail" }}
+        reviewer=""
+        onCheckAnother={vi.fn()}
+      />,
+    );
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/this label fails/i);
+  });
+
   it("shows both the declared and the detected value without opening anything", () => {
     render(<ResultsScreen response={RESPONSE} reviewer="" onCheckAnother={vi.fn()} />);
     expect(screen.getByText("Stone's Throw")).toBeInTheDocument();

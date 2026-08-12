@@ -493,3 +493,15 @@ All decided by the product owner in review of the running app.
   being here.
 - **`samples/batch-manifest.csv`** pairs with the 31 images in
   `api/app/samples/` for a full batch test through the UI.
+
+### Session 6 amendments, summary bar
+
+- **The results summary is a USWDS-shaped alert**: white card, grey border,
+  8px status-coloured left bar and a coloured glyph, replacing the fully
+  tinted band with its boxed glyph. Field-card rails thinned to match.
+- **The counts breakdown is gone** ("5 fields pass · 1 need review · 0
+  fail"); the headline carries the number. Removing it surfaced a rule-5
+  regression the review caught: one flagged field and one failing field both
+  read "1 issue found", identically to a screen reader. The headline now
+  names the outcome in words: "1 issue found. This label needs review." /
+  "This label fails."

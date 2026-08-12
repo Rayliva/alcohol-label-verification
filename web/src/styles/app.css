@@ -495,45 +495,48 @@ a:hover {
 
 .summary {
   display: flex;
-  gap: 20px;
+  gap: 18px;
   align-items: flex-start;
-  border: 2px solid;
-  border-left-width: 12px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-left-width: 8px;
   border-radius: var(--radius-card);
-  padding: 22px 26px;
+  padding: 18px 22px;
 }
 
 .summary--pass {
-  background: var(--pass-tint);
-  border-color: var(--pass-border);
+  border-left-color: var(--pass-border);
 }
 .summary--needs_review {
-  background: var(--review-tint);
-  border-color: var(--review-border);
+  border-left-color: var(--review-border);
 }
 .summary--fail {
-  background: var(--fail-tint);
-  border-color: var(--fail-border);
+  border-left-color: var(--fail-border);
 }
 .summary--unreadable {
-  background: var(--zebra);
-  border-color: var(--border);
+  border-left-color: var(--border);
 }
 
 .summary__glyph {
-  width: 56px;
-  height: 56px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-control);
-  font-size: 30px;
+  font-size: 26px;
+  font-weight: 700;
 }
 
-.summary__counts {
-  font-size: 20px;
-  margin: 6px 0 0;
+.summary--pass .summary__glyph {
+  color: var(--pass-border);
+}
+.summary--needs_review .summary__glyph {
+  color: var(--review-border);
+}
+.summary--fail .summary__glyph {
+  color: var(--fail-border);
+}
+.summary--unreadable .summary__glyph {
+  color: var(--ink-secondary);
 }
 
 .summary__meta {
@@ -551,7 +554,7 @@ a:hover {
 /* Field cards ------------------------------------------------------------ */
 
 .result {
-  border-left-width: 10px;
+  border-left-width: 8px;
 }
 .result--pass {
   border-left-color: var(--pass-border);
