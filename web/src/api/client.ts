@@ -169,11 +169,13 @@ export async function fetchQueueItem(id: string): Promise<QueueItemDetail> {
   return response.json();
 }
 
+/** Records the decision and answers with where to go next: the id of the
+ * first application still undecided, or null when the queue is done. */
 export async function recordDecision(
   id: string,
   action: "approve" | "reject" | "override",
   note: string,
-): Promise<void> {
+): Promise<{ nextId: string | null }> {
   const response = await fetch(
     `${BASE}/api/queue/${encodeURIComponent(id)}/decision`,
     {
@@ -184,6 +186,8 @@ export async function recordDecision(
     },
   );
   if (!response.ok) throw new ApiError(await readError(response));
+  const body = await response.json();
+  return { nextId: body.next_id ?? null };
 }
 
 export function labelImageUrl(id: string): string {

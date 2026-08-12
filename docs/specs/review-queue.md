@@ -1,6 +1,8 @@
 # Spec: password gate and agent review queue
 
-Status: **implemented and deployed.** Updated 2026-08-11 to match what ships.
+Status: **implemented and deployed.** Updated 2026-08-12: search and
+decided-state filter, next-in-queue advance, unreadable uploads join the
+queue, and the elapsed-time display restored (see 2026-08-12 amendments).
 
 Traces to `requirements.md` (Sarah Chen: "An agent pulls up an application, looks
 at the label artwork, and checks that what's on the label matches what's in the
@@ -96,6 +98,31 @@ This spec makes the queue the front door and keeps upload as a secondary action.
 - A completed upload is added to the queue for the session.
 - Batch upload is unchanged: async, pre-flight validated, determinate progress.
 
+### 6. Amendments, 2026-08-12 (product owner)
+
+- **Search and filter on the queue screen.** A text input filters rows by
+  brand or application ID, case-insensitive, as the agent types. Beside it,
+  a decided-state filter: All / Not decided / Decided, as pressed buttons.
+  Both are client-side; the queue is one fetch. An empty filtered list says
+  so rather than rendering a bare table.
+- **Next in queue.** Recording a decision advances straight to the next
+  undecided application instead of returning to the list — "I should just be
+  able to go into the next one." The decision response carries `next_id`, the
+  id of the first undecided item in queue order, or null when none remain, in
+  which case the UI returns to the queue. The server picks the next item so
+  the order is the queue's one sort, not a second copy in the client.
+- **Every upload joins the queue, including unreadable ones.** The
+  unreadable path returned before the queue insert, so those uploads
+  vanished. An unreadable upload is a queue item shaped like a seeded
+  unreadable row: no result, an `unreadable` reason, no artwork.
+- **The elapsed time is back on the results screen.** Acceptance criterion 6
+  below always required it; it was lost when the "spirits · read in N
+  seconds" line was trimmed. What is shown is the wall-clock time the agent
+  actually waited, measured by the client from submit to response, phrased
+  "Checked in N seconds" — not the server's pipeline time presented as if it
+  were the wait. The same line says the application is now in the review
+  queue, so nobody goes hunting for it.
+
 ## Acceptance criteria
 
 1. Given no session cookie, when any API route other than `/health` is called,
@@ -116,6 +143,16 @@ This spec makes the queue the front door and keeps upload as a secondary action.
    seeded state and any decisions made earlier are gone.
 8. Every control is reachable by Tab, activatable by Enter or Space, and
    queryable by `getByRole(role, { name })`.
+9. Given text typed into the queue search, then only rows whose brand or
+   application ID contains it (case-insensitive) remain; given a
+   decided-state filter pressed, then only rows in that state remain; given
+   nothing matches, then a message says so.
+10. Given a decision recorded with undecided applications remaining, then the
+    next undecided application opens without a trip through the queue; given
+    none remain, then the queue screen returns.
+11. Given an unreadable upload, then it joins the queue with its reason, and
+    opening it shows the same unreadable notice a seeded unreadable row
+    shows.
 
 ## Documentation this invalidates
 

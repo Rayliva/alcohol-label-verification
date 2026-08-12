@@ -29,7 +29,9 @@ export function ReviewScreen({
 }: {
   id: string;
   onBack: () => void;
-  onDecided: () => void;
+  /** Called with the next undecided application's id, or null when the
+   * queue is done — the caller decides where that leads. */
+  onDecided: (nextId: string | null) => void;
 }) {
   const [item, setItem] = useState<QueueItemDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -58,8 +60,8 @@ export function ReviewScreen({
   const decide = async (action: Action) => {
     setSaving(action);
     try {
-      await recordDecision(id, action, note);
-      onDecided();
+      const { nextId } = await recordDecision(id, action, note);
+      onDecided(nextId);
     } catch (cause) {
       setError(
         cause instanceof ApiError ? cause.body.message : "Could not save that decision.",

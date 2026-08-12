@@ -906,6 +906,24 @@ a:hover {
   margin: 16px 0;
 }
 
+/* Search beside the decision-state filter, above the queue table. The input
+   and the buttons bottom-align so the row reads as one control group. */
+.queue-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  align-items: flex-end;
+  margin-top: 16px;
+}
+
+.queue-controls__search {
+  flex: 0 1 340px;
+}
+
+.queue-controls .filter-row {
+  margin: 0 0 2px;
+}
+
 .file-picker {
   margin-top: 16px;
   display: flex;

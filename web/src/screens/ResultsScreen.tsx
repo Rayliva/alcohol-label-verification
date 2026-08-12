@@ -45,6 +45,10 @@ export function ResultsScreen({
   response,
   reviewer,
   onCheckAnother,
+  /** The wait the agent just sat through, submit to response, measured by the
+   * caller. Fresh uploads only: a seeded row opened from the queue was
+   * checked long ago, and a stopwatch there would report the wrong machine. */
+  elapsedSeconds = null,
   /** True when this sits inside the review screen, which owns the page's one
    * dominant action and its own back button. */
   embedded = false,
@@ -52,6 +56,7 @@ export function ResultsScreen({
   response: VerificationResponse;
   reviewer: string;
   onCheckAnother: () => void;
+  elapsedSeconds?: number | null;
   embedded?: boolean;
 }) {
   const ordered = useMemo(
@@ -89,6 +94,11 @@ export function ResultsScreen({
               review · {counts.fail ?? 0} {(counts.fail ?? 0) === 1 ? "fails" : "fail"}
             </p>
           )}
+          {elapsedSeconds != null ? (
+            <p className="summary__meta">
+              Checked in {elapsedSeconds.toFixed(1)} seconds · Now in the review queue
+            </p>
+          ) : null}
           {response.label_id || reviewer ? (
             <p className="summary__meta">
               {response.label_id ? `Application ${response.label_id}` : ""}

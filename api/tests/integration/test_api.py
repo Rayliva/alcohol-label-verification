@@ -126,6 +126,42 @@ class TestUnreadableImages:
         assert body["fields"] == []
 
 
+class TestUploadsJoinTheQueue:
+    """A checked label appears in the review queue beside the seeded work."""
+
+    def test_a_verified_upload_appears_in_the_queue(self, client, labels) -> None:
+        before = {row["id"] for row in client.get("/api/queue").json()["items"]}
+        body = post(client, labels["t1-clean-classic-1"]).json()
+        after = client.get("/api/queue").json()["items"]
+        new = [row for row in after if row["id"] not in before]
+        assert len(new) == 1
+        assert new[0]["source"] == "uploaded"
+        assert new[0]["outcome"] == body["overall"]
+        assert new[0]["decision"] is None
+
+    def test_an_uploaded_item_can_be_opened_and_decided(self, client, labels) -> None:
+        before = {row["id"] for row in client.get("/api/queue").json()["items"]}
+        post(client, labels["t1-clean-classic-1"])
+        after = client.get("/api/queue").json()["items"]
+        new = next(row for row in after if row["id"] not in before)
+        detail = client.get(f"/api/queue/{new['id']}").json()
+        assert detail["result"]["overall"] == new["outcome"]
+        decided = client.post(
+            f"/api/queue/{new['id']}/decision",
+            json={"action": "approve", "note": ""},
+        )
+        assert decided.status_code == 200
+        assert decided.json()["decision"]["action"] == "approve"
+
+    def test_an_unreadable_upload_still_joins_the_queue(self, client, labels) -> None:
+        before = {row["id"] for row in client.get("/api/queue").json()["items"]}
+        post(client, labels["t4-tiny"])
+        after = client.get("/api/queue").json()["items"]
+        new = [row for row in after if row["id"] not in before]
+        assert len(new) == 1
+        assert new[0]["outcome"] == "unreadable"
+
+
 class TestRequestErrors:
     def test_a_beverage_type_that_is_not_ready_says_so(self, client, labels) -> None:
         response = post(client, labels["t1-clean-classic-1"], **{})

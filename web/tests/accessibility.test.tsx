@@ -3,10 +3,17 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import { InputScreen } from "../src/screens/InputScreen";
+import { QueueScreen } from "../src/screens/QueueScreen";
 import { SignInScreen } from "../src/screens/SignInScreen";
 import { ResultsScreen } from "../src/screens/ResultsScreen";
+import { fetchQueue } from "../src/api/client";
 import { EMPTY_DECLARED } from "../src/api/types";
-import type { DeclaredFields, VerificationResponse } from "../src/api/types";
+import type { DeclaredFields, QueueListing, VerificationResponse } from "../src/api/types";
+
+vi.mock("../src/api/client", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../src/api/client")>();
+  return { ...actual, fetchQueue: vi.fn() };
+});
 
 /**
  * The nine hard constraints in .claude/rules/accessibility.md, checked.
@@ -305,6 +312,86 @@ describe("The government warning gets its own block", () => {
   it("says plainly when nothing in the wording differs", () => {
     render(<ResultsScreen response={RESPONSE} reviewer="" onCheckAnother={vi.fn()} />);
     expect(screen.getByText(/nothing is highlighted/i)).toBeInTheDocument();
+  });
+});
+
+const LISTING: QueueListing = {
+  items: [
+    {
+      id: "001_bourbon_clean",
+      brand: "OLD TOM DISTILLERY",
+      beverage_type: "spirits",
+      outcome: "pass",
+      processing_ms: 1900,
+      source: "seeded",
+      decision: null,
+    },
+    {
+      id: "014_stones_throw",
+      brand: "STONE'S THROW",
+      beverage_type: "spirits",
+      outcome: "needs_review",
+      processing_ms: 2100,
+      source: "seeded",
+      decision: { action: "approve", note: "", decided_by: "agent" },
+    },
+  ],
+  counts: {},
+  awaiting_decision: 1,
+};
+
+describe("The queue is searchable and filterable", () => {
+  it("filters rows as the agent types, and says so when nothing matches", async () => {
+    vi.mocked(fetchQueue).mockResolvedValue(LISTING);
+    const user = userEvent.setup();
+    render(<QueueScreen onOpen={vi.fn()} reloadKey={0} />);
+
+    expect(await screen.findByText("OLD TOM DISTILLERY")).toBeInTheDocument();
+    const search = screen.getByLabelText(/search/i);
+    await user.type(search, "stone");
+    expect(screen.queryByText("OLD TOM DISTILLERY")).toBeNull();
+    expect(screen.getByText("STONE'S THROW")).toBeInTheDocument();
+
+    await user.clear(search);
+    await user.type(search, "zzz");
+    expect(screen.getByRole("status")).toHaveTextContent(/no applications match/i);
+  });
+
+  it("filters by decision state with pressed buttons, never by colour", async () => {
+    vi.mocked(fetchQueue).mockResolvedValue(LISTING);
+    const user = userEvent.setup();
+    render(<QueueScreen onOpen={vi.fn()} reloadKey={0} />);
+    expect(await screen.findByText("OLD TOM DISTILLERY")).toBeInTheDocument();
+
+    const undecided = screen.getByRole("button", { name: /not decided \(1\)/i });
+    await user.click(undecided);
+    expect(undecided).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByText("OLD TOM DISTILLERY")).toBeInTheDocument();
+    expect(screen.queryByText("STONE'S THROW")).toBeNull();
+
+    await user.click(screen.getByRole("button", { name: /^decided \(1\)/i }));
+    expect(screen.getByText("STONE'S THROW")).toBeInTheDocument();
+    expect(screen.queryByText("OLD TOM DISTILLERY")).toBeNull();
+  });
+});
+
+describe("The wait is reported where it was spent", () => {
+  it("shows the measured time, and where the application went, on a fresh upload", () => {
+    render(
+      <ResultsScreen
+        response={RESPONSE}
+        reviewer=""
+        onCheckAnother={vi.fn()}
+        elapsedSeconds={4.2}
+      />,
+    );
+    expect(screen.getByText(/checked in 4\.2 seconds/i)).toBeInTheDocument();
+    expect(screen.getByText(/now in the review queue/i)).toBeInTheDocument();
+  });
+
+  it("shows no stopwatch on a recorded result opened from the queue", () => {
+    render(<ResultsScreen response={RESPONSE} reviewer="" onCheckAnother={vi.fn()} embedded />);
+    expect(screen.queryByText(/checked in/i)).toBeNull();
   });
 });
 

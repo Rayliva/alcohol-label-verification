@@ -118,6 +118,12 @@ class ReviewQueue:
             self._items[item.id] = item
             return item
 
+    def next_undecided(self) -> QueueItem | None:
+        """The first undecided item in queue order — what "next" means to the UI."""
+        with self._lock:
+            undecided = [i for i in self._items.values() if i.decision is None]
+            return min(undecided, key=_rank) if undecided else None
+
     def decide(self, item_id: str, *, action: str, note: str, by: str) -> QueueItem | None:
         with self._lock:
             item = self._items.get(item_id)

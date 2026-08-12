@@ -146,4 +146,7 @@ def decide(
                 "what_to_do": "Go back to the queue and pick an application from the list.",
             },
         )
-    return item.summary()
+    # Where to go from here: the first undecided item in the queue's own
+    # order, so deciding flows straight into the next application.
+    next_item = queue.next_undecided()
+    return {**item.summary(), "next_id": next_item.id if next_item else None}

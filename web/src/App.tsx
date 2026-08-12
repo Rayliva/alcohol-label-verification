@@ -34,6 +34,9 @@ export default function App() {
   // showing a decision that has already been made.
   const [queueVersion, setQueueVersion] = useState(0);
   const [response, setResponse] = useState<VerificationResponse | null>(null);
+  // The wait the agent actually experienced, submit to response, measured
+  // here because only the client can see the whole of it (upload included).
+  const [elapsedSeconds, setElapsedSeconds] = useState<number | null>(null);
   const [error, setError] = useState<ErrorBody | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploaded, setUploaded] = useState(0);
@@ -62,9 +65,11 @@ export default function App() {
     setStep("processing");
     const controller = new AbortController();
     request.current = controller;
+    const startedAt = performance.now();
     try {
       // Spirits is the product's scope; there is no selector (ui-spec, 2026-08-11).
       const result = await verifyLabel(image, "spirits", declared, controller.signal, setUploaded);
+      setElapsedSeconds((performance.now() - startedAt) / 1000);
       setResponse(result);
       setQueueVersion((version) => version + 1);
       setStep("results");
@@ -155,11 +160,19 @@ export default function App() {
 
         {step === "review" && openId ? (
           <ReviewScreen
+            /* Keyed so each application starts fresh: without this, the note
+               and the saving state would carry over when a decision advances
+               straight into the next application. */
+            key={openId}
             id={openId}
             onBack={() => setStep("queue")}
-            onDecided={() => {
+            onDecided={(nextId) => {
               setQueueVersion((version) => version + 1);
-              setStep("queue");
+              if (nextId) {
+                setOpenId(nextId);
+              } else {
+                setStep("queue");
+              }
             }}
           />
         ) : null}
@@ -191,6 +204,7 @@ export default function App() {
         {step === "results" && response ? (
           <ResultsScreen
             response={response}
+            elapsedSeconds={elapsedSeconds}
             reviewer=""
             onCheckAnother={() => {
               setResponse(null);

@@ -513,6 +513,10 @@ All decided by the product owner in review of the running app.
   accessibility aid; the README records it under "One deliberate redundancy".
   The outcome word in the headline stays; the two carry the same fact in
   two forms, which is the point.
+- **Queue search, decided-state filter, next-in-queue advance, uploads
+  always join the queue, and the measured wait back on the results screen.**
+  Specified in full in `docs/specs/review-queue.md`, "Amendments,
+  2026-08-12".
 - **One typeface outside the evidence.** The submit flow had four faces in
   view at once: mono inputs for the "exact" fields, a mono filename line, a
   mono application-ID column in the batch table, and a prose sentence on the

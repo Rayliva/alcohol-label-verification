@@ -29,6 +29,8 @@ const OUTCOME_LABEL: Record<string, string> = {
   pass: "Pass",
 };
 
+type DecidedFilter = "all" | "undecided" | "decided";
+
 export function QueueScreen({
   onOpen,
   reloadKey,
@@ -37,6 +39,8 @@ export function QueueScreen({
   reloadKey: number;
 }) {
   const [listing, setListing] = useState<QueueListing | null>(null);
+  const [query, setQuery] = useState("");
+  const [decidedFilter, setDecidedFilter] = useState<DecidedFilter>("all");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -76,6 +80,23 @@ export function QueueScreen({
 
   const waiting = listing.awaiting_decision;
 
+  const needle = query.trim().toLowerCase();
+  const shown = listing.items.filter((row: QueueRow) => {
+    const matchesText =
+      !needle ||
+      row.brand.toLowerCase().includes(needle) ||
+      row.id.toLowerCase().includes(needle);
+    const matchesState =
+      decidedFilter === "all" || (decidedFilter === "decided") === Boolean(row.decision);
+    return matchesText && matchesState;
+  });
+
+  const stateFilters: { key: DecidedFilter; label: string; count: number }[] = [
+    { key: "all", label: "All", count: listing.items.length },
+    { key: "undecided", label: "Not decided", count: waiting },
+    { key: "decided", label: "Decided", count: listing.items.length - waiting },
+  ];
+
   return (
     <section className="card">
       <div className="queue__head">
@@ -89,6 +110,41 @@ export function QueueScreen({
         </div>
       </div>
 
+      <div className="queue-controls">
+        <div className="field queue-controls__search">
+          <label className="field__label" htmlFor="queue-search">
+            Search
+          </label>
+          <input
+            id="queue-search"
+            className="input"
+            type="search"
+            placeholder="Brand or application ID"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </div>
+        <div className="filter-row" role="group" aria-label="Show applications by decision state">
+          {stateFilters.map((option) => (
+            <button
+              key={option.key}
+              type="button"
+              className="button"
+              aria-pressed={decidedFilter === option.key}
+              onClick={() => setDecidedFilter(option.key)}
+            >
+              {option.label} ({option.count})
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {shown.length === 0 ? (
+        <p className="help" role="status">
+          No applications match. Clear the search or choose another filter to
+          see all {listing.items.length}.
+        </p>
+      ) : (
       <table className="queue">
         <caption className="visually-hidden">
           Applications awaiting review, those needing human judgment first
@@ -104,7 +160,7 @@ export function QueueScreen({
           </tr>
         </thead>
         <tbody>
-          {listing.items.map((row: QueueRow) => (
+          {shown.map((row: QueueRow) => (
             <tr key={row.id} className={row.decision ? "queue__row--decided" : undefined}>
               <th scope="row" className="queue__brand">
                 {row.brand}
@@ -142,6 +198,7 @@ export function QueueScreen({
           ))}
         </tbody>
       </table>
+      )}
     </section>
   );
 }

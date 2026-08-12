@@ -204,7 +204,7 @@ async def verify_label(
         # screen, carrying a reason they can act on. The elapsed time is real:
         # batch progress aggregates all four buckets, and reporting zero here
         # makes its estimate wrong.
-        return VerificationResponse(
+        response = VerificationResponse(
             label_id=application_id or None,
             beverage_type=beverage_type,
             overall="unreadable",
@@ -212,6 +212,12 @@ async def verify_label(
             reviewer=reviewer or None,
             error=ErrorBody(**exc.as_dict(), partial_fields_shown=False),
         )
+        # Unreadable is one of the four outcomes, so it joins the queue like
+        # the other three — shaped like a seeded unreadable row: a reason, no
+        # result. Returning before the insert here is how uploads used to
+        # vanish.
+        _join_queue(response, brand=brand_name or application_id, unreadable=exc.as_dict())
+        return response
     except BeverageTypeUnavailableError as exc:
         raise _bad_request(
             code="beverage_type_unavailable",
@@ -235,22 +241,35 @@ async def verify_label(
         ) from exc
 
     response = _to_response(result, application_id=application_id, reviewer=reviewer)
-    # A checked label joins the queue, so an agent who uploads one finds it
-    # beside everything else waiting rather than losing it when they navigate
-    # away. It lives for the life of the process, like the rest of the queue.
+    _join_queue(response, brand=brand_name or application_id)
+    return response
+
+
+def _join_queue(
+    response: VerificationResponse,
+    *,
+    brand: str | None,
+    unreadable: dict[str, str] | None = None,
+) -> None:
+    """A checked label joins the queue, whatever its outcome.
+
+    An agent who uploads a label finds it beside everything else waiting
+    rather than losing it when they navigate away. It lives for the life of
+    the process, like the rest of the queue.
+    """
     queue.add(
         QueueItem(
             id=f"upload-{uuid.uuid4().hex[:8]}",
-            brand=brand_name or application_id or "Uploaded label",
-            beverage_type=beverage_type,
+            brand=brand or "Uploaded label",
+            beverage_type=response.beverage_type,
             outcome=response.overall,
             processing_ms=response.processing_ms,
             source="uploaded",
             received_at=time.time(),
-            result=response.model_dump(mode="json"),
+            result=None if unreadable else response.model_dump(mode="json"),
+            unreadable=unreadable,
         )
     )
-    return response
 
 
 def _bad_request(*, code: str, message: str, what_to_do: str) -> HTTPException:

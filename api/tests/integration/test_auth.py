@@ -1,4 +1,4 @@
-"""Nothing that reads a label is reachable without signing in.
+﻿"""Nothing that reads a label is reachable without signing in.
 
 The deployed URL is public. The gate is not an identity system — one shared
 credential, no accounts, nothing stored — but it has to actually hold, and it
@@ -136,3 +136,12 @@ class TestTheQueue:
         first = client.get("/api/queue").json()["items"][0]["id"]
         client.post(f"/api/queue/{first}/decision", json={"action": "approve"})
         assert client.get("/api/queue").json()["items"][0]["id"] != first
+
+    def test_a_decision_names_the_next_undecided_application(self, client: TestClient) -> None:
+        # "I should just be able to go into the next one" — the decision
+        # response carries where to go, in the queue's own order.
+        sign_in(client)
+        items = client.get("/api/queue").json()["items"]
+        first, second = items[0]["id"], items[1]["id"]
+        body = client.post(f"/api/queue/{first}/decision", json={"action": "approve"}).json()
+        assert body["next_id"] == second
