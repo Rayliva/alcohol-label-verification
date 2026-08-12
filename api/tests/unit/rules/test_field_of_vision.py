@@ -62,11 +62,16 @@ class TestItDoesNotVouchForFieldsThatAreNotThere:
         assert verdict is Verdict.PASS
         assert "all appear on the same side" in reason
 
-    def test_a_genuine_split_still_fails(self) -> None:
-        verdict, _ = field_of_vision(
+    def test_a_genuine_split_reaches_a_person(self) -> None:
+        # Not FAIL: which side a field sits on is inferred from the image's
+        # aspect ratio, which cannot separate two-panel artwork from a
+        # landscape single-panel export. The split still reaches an agent,
+        # carrying where each field was seen.
+        verdict, reason = field_of_vision(
             {"brand_name": "front", "class_type": "front", "alcohol_content": "back"}
         )
-        assert verdict is Verdict.FAIL
+        assert verdict is Verdict.NEEDS_REVIEW
+        assert "one panel or two" in reason
 
 
 class TestAnUnknownSideIsNotAVerdict:

@@ -63,7 +63,13 @@ class Settings(BaseSettings):
     insecure_cookies: bool = False
 
     # --- Server ---
-    cors_origins: str = "http://localhost:5173"
+    # Empty by default: production serves the UI and the API from one origin,
+    # so it needs no cross-origin access at all. Local development does — the
+    # Vite dev server is a different port — and .env.example carries that
+    # value. A stale default here is what previously turned the session
+    # cookie non-Secure in production, when the cookie flag was derived from
+    # this string.
+    cors_origins: str = ""
     log_level: str = "INFO"
 
     @property

@@ -329,11 +329,22 @@ def _check_field_of_vision(layout: LayoutMetrics | None) -> WarningCheck:
     placements = ", ".join(
         f"{name.replace('_', ' ')} on the {side}" for name, side in known.items()
     )
+    # NEEDS_REVIEW rather than FAIL, because which side a field sits on is a
+    # guess. Panels are inferred from the image's aspect ratio, and that cannot
+    # separate genuinely two-panel artwork (the corpus renders it at 1.43) from
+    # a single-panel landscape export (around 1.75). Failing on it accuses a
+    # compliant label of a violation invented by the shape of the photograph.
+    #
+    # Nothing is missed by softening it: a real split still reaches an agent,
+    # carrying where each field was seen, and they can tell in a glance what no
+    # ratio can. Recorded as B3 in docs/audit-findings.md.
     return WarningCheck(
         WarningCheckName.FIELD_OF_VISION,
-        Verdict.FAIL,
-        f"27 CFR 5.63 requires brand name, class or type, and alcohol content in the "
-        f"same field of vision, but this label has {placements}.",
+        Verdict.NEEDS_REVIEW,
+        f"27 CFR 5.63 requires brand name, class or type, and alcohol content in "
+        f"the same field of vision. This image appears to show {placements} — but "
+        "whether it is one panel or two cannot be told from the picture. Look at "
+        "the artwork.",
     )
 
 

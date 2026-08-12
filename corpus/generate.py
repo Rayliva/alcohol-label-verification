@@ -614,7 +614,13 @@ def _tier_five() -> list[Variant]:
                 "content in the same field of vision.",
                 spec=_spec_from(OLD_TOM, label_id, back_fields=(moved,), design=COMPACT),
                 application=dict(OLD_TOM),
-                deviations={"government_warning": "fail"},
+                # needs_review, not fail. Which panel a field sits on is
+                # inferred from the image's aspect ratio, and that cannot
+                # separate this two-panel artwork (1.43) from a single-panel
+                # landscape export (about 1.75). The split reaches an agent
+                # with where each field was seen rather than being asserted as
+                # a violation. See docs/audit-findings.md B3.
+                deviations={"government_warning": "needs_review"},
                 requires_layout=True,
             )
         )

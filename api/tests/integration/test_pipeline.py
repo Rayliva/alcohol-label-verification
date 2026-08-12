@@ -105,12 +105,15 @@ class TestMeasurements:
         )
         assert contrast.verdict is not Verdict.PASS
 
-    def test_a_field_on_the_back_panel_is_caught(self, labels, ocr) -> None:
+    def test_a_field_on_the_back_panel_reaches_a_person(self, labels, ocr) -> None:
         result = run(labels["t5-field-of-vision-1"], ocr)
         check = next(
             c for c in result.report.warning_checks if c.check is WarningCheckName.FIELD_OF_VISION
         )
-        assert check.verdict is Verdict.FAIL
+        # Not FAIL: panels are inferred from aspect ratio, which cannot tell
+        # two-panel artwork from a landscape single-panel export. The split
+        # still reaches an agent with where each field was seen.
+        assert check.verdict is Verdict.NEEDS_REVIEW
 
 
 class TestUnreadableImages:

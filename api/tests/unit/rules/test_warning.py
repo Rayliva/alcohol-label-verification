@@ -148,7 +148,7 @@ class TestFieldOfVision:
         report = check_warning(detected=STATUTORY_WARNING, layout=GOOD_LAYOUT)
         assert verdict_for(report.checks, WarningCheckName.FIELD_OF_VISION) is Verdict.PASS
 
-    def test_alcohol_content_on_the_back_fails(self) -> None:
+    def test_alcohol_content_on_the_back_reaches_a_person(self) -> None:
         # 27 CFR 5.63 requires brand, class/type and alcohol content in the
         # same field of vision.
         layout = GOOD_LAYOUT.replace(
@@ -159,7 +159,9 @@ class TestFieldOfVision:
             }
         )
         report = check_warning(detected=STATUTORY_WARNING, layout=layout)
-        assert verdict_for(report.checks, WarningCheckName.FIELD_OF_VISION) is Verdict.FAIL
+        # Not FAIL: the side a field sits on is inferred from aspect ratio, so
+        # a split is a question for a person rather than an accusation.
+        assert verdict_for(report.checks, WarningCheckName.FIELD_OF_VISION) is Verdict.NEEDS_REVIEW
 
     def test_it_is_omitted_for_beverage_types_it_does_not_govern(self) -> None:
         report = check_warning(

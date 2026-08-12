@@ -1551,9 +1551,9 @@
         "alcohol_content": "pass",
         "net_contents": "pass",
         "bottler_address": "pass",
-        "government_warning": "fail"
+        "government_warning": "needs_review"
       },
-      "expected_overall": "fail"
+      "expected_overall": "needs_review"
     },
     {
       "id": "t5-field-of-vision-2",
@@ -1578,9 +1578,9 @@
         "alcohol_content": "pass",
         "net_contents": "pass",
         "bottler_address": "pass",
-        "government_warning": "fail"
+        "government_warning": "needs_review"
       },
-      "expected_overall": "fail"
+      "expected_overall": "needs_review"
     },
     {
       "id": "t5-field-of-vision-3",
@@ -1605,9 +1605,9 @@
         "alcohol_content": "pass",
         "net_contents": "pass",
         "bottler_address": "pass",
-        "government_warning": "fail"
+        "government_warning": "needs_review"
       },
-      "expected_overall": "fail"
+      "expected_overall": "needs_review"
     }
   ]
 }

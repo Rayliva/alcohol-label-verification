@@ -25,7 +25,7 @@ The error class this project exists to prevent. These come first, always.
 |---|---|---|
 | B1 | **fixed** | `parse_net_contents` sums every metric quantity it finds. Intended for "1 L 500 mL"; also doubles "70 cl 700 ml" (one volume, two spellings, a normal convention on imports) to 1400 mL |
 | B2 | **fixed** | `CROSS_SYSTEM_TOLERANCE` (1%) is too tight for "1 PT 9 FL OZ" = 739.34 mL against a declared 750 mL — 1.42% apart, so it fails. That form is named in the module's own docstring as a real one |
-| B3 | **accepted** | Aspect ratio alone flips `field_of_vision`: 1000x1400 passes, 1400x800 fails. Real, but not fixed — the corpus renders genuine two-panel artwork at 1.43 and a single-panel landscape export sits at 1.75, so the ratio cannot separate them. Declining to judge whenever the frame is wide would drop the check on every genuine two-panel label, which costs more than the error it prevents. Documented at the call site |
+| B3 | **fixed** | Aspect ratio alone decided which panel a field sat on, so 1000x1400 passed and 1400x800 failed with a citation invented by the frame. It cannot be measured away — the corpus renders genuine two-panel artwork at 1.43 and a single-panel landscape export sits at 1.75 — so the verdict was softened instead: a split is NEEDS_REVIEW carrying where each field was seen, never FAIL. Nothing is missed; the check stops asserting what the picture cannot tell it |
 
 ## C. Wrong status or inconsistent output
 
@@ -79,6 +79,46 @@ Recorded so it is not re-investigated.
 
 - **Skew as a live false FAIL.** Claimed `t4-skew` produces a stroke ratio of 0.766 and fails. With real OCR the ratio is `None` — the measurement is not produced at all, and the check already asks for review. The 0.766 came from an oracle bounding box, not the pipeline.
 - **ZIP handling.** There is no `zipfile` or `tarfile` anywhere; batch takes multipart images plus a manifest. Zip-slip and archive bombs are not applicable.
+
+## Decisions confirmed 2026-08-11
+
+### Spirits only is not a gap in coverage
+
+Checked against the brief rather than assumed. `requirements.md` names three
+beverage types exactly once, and prefaces it *"For reference"*:
+
+> For reference, TTB requires specific information on alcohol beverage labels.
+> The exact requirements vary by beverage type (beer, wine, distilled spirits)
+> but common elements include: ...
+
+That paragraph is background about TTB, not a feature list. The instruction is
+further down, and it points at one worked example:
+
+> Your app should handle labels containing information like the example below
+
+followed by *Example Distilled Spirits Label Fields*. The only worked example
+in the brief is spirits. The brief also states outright that *"a working core
+application with clean code is preferred over ambitious but incomplete
+features"*.
+
+So spirits-complete is the intended shape, wine and malt stay declared but
+unavailable with the reason shown in the UI, and no further corpus work is
+needed for them. The independent requirements audit reached the same conclusion
+unprompted. **Do not generate wine or malt labels.** Finding A5 stays open but
+unreachable, and only becomes live if that decision is reversed.
+
+### CORS_ORIGINS is a code default, not a Render setting
+
+It is absent from the Render dashboard because it was never set there: the app
+falls back to the default in `api/app/config.py`, which is
+`http://localhost:5173`. That stale value is what made the session cookie
+non-Secure in production, since the cookie flag used to be derived from it.
+
+The cookie no longer depends on it, so what remains is tidiness: production
+serves the UI and the API from one origin and needs no CORS at all. The fix
+belongs in code — default to empty, and carry the localhost value in
+`.env.example` where local development picks it up — rather than as another
+variable to remember to set on a host.
 
 ## Standing note
 
