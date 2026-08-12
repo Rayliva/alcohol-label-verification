@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { ApiError, signIn } from "../api/client";
+import { Logo } from "../components/Logo";
 
 /**
  * The gate on a public URL.
@@ -35,6 +36,7 @@ export function SignInScreen({ onSignedIn }: { onSignedIn: (who: string) => void
 
   return (
     <section className="card card--narrow">
+      <Logo className="signin__logo" />
       <h1>Sign in</h1>
       <p className="help">
         Label Check compares label artwork against the values declared in a COLA

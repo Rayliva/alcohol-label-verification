@@ -8,6 +8,7 @@ import type {
   VerificationResponse,
 } from "./api/types";
 import { EMPTY_DECLARED } from "./api/types";
+import { Logo } from "./components/Logo";
 import { BatchScreen } from "./screens/BatchScreen";
 import { QueueScreen } from "./screens/QueueScreen";
 import { ReviewScreen } from "./screens/ReviewScreen";
@@ -118,6 +119,7 @@ export default function App() {
   return (
     <>
       <header className="masthead">
+        {agent ? <Logo className="masthead__logo" /> : null}
         <span className="masthead__name">Label Check</span>
         {agent && step !== "input" && step !== "batch" && step !== "processing" ? (
           <button

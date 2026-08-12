@@ -15,7 +15,7 @@ Last updated: 2026-08-11, end of session 5.
 **Phases 0 to 3 are complete and deployed.** Phase 4 is the only phase left,
 and every item in it is a documented scope decision rather than an oversight.
 
-415 backend tests and 20 frontend tests, all green, all offline. Lint, format
+415 backend tests and 21 frontend tests, all green, all offline. Lint, format
 and mypy clean (mypy carries 8 long-standing errors in three files). Pushed to
 `main`; Render is serving it.
 

@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import { InputScreen } from "../src/screens/InputScreen";
+import { SignInScreen } from "../src/screens/SignInScreen";
 import { ResultsScreen } from "../src/screens/ResultsScreen";
 import { EMPTY_DECLARED } from "../src/api/types";
 import type { BeverageTypeOption, DeclaredFields, VerificationResponse } from "../src/api/types";
@@ -301,5 +302,14 @@ describe("The government warning gets its own block", () => {
   it("says plainly when nothing in the wording differs", () => {
     render(<ResultsScreen response={RESPONSE} reviewer="" onCheckAnother={vi.fn()} />);
     expect(screen.getByText(/nothing is highlighted/i)).toBeInTheDocument();
+  });
+});
+
+describe("Constraint 7 — everything has an accessible name", () => {
+  it("names the mark rather than leaving a screen reader an empty image", () => {
+    render(<SignInScreen onSignedIn={vi.fn()} />);
+    expect(
+      screen.getByRole("img", { name: /alcohol and tobacco tax and trade bureau/i }),
+    ).toBeInTheDocument();
   });
 });

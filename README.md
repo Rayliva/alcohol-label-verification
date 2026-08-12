@@ -259,7 +259,7 @@ known rather than actionable.
 cd web
 npm install
 npm run dev        # http://localhost:5173, proxying /api to port 8000
-npm run test       # 20 accessibility and behaviour tests, single pass
+npm run test       # 21 accessibility and behaviour tests, single pass
 npm run test:watch # the same, in watch mode
 npm run build
 ```
@@ -432,6 +432,12 @@ are the error class this product is scored on.
 
 ## Scope and trade-offs
 
+**On the TTB seal.** The sign-in screen and the masthead carry the Bureau's
+seal (`web/public/ttb-logo.svg`, taken from ttb.gov) so the screens read as
+what they are meant to sit inside. **This is a prototype written against a
+take-home brief. It is not a TTB product, it is not operated by or affiliated
+with the Bureau, and no verdict it produces is an official determination.**
+
 ### Shipped
 
 Single-label review · six-check government warning · fuzzy text matching with
@@ -537,7 +543,7 @@ Not built, and named rather than left implied:
 | Extraction | Claude Haiku 4.5, structured outputs, thinking disabled, temperature 0 | Benchmarked against Opus 5 and Sonnet 5 during the spike. Structured outputs remove the parse-and-retry loop; temperature 0 because the same label must get the same verdict twice |
 | Rules | Pure Python, no dependencies | Unit-testable with no network. The whole engine runs in 5 ms |
 | Frontend | React 19, Vite, TypeScript, hand-written CSS tokens | The design specifies exact values throughout, and each is an accessibility decision with a reason |
-| Tests | pytest, Vitest, Testing Library | 415 backend, 20 frontend |
+| Tests | pytest, Vitest, Testing Library | 415 backend, 21 frontend |
 | Hosting | Render, always-on tier, from `api/Dockerfile` | Cold starts sabotage the evaluator's first click |
 
 ---

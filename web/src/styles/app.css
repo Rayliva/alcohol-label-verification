@@ -96,6 +96,22 @@ a:hover {
   gap: 16px;
 }
 
+.signin__logo {
+  height: 52px;
+  width: auto;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.masthead__logo {
+  height: 34px;
+  width: auto;
+  display: block;
+  /* The masthead is a flex row. Without this a narrow viewport squeezes the
+     width while the height holds, and the seal comes out oval. */
+  flex-shrink: 0;
+}
+
 /* The spacer lives on the wordmark, not on either thing to its right. Both of
    those come and go with the screen, and a margin-left:auto that disappears
    takes the right-hand alignment with it. */
