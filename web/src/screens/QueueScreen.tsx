@@ -30,17 +30,23 @@ const OUTCOME_LABEL: Record<string, string> = {
 };
 
 type DecidedFilter = "all" | "undecided" | "decided";
+type OutcomeFilter = "all" | "needs_review" | "unreadable" | "fail" | "pass";
 
 export function QueueScreen({
   onOpen,
+  onStart,
   reloadKey,
 }: {
   onOpen: (id: string) => void;
+  /** Begin a reviewing run at the given application, the queue's first
+   * undecided one. */
+  onStart: (id: string) => void;
   reloadKey: number;
 }) {
   const [listing, setListing] = useState<QueueListing | null>(null);
   const [query, setQuery] = useState("");
   const [decidedFilter, setDecidedFilter] = useState<DecidedFilter>("all");
+  const [outcomeFilter, setOutcomeFilter] = useState<OutcomeFilter>("all");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -88,14 +94,11 @@ export function QueueScreen({
       row.id.toLowerCase().includes(needle);
     const matchesState =
       decidedFilter === "all" || (decidedFilter === "decided") === Boolean(row.decision);
-    return matchesText && matchesState;
+    const matchesOutcome = outcomeFilter === "all" || row.outcome === outcomeFilter;
+    return matchesText && matchesState && matchesOutcome;
   });
 
-  const stateFilters: { key: DecidedFilter; label: string; count: number }[] = [
-    { key: "all", label: "All", count: listing.items.length },
-    { key: "undecided", label: "Not decided", count: waiting },
-    { key: "decided", label: "Decided", count: listing.items.length - waiting },
-  ];
+  const firstUndecided = listing.items.find((row: QueueRow) => !row.decision);
 
   return (
     <section className="card">
@@ -108,6 +111,15 @@ export function QueueScreen({
               : `${waiting} of ${listing.items.length} still need a decision. Those needing judgment are listed first.`}
           </p>
         </div>
+        {firstUndecided ? (
+          <button
+            type="button"
+            className="button button--primary"
+            onClick={() => onStart(firstUndecided.id)}
+          >
+            Start reviewing
+          </button>
+        ) : null}
       </div>
 
       <div className="queue-controls">
@@ -124,18 +136,37 @@ export function QueueScreen({
             onChange={(event) => setQuery(event.target.value)}
           />
         </div>
-        <div className="filter-row" role="group" aria-label="Show applications by decision state">
-          {stateFilters.map((option) => (
-            <button
-              key={option.key}
-              type="button"
-              className="button"
-              aria-pressed={decidedFilter === option.key}
-              onClick={() => setDecidedFilter(option.key)}
-            >
-              {option.label} ({option.count})
-            </button>
-          ))}
+        <div className="field">
+          <label className="field__label" htmlFor="queue-decided">
+            Decision
+          </label>
+          <select
+            id="queue-decided"
+            className="select"
+            value={decidedFilter}
+            onChange={(event) => setDecidedFilter(event.target.value as DecidedFilter)}
+          >
+            <option value="all">All</option>
+            <option value="undecided">Not decided</option>
+            <option value="decided">Decided</option>
+          </select>
+        </div>
+        <div className="field">
+          <label className="field__label" htmlFor="queue-outcome">
+            Result
+          </label>
+          <select
+            id="queue-outcome"
+            className="select"
+            value={outcomeFilter}
+            onChange={(event) => setOutcomeFilter(event.target.value as OutcomeFilter)}
+          >
+            <option value="all">All</option>
+            <option value="needs_review">Needs review</option>
+            <option value="unreadable">Could not be read</option>
+            <option value="fail">Fail</option>
+            <option value="pass">Pass</option>
+          </select>
         </div>
       </div>
 

@@ -4,16 +4,25 @@ import { describe, expect, it, vi } from "vitest";
 
 import { InputScreen } from "../src/screens/InputScreen";
 import { QueueScreen } from "../src/screens/QueueScreen";
+import { ReviewScreen } from "../src/screens/ReviewScreen";
 import { SignInScreen } from "../src/screens/SignInScreen";
 import { ResultsScreen } from "../src/screens/ResultsScreen";
-import { fetchQueue } from "../src/api/client";
+import { fetchQueue, fetchQueueItem } from "../src/api/client";
 import { EMPTY_DECLARED } from "../src/api/types";
-import type { DeclaredFields, QueueListing, VerificationResponse } from "../src/api/types";
+import type {
+  DeclaredFields,
+  QueueItemDetail,
+  QueueListing,
+  VerificationResponse,
+} from "../src/api/types";
 
 vi.mock("../src/api/client", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../src/api/client")>();
-  return { ...actual, fetchQueue: vi.fn() };
+  return { ...actual, fetchQueue: vi.fn(), fetchQueueItem: vi.fn() };
 });
+
+// jsdom has no layout, so the review screen's scroll reset is a no-op stub.
+window.scrollTo = vi.fn();
 
 /**
  * The nine hard constraints in .claude/rules/accessibility.md, checked.
@@ -344,7 +353,7 @@ describe("The queue is searchable and filterable", () => {
   it("filters rows as the agent types, and says so when nothing matches", async () => {
     vi.mocked(fetchQueue).mockResolvedValue(LISTING);
     const user = userEvent.setup();
-    render(<QueueScreen onOpen={vi.fn()} reloadKey={0} />);
+    render(<QueueScreen onOpen={vi.fn()} onStart={vi.fn()} reloadKey={0} />);
 
     expect(await screen.findByText("OLD TOM DISTILLERY")).toBeInTheDocument();
     const search = screen.getByLabelText(/search/i);
@@ -357,21 +366,78 @@ describe("The queue is searchable and filterable", () => {
     expect(screen.getByRole("status")).toHaveTextContent(/no applications match/i);
   });
 
-  it("filters by decision state with pressed buttons, never by colour", async () => {
+  it("filters by decision state and by result, each behind a labelled dropdown", async () => {
     vi.mocked(fetchQueue).mockResolvedValue(LISTING);
     const user = userEvent.setup();
-    render(<QueueScreen onOpen={vi.fn()} reloadKey={0} />);
+    render(<QueueScreen onOpen={vi.fn()} onStart={vi.fn()} reloadKey={0} />);
     expect(await screen.findByText("OLD TOM DISTILLERY")).toBeInTheDocument();
 
-    const undecided = screen.getByRole("button", { name: /not decided \(1\)/i });
-    await user.click(undecided);
-    expect(undecided).toHaveAttribute("aria-pressed", "true");
+    const decision = screen.getByLabelText(/decision/i);
+    await user.selectOptions(decision, "undecided");
     expect(screen.getByText("OLD TOM DISTILLERY")).toBeInTheDocument();
     expect(screen.queryByText("STONE'S THROW")).toBeNull();
 
-    await user.click(screen.getByRole("button", { name: /^decided \(1\)/i }));
+    await user.selectOptions(decision, "all");
+    await user.selectOptions(screen.getByLabelText(/result/i), "needs_review");
     expect(screen.getByText("STONE'S THROW")).toBeInTheDocument();
     expect(screen.queryByText("OLD TOM DISTILLERY")).toBeNull();
+  });
+});
+
+describe("Two ways into an application", () => {
+  it("starts a reviewing run at the first undecided application", async () => {
+    vi.mocked(fetchQueue).mockResolvedValue(LISTING);
+    const user = userEvent.setup();
+    const onStart = vi.fn();
+    render(<QueueScreen onOpen={vi.fn()} onStart={onStart} reloadKey={0} />);
+
+    await user.click(await screen.findByRole("button", { name: /start reviewing/i }));
+    expect(onStart).toHaveBeenCalledWith("001_bourbon_clean");
+  });
+
+  it("offers no run when everything is decided", async () => {
+    const allDecided: QueueListing = {
+      ...LISTING,
+      awaiting_decision: 0,
+      items: LISTING.items.map((row) => ({
+        ...row,
+        decision: { action: "approve" as const, note: "", decided_by: "agent" },
+      })),
+    };
+    vi.mocked(fetchQueue).mockResolvedValue(allDecided);
+    render(<QueueScreen onOpen={vi.fn()} onStart={vi.fn()} reloadKey={0} />);
+
+    expect(await screen.findByText("OLD TOM DISTILLERY")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /start reviewing/i })).toBeNull();
+  });
+
+  it("names the application on screen during a run, as a live region", async () => {
+    const detail: QueueItemDetail = {
+      ...LISTING.items[0],
+      result: RESPONSE,
+      unreadable: null,
+      has_image: false,
+    };
+    vi.mocked(fetchQueueItem).mockResolvedValue(detail);
+    render(<ReviewScreen id="001_bourbon_clean" queueRun onBack={vi.fn()} onDecided={vi.fn()} />);
+
+    const banner = await screen.findByRole("status");
+    expect(banner).toHaveTextContent(/now reviewing/i);
+    expect(banner).toHaveTextContent("OLD TOM DISTILLERY");
+  });
+
+  it("shows no run banner when opened from a row's own Review button", async () => {
+    const detail: QueueItemDetail = {
+      ...LISTING.items[0],
+      result: RESPONSE,
+      unreadable: null,
+      has_image: false,
+    };
+    vi.mocked(fetchQueueItem).mockResolvedValue(detail);
+    render(<ReviewScreen id="001_bourbon_clean" onBack={vi.fn()} onDecided={vi.fn()} />);
+
+    expect(await screen.findByText(/your decision/i)).toBeInTheDocument();
+    expect(screen.queryByText(/now reviewing/i)).toBeNull();
   });
 });
 

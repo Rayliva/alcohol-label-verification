@@ -30,6 +30,10 @@ export default function App() {
   const [agent, setAgent] = useState<string | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
   const [openId, setOpenId] = useState<string | null>(null);
+  // True while the agent is working through the queue via "Start reviewing":
+  // in a run, a decision opens the next undecided application. Opened from a
+  // row's own Review button, a decision returns to the list instead.
+  const [queueRun, setQueueRun] = useState(false);
   // Bumped whenever the queue's contents change, so it refetches rather than
   // showing a decision that has already been made.
   const [queueVersion, setQueueVersion] = useState(0);
@@ -153,6 +157,12 @@ export default function App() {
             reloadKey={queueVersion}
             onOpen={(id) => {
               setOpenId(id);
+              setQueueRun(false);
+              setStep("review");
+            }}
+            onStart={(id) => {
+              setOpenId(id);
+              setQueueRun(true);
               setStep("review");
             }}
           />
@@ -160,15 +170,15 @@ export default function App() {
 
         {step === "review" && openId ? (
           <ReviewScreen
-            /* Keyed so each application starts fresh: without this, the note
-               and the saving state would carry over when a decision advances
-               straight into the next application. */
-            key={openId}
+            /* Not keyed: the "Now reviewing" banner must be the same DOM node
+               across an advance for its live region to announce the change.
+               The screen resets its own state when the id changes. */
             id={openId}
+            queueRun={queueRun}
             onBack={() => setStep("queue")}
             onDecided={(nextId) => {
               setQueueVersion((version) => version + 1);
-              if (nextId) {
+              if (queueRun && nextId) {
                 setOpenId(nextId);
               } else {
                 setStep("queue");

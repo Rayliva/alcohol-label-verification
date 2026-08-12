@@ -102,15 +102,27 @@ This spec makes the queue the front door and keeps upload as a secondary action.
 
 - **Search and filter on the queue screen.** A text input filters rows by
   brand or application ID, case-insensitive, as the agent types. Beside it,
-  a decided-state filter: All / Not decided / Decided, as pressed buttons.
-  Both are client-side; the queue is one fetch. An empty filtered list says
-  so rather than rendering a bare table.
-- **Next in queue.** Recording a decision advances straight to the next
-  undecided application instead of returning to the list — "I should just be
-  able to go into the next one." The decision response carries `next_id`, the
-  id of the first undecided item in queue order, or null when none remain, in
-  which case the UI returns to the queue. The server picks the next item so
-  the order is the queue's one sort, not a second copy in the client.
+  two labelled dropdowns (revised same day from pressed buttons, at the
+  owner's request): **Decision** — All / Not decided / Decided — and
+  **Result** — All / Needs review / Could not be read / Fail / Pass. All
+  client-side; the queue is one fetch. An empty filtered list says so rather
+  than rendering a bare table.
+- **Next in queue, opt-in.** First cut advanced to the next application on
+  every decision; the owner flagged the failure mode the same day: an agent
+  could decide, not register the screen changed, and read the next
+  application as the one they just decided. Revised shape:
+  - The queue screen offers **Start reviewing** when undecided applications
+    remain. It opens the first undecided application and, in that run,
+    each decision flows into the next undecided application until none
+    remain, which returns to the queue.
+  - A row's own **Review [brand]** button opens just that application, and
+    its decision returns to the list, as before.
+  - In a run, a status banner above the result names the application on
+    screen — "Now reviewing [brand]" — as a live region, so the handoff is
+    announced rather than inferred, and each advance starts scrolled to the
+    top.
+  - The decision response still carries `next_id` (first undecided in queue
+    order, or null); the client decides whether it is in a run.
 - **Every upload joins the queue, including unreadable ones.** The
   unreadable path returned before the queue insert, so those uploads
   vanished. An unreadable upload is a queue item shaped like a seeded
@@ -144,12 +156,14 @@ This spec makes the queue the front door and keeps upload as a secondary action.
 8. Every control is reachable by Tab, activatable by Enter or Space, and
    queryable by `getByRole(role, { name })`.
 9. Given text typed into the queue search, then only rows whose brand or
-   application ID contains it (case-insensitive) remain; given a
-   decided-state filter pressed, then only rows in that state remain; given
+   application ID contains it (case-insensitive) remain; given a Decision or
+   Result dropdown choice, then only rows in that state remain; given
    nothing matches, then a message says so.
-10. Given a decision recorded with undecided applications remaining, then the
-    next undecided application opens without a trip through the queue; given
-    none remain, then the queue screen returns.
+10. Given "Start reviewing" pressed, then the first undecided application
+    opens with a banner naming it, and each decision opens the next
+    undecided application until none remain, which returns to the queue.
+    Given a row's Review button instead, then that application opens alone
+    and its decision returns to the queue.
 11. Given an unreadable upload, then it joins the queue with its reason, and
     opening it shows the same unreadable notice a seeded unreadable row
     shows.

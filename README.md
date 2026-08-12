@@ -463,10 +463,10 @@ Single-label review · six-check government warning · fuzzy text matching with
 abbreviation and corporate-suffix handling · numeric ABV and net-contents
 matching with unit conversion · evidence crops · agent override with notes ·
 batch upload with pre-flight, live progress and CSV export · specific reasons
-for unreadable images · a review queue with search, a decided-state filter,
-and decisions that flow straight into the next undecided application ·
-uploads join the queue whatever their outcome, with the wall-clock wait
-("Checked in 4.2 seconds") shown on the result.
+for unreadable images · a review queue with search, decision and result
+filters, and an opt-in "Start reviewing" run where each decision opens the
+next undecided application · uploads join the queue whatever their outcome,
+with the wall-clock wait ("Checked in 4.2 seconds") shown on the result.
 
 ### Deliberately not built
 

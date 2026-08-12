@@ -916,12 +916,43 @@ a:hover {
   margin-top: 16px;
 }
 
-.queue-controls__search {
+.select {
+  font-family: inherit;
+  font-size: var(--size-body);
+  color: var(--ink);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-control);
+  padding: 12px 14px;
+  min-height: 52px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.queue-controls .field {
+  flex: 0 1 240px;
+}
+
+/* Three classes so the search stays wider than the dropdowns beside it. */
+.queue-controls .field.queue-controls__search {
   flex: 0 1 340px;
 }
 
-.queue-controls .filter-row {
-  margin: 0 0 2px;
+/* The row's gap is its spacing; the stacked-form rule above would add a
+   dead 22px when the row wraps. */
+.queue-controls .field + .field {
+  margin-top: 0;
+}
+
+/* "Now reviewing X" during a queue run. A live region: the screen changes
+   under the agent when a decision advances, so the page says whose
+   application it is showing rather than leaving it to be noticed. */
+.run-banner {
+  background: var(--primary-tint);
+  border: 2px solid var(--primary);
+  border-left-width: 8px;
+  padding: 12px 16px;
+  margin: 0 0 14px;
 }
 
 .file-picker {

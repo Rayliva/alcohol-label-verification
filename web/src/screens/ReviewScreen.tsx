@@ -26,12 +26,18 @@ export function ReviewScreen({
   id,
   onBack,
   onDecided,
+  /** True when this application opened as part of a reviewing run, where a
+   * decision flows into the next undecided application. The banner exists
+   * because of that flow: the screen changes under the agent, so it has to
+   * say whose application it is showing. */
+  queueRun = false,
 }: {
   id: string;
   onBack: () => void;
   /** Called with the next undecided application's id, or null when the
    * queue is done — the caller decides where that leads. */
   onDecided: (nextId: string | null) => void;
+  queueRun?: boolean;
 }) {
   const [item, setItem] = useState<QueueItemDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +47,16 @@ export function ReviewScreen({
 
   useEffect(() => {
     let live = true;
+    // A new application starts fresh: no leftover note, no disabled buttons,
+    // and the page back at the top — in a run the previous application left
+    // the scroll at its decision buttons, which is exactly where a new one
+    // would be mistaken for the old.
+    setItem(null);
+    setNote("");
+    setSaving(null);
+    setError(null);
+    setArtworkOpen(false);
+    window.scrollTo(0, 0);
     fetchQueueItem(id)
       .then((data) => live && setItem(data))
       .catch(
@@ -70,22 +86,44 @@ export function ReviewScreen({
     }
   };
 
+  // One persistent node across loading and loaded states, so the change of
+  // application is announced by the live region rather than left to be
+  // noticed.
+  const banner = queueRun ? (
+    <p className="run-banner" role="status">
+      {item ? (
+        <>
+          Now reviewing <strong>{item.brand}</strong>. Deciding opens the next
+          application in the queue.
+        </>
+      ) : (
+        "Opening the next application…"
+      )}
+    </p>
+  ) : null;
+
   if (error) {
     return (
-      <section className="notice notice--error" role="alert">
-        <h2>{error}</h2>
-        <button className="button" type="button" onClick={onBack}>
-          Back to the queue
-        </button>
-      </section>
+      <>
+        {banner}
+        <section className="notice notice--error" role="alert">
+          <h2>{error}</h2>
+          <button className="button" type="button" onClick={onBack}>
+            Back to the queue
+          </button>
+        </section>
+      </>
     );
   }
 
   if (!item) {
     return (
-      <section className="card">
-        <p className="help">Loading this application…</p>
-      </section>
+      <>
+        {banner}
+        <section className="card">
+          <p className="help">Loading this application…</p>
+        </section>
+      </>
     );
   }
 
@@ -93,6 +131,7 @@ export function ReviewScreen({
 
   return (
     <>
+      {banner}
       <button className="back-link" type="button" onClick={onBack}>
         <span aria-hidden="true">←</span> Back to the queue
       </button>
