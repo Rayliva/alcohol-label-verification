@@ -233,6 +233,15 @@ a:hover {
   font-weight: 600;
 }
 
+/* Constraint 1 has no inline-text exception in this project, so a link in
+   help copy still gets a 44px target through padding rather than staying at
+   line height. */
+.help a {
+  display: inline-block;
+  padding: 10px 2px;
+  margin: -10px -2px;
+}
+
 /* Controls --------------------------------------------------------------- */
 
 /* Constraint 1: nothing interactive is smaller than 44x44. */
