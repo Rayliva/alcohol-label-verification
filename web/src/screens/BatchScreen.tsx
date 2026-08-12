@@ -46,7 +46,7 @@ function minutes(seconds: number): string {
   return `${Math.round(seconds / 60)} minutes`;
 }
 
-export function BatchScreen({ onSingle }: { onSingle: () => void }) {
+export function BatchScreen() {
   const [images, setImages] = useState<File[]>([]);
   const [manifest, setManifest] = useState<File | null>(null);
   const [report, setReport] = useState<PreflightReport | null>(null);
@@ -122,7 +122,7 @@ export function BatchScreen({ onSingle }: { onSingle: () => void }) {
       {!job ? (
         <>
           <section className="card" aria-labelledby="images-heading">
-            <h2 id="images-heading">1. Label images</h2>
+            <h2 id="images-heading">Label images</h2>
             <p className="help">Select every label image for this batch at once.</p>
             <div style={{ marginTop: 16, display: "flex", gap: 12, alignItems: "center" }}>
               <button
@@ -154,7 +154,7 @@ export function BatchScreen({ onSingle }: { onSingle: () => void }) {
           </section>
 
           <section className="card" aria-labelledby="manifest-heading">
-            <h2 id="manifest-heading">2. Application spreadsheet</h2>
+            <h2 id="manifest-heading">Application spreadsheet</h2>
             <p className="help">
               One row per application, naming the image file it belongs to. CSV or JSON.
             </p>
@@ -190,7 +190,7 @@ export function BatchScreen({ onSingle }: { onSingle: () => void }) {
 
           {images.length && manifest ? (
           <section className="card" aria-labelledby="preflight-heading">
-            <h2 id="preflight-heading">3. Before we start</h2>
+            <h2 id="preflight-heading">Before we start</h2>
             {report ? (
               <>
                 <p style={{ fontSize: 20 }}>
@@ -233,11 +233,6 @@ export function BatchScreen({ onSingle }: { onSingle: () => void }) {
           </section>
           ) : null}
 
-          <p>
-            <button type="button" className="button button--quiet" onClick={onSingle}>
-              Just one label? Check a single label instead.
-            </button>
-          </p>
         </>
       ) : (
         <>

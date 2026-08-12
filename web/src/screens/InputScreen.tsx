@@ -76,17 +76,12 @@ export function InputScreen({
   image,
   onImage,
   onSubmit,
-  onBatch,
-  onCancel,
 }: {
   declared: DeclaredFields;
   onDeclared: (next: DeclaredFields) => void;
   image: File | null;
   onImage: (file: File | null) => void;
   onSubmit: () => void;
-  onBatch?: () => void;
-  /** Back to the queue. Absent on the first screen an agent ever sees. */
-  onCancel?: () => void;
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -124,14 +119,9 @@ export function InputScreen({
   };
 
   return (
-    <div className="stack form-column">
-      {onCancel ? (
-        <button className="back-link" type="button" onClick={onCancel}>
-          <span aria-hidden="true">←</span> Back to the queue
-        </button>
-      ) : null}
+    <>
       <section className="card" aria-labelledby="artwork-heading">
-          <h2 id="artwork-heading">1. The label artwork</h2>
+          <h2 id="artwork-heading">The label artwork</h2>
           <p className="help">A photograph or an export of the label. JPG or PNG.</p>
 
           {image ? (
@@ -196,7 +186,7 @@ export function InputScreen({
       </section>
 
       <section className="card" aria-labelledby="declared-heading">
-        <h2 id="declared-heading">2. What the application says</h2>
+        <h2 id="declared-heading">What the application says</h2>
         <p className="help">
           Copy these from the COLA application, exactly as written. Fields marked{" "}
           <span className="field__required">*</span> are required.
@@ -284,14 +274,7 @@ export function InputScreen({
           Check this label
         </button>
 
-        {onBatch ? (
-          <p style={{ marginBottom: 0 }}>
-            <button type="button" className="button button--quiet" onClick={onBatch}>
-              Have a lot of these? Check a batch of labels instead.
-            </button>
-          </p>
-        ) : null}
       </section>
-    </div>
+    </>
   );
 }

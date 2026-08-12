@@ -446,3 +446,18 @@ All decided by the product owner in review of the running app.
   contrast ratio re-checked against the accessibility rules; the token file
   carries the measured values. This supersedes the design handoff's warm
   palette, which the owner judged too modern for the audience.
+
+### Session 6 amendments, continued
+
+- **One submit page.** Single and batch live behind a One label / A batch
+  toggle on the same screen, instead of two screens cross-linked by quiet
+  buttons at the bottom. The inactive half is hidden, not unmounted, so a
+  running batch job keeps its progress view, Stop and export when the toggle
+  flips.
+- **The masthead identity navigates home.** Seal plus product name is one
+  button back to the queue; during a check it also aborts the in-flight
+  request, exactly as Cancel does.
+- **Queue rows quietened.** The small verdict badges shed their tinted pills
+  (glyph and word in the verdict colour, contrast re-checked on the zebra
+  stripes) and the per-row Review action is an underlined link rather than an
+  outlined button, both still 44px targets.

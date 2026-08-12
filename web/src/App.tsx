@@ -4,11 +4,11 @@ import { ApiError, currentAgent, signOut, verifyLabel } from "./api/client";
 import type { DeclaredFields, ErrorBody, VerificationResponse } from "./api/types";
 import { EMPTY_DECLARED } from "./api/types";
 import { Logo } from "./components/Logo";
-import { BatchScreen } from "./screens/BatchScreen";
 import { QueueScreen } from "./screens/QueueScreen";
 import { ReviewScreen } from "./screens/ReviewScreen";
 import { SignInScreen } from "./screens/SignInScreen";
-import { InputScreen } from "./screens/InputScreen";
+import { SubmitScreen } from "./screens/SubmitScreen";
+import type { SubmitMode } from "./screens/SubmitScreen";
 import { ProcessingScreen } from "./screens/ProcessingScreen";
 import { ResultsScreen } from "./screens/ResultsScreen";
 
@@ -20,10 +20,11 @@ import { ResultsScreen } from "./screens/ResultsScreen";
  * explain to an agent who prints their emails.
  */
 
-type Step = "queue" | "review" | "input" | "processing" | "results" | "batch";
+type Step = "queue" | "review" | "submit" | "processing" | "results";
 
 export default function App() {
   const [declared, setDeclared] = useState<DeclaredFields>(EMPTY_DECLARED);
+  const [mode, setMode] = useState<SubmitMode>("single");
   const [image, setImage] = useState<File | null>(null);
   const [step, setStep] = useState<Step>("queue");
   const [agent, setAgent] = useState<string | null>(null);
@@ -78,7 +79,7 @@ export default function App() {
               what_to_do: "Try again. Your entry has been kept.",
             },
       );
-      setStep("input");
+      setStep("submit");
     }
   };
 
@@ -86,13 +87,26 @@ export default function App() {
     <>
       {agent ? (
       <header className="masthead">
-        <Logo className="masthead__logo" />
-        <span className="masthead__name">Alcohol Label Verification</span>
-        {step !== "input" && step !== "batch" && step !== "processing" ? (
+        <button
+          className="masthead__home"
+          type="button"
+          onClick={() => {
+            // Going home mid-check is a cancel: without the abort, the
+            // in-flight request resolves seconds later and yanks the user
+            // off the queue onto the results screen.
+            if (step === "processing") request.current?.abort();
+            setStep("queue");
+          }}
+        >
+          <Logo className="masthead__logo" />
+          <span className="masthead__name">Alcohol Label Verification</span>
+          <span className="visually-hidden">, back to the queue</span>
+        </button>
+        {step !== "submit" && step !== "processing" ? (
           <button
             className="button button--small button--primary"
             type="button"
-            onClick={() => setStep("input")}
+            onClick={() => setStep("submit")}
           >
             <span className="masthead__plus" aria-hidden="true">
               +
@@ -150,19 +164,18 @@ export default function App() {
           />
         ) : null}
 
-        {step === "input" ? (
-          <InputScreen
+        {step === "submit" ? (
+          <SubmitScreen
+            mode={mode}
+            onMode={setMode}
+            onBack={() => setStep("queue")}
             declared={declared}
             onDeclared={setDeclared}
             image={image}
             onImage={setImage}
             onSubmit={submit}
-            onBatch={() => setStep("batch")}
-            onCancel={() => setStep("queue")}
           />
         ) : null}
-
-        {step === "batch" ? <BatchScreen onSingle={() => setStep("input")} /> : null}
 
         {step === "processing" ? (
           <ProcessingScreen
@@ -170,7 +183,7 @@ export default function App() {
             uploaded={uploaded}
             onCancel={() => {
               request.current?.abort();
-              setStep("input");
+              setStep("submit");
             }}
           />
         ) : null}
