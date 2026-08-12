@@ -50,15 +50,6 @@ export interface VerificationResponse {
   ocr_engine: string | null;
 }
 
-export interface BeverageTypeOption {
-  beverage_type: string;
-  display_name: string;
-  citation: string;
-  available: boolean;
-  unavailable_reason: string | null;
-  alcohol_content_required: boolean;
-  alcohol_content_note: string | null;
-}
 
 export interface DeclaredFields {
   application_id: string;

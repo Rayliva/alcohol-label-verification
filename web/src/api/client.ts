@@ -1,5 +1,4 @@
 import type {
-  BeverageTypeOption,
   DeclaredFields,
   ErrorBody,
   QueueItemDetail,
@@ -58,12 +57,6 @@ async function readError(response: Response): Promise<ErrorBody> {
     // Fall through to the generic-but-actionable message.
     return UNREACHABLE;
   }
-}
-
-export async function fetchBeverageTypes(): Promise<BeverageTypeOption[]> {
-  const response = await fetch(`${BASE}/api/beverage-types`, CREDENTIALED);
-  if (!response.ok) throw new ApiError(await readError(response));
-  return response.json();
 }
 
 /**

@@ -36,6 +36,12 @@ Confirmed against Cornell LII, 2026-08-09:
 | Wine ABV | 4.36 | Optional ≤14% if "table wine"/"light wine"; ±1.5 / ±1.0 tolerance |
 | Malt ABV | 7.63 | Required only with added nonbeverage alcohol |
 
+Confirmed against Cornell LII, 2026-08-11 (second entry added later that day):
+
+| Item | Section | Value |
+|---|---|---|
+| Bottler address | 5.66 | "The address consists of the city and State where the operation occurred, or the city and State of the principal place of business" — consistent with the basic permit. "Addresses may, but are not required to, include additional information such as street names, counties, zip codes" — **street address optional** |
+
 Confirmed against Cornell LII, 2026-08-11:
 
 | Item | Section | Value |

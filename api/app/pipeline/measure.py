@@ -260,49 +260,90 @@ def _sides(ocr: OcrResult, image: Image.Image, detected: dict[str, str | None]) 
     return sides
 
 
+def _squash(text: str) -> str:
+    """Case-folded with ALL whitespace removed, not just collapsed.
+
+    Cloud Vision joins wrapped lines without a space: the 006 sample's
+    two-line title comes back as one block reading "OLD TOMDISTILLERY", and
+    the government warning as "womenshould not ... risk ofbirth defects".
+    Extraction restores the spaces, so any comparison that keeps them can
+    never match a block whose line break was swallowed — the brand's evidence
+    crop fell through to the bottler line, which merely mentions the name.
+    """
+    return "".join(text.split()).casefold()
+
+
 def find_block(ocr: OcrResult, value: str) -> TextBlock | None:
     """The OCR block a detected value came from, or None.
 
-    Matching is on collapsed, case-folded text: the extraction step returns what
-    the label says, and OCR block boundaries do not always agree with it.
+    Matching is on squashed, case-folded text: the extraction step returns
+    what the label says, and OCR block boundaries — including where the line
+    breaks were — do not always agree with it.
     """
-    needle = " ".join(value.split()).casefold()
+    needle = _squash(value)
     if not needle:
         return None
-    candidates = [b for b in ocr.blocks if needle in " ".join(b.text.split()).casefold()]
-    if candidates:
-        return min(candidates, key=lambda b: len(b.text))
+    candidates = [b for b in ocr.blocks if needle in _squash(b.text)]
+    # A block that IS the value settles it — checked across every candidate,
+    # not only the shortest, because raw length counts whitespace and a glued
+    # containing block can be "shorter" than the exact one. A block that merely
+    # contains the value does not settle it: the spanning reconstruction below
+    # still gets a chance to find the blocks that together are exactly the
+    # value — a two-line title split into two OCR blocks must beat a bottler
+    # line that mentions the brand.
+    exact = [b for b in candidates if _squash(b.text) == needle]
+    if exact:
+        return min(exact, key=lambda b: len(b.text))
+    best = min(candidates, key=lambda b: len(b.text)) if candidates else None
 
-    # A long value wrapped across several lines — the government warning always
-    # is. Merge the blocks it spans so the evidence crop shows the whole
-    # statement rather than its first line.
-    spanning = [
-        b
-        for b in ocr.blocks
-        if len(b.text.strip()) > 3 and " ".join(b.text.split()).casefold() in needle
-    ]
-    if len(spanning) > 1 and _reconstructs(spanning, needle):
-        return _merge(spanning)
+    # A value wrapped across several lines — the government warning always is,
+    # and so is a two-line brand title. Merge the blocks it spans so the
+    # evidence crop shows the whole statement rather than its first line.
+    spanning = [b for b in ocr.blocks if len(b.text.strip()) > 3 and _squash(b.text) in needle]
+    reconstructed = _reconstruct(spanning, needle)
+    if reconstructed is not None:
+        return _merge(reconstructed)
+    if best is not None:
+        return best
 
-    # Otherwise fall back to the block sharing the most words.
-    words = set(needle.split())
+    # Otherwise fall back to the block sharing the most words. Half of them
+    # was too loose a bar for a claim about evidence: a two-word value matched
+    # any block sharing one word, and the crop could be an unrelated line
+    # presented as the place the value came from (audit C3). Two thirds keeps
+    # the crop when OCR mangles one word among several and refuses it when
+    # most of the value is simply not there.
+    words = set(value.casefold().split())
     scored = [
         (len(words & set(" ".join(b.text.split()).casefold().split())), b) for b in ocr.blocks
     ]
-    best_score, best = max(scored, key=lambda pair: pair[0], default=(0, None))
-    return best if best_score >= max(1, len(words) // 2) else None
+    best_score, fallback = max(scored, key=lambda pair: pair[0], default=(0, None))
+    return fallback if best_score >= max(1, -(-2 * len(words) // 3)) else None
 
 
-def _reconstructs(blocks: list[TextBlock], needle: str) -> bool:
-    """True when these blocks, read in order, actually make up the value.
+def _reconstruct(blocks: list[TextBlock], needle: str) -> list[TextBlock] | None:
+    """The subset of blocks that, read in order, make up the value — or None.
 
-    Without this a short word that also appears elsewhere on the label — the
-    state in an address matching the state in a class designation — dragged an
-    unrelated block into the merge, and the evidence crop showed a third of the
-    label instead of one line.
+    Greedy: walk the candidates in reading order and keep each one that
+    continues the needle from where the last kept block left off. A stray
+    fragment whose text happens to sit somewhere inside the needle is skipped
+    rather than allowed to veto the merge — demanding that every candidate
+    participate let one junk OCR fragment cost the crop its region.
+
+    The exact-continuation requirement is also what keeps unrelated blocks
+    out: a short word that appears elsewhere on the label — the state in an
+    address matching the state in a class designation — does not continue the
+    needle at the current position, so it never drags the merge across a third
+    of the label. The needle arrives already squashed.
     """
     ordered = sorted(blocks, key=lambda b: (b.box.y, b.box.x))
-    return " ".join(" ".join(b.text.split()) for b in ordered).casefold() == needle
+    used: list[TextBlock] = []
+    position = 0
+    for candidate in ordered:
+        squashed = _squash(candidate.text)
+        if needle.startswith(squashed, position):
+            used.append(candidate)
+            position += len(squashed)
+    return used if position == len(needle) and len(used) > 1 else None
 
 
 def _merge(blocks: list[TextBlock]) -> TextBlock:

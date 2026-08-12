@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { ApiError, fetchQueueItem, labelImageUrl, recordDecision } from "../api/client";
 import type { QueueItemDetail } from "../api/types";
+import { Lightbox } from "../components/Lightbox";
 import { ResultsScreen } from "./ResultsScreen";
 
 /**
@@ -34,6 +35,7 @@ export function ReviewScreen({
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState<Action | null>(null);
+  const [artworkOpen, setArtworkOpen] = useState(false);
 
   useEffect(() => {
     let live = true;
@@ -96,11 +98,25 @@ export function ReviewScreen({
       {item.has_image ? (
         <section className="card">
           <h2>The label as submitted</h2>
-          <img
-            className="review__artwork"
-            src={labelImageUrl(item.id)}
-            alt={`Submitted label artwork for ${item.brand}`}
-          />
+          <button
+            type="button"
+            className="review__artwork-button"
+            onClick={() => setArtworkOpen(true)}
+          >
+            <img
+              className="review__artwork"
+              src={labelImageUrl(item.id)}
+              alt={`Submitted label artwork for ${item.brand}`}
+            />
+            <span className="visually-hidden">Click to enlarge</span>
+          </button>
+          {artworkOpen ? (
+            <Lightbox
+              src={labelImageUrl(item.id)}
+              alt={`Submitted label artwork for ${item.brand}`}
+              onClose={() => setArtworkOpen(false)}
+            />
+          ) : null}
         </section>
       ) : null}
 

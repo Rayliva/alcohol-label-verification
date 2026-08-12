@@ -33,7 +33,7 @@ The error class this project exists to prevent. These come first, always.
 |---|---|---|
 | C1 | **fixed** | `anthropic.APIError` derives from `Exception`, not from `OSError`/`RuntimeError`/`ValueError`, so every provider outage, 429, 401 and timeout falls past the 502 handler in `api/routes.py` to the generic 500 backstop |
 | C2 | **open** | `pipeline/run.py` recomputes `overall` from untempered warning checks after `temper_by_reading` downgrades the field, so a response can carry `overall: fail` with no field at FAIL |
-| C3 | **open** | `find_block`'s last-resort match accepts any block sharing half the words — one word for a two-word value. The evidence crop can be an unrelated line, and `temper_by_reading` then draws its confidence from that wrong block |
+| C3 | **fixed** | `find_block` could attach the wrong evidence twice over: the last-resort match accepted any block sharing half the words (now two thirds), and matching kept whitespace while Cloud Vision joins wrapped lines without a space, so a two-line brand title could never match and the crop fell through to the bottler line that mentions the name. Made visible by the 006 sample. Matching is whitespace-blind now, and blocks that together are exactly the value beat a line that merely contains it |
 
 ## D. Documentation that is false
 

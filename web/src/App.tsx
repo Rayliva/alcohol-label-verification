@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-import { ApiError, currentAgent, fetchBeverageTypes, signOut, verifyLabel } from "./api/client";
-import type {
-  BeverageTypeOption,
-  DeclaredFields,
-  ErrorBody,
-  VerificationResponse,
-} from "./api/types";
+import { ApiError, currentAgent, signOut, verifyLabel } from "./api/client";
+import type { DeclaredFields, ErrorBody, VerificationResponse } from "./api/types";
 import { EMPTY_DECLARED } from "./api/types";
 import { Logo } from "./components/Logo";
 import { BatchScreen } from "./screens/BatchScreen";
@@ -27,21 +22,7 @@ import { ResultsScreen } from "./screens/ResultsScreen";
 
 type Step = "queue" | "review" | "input" | "processing" | "results" | "batch";
 
-const FALLBACK_TYPES: BeverageTypeOption[] = [
-  {
-    beverage_type: "spirits",
-    display_name: "Spirits",
-    citation: "27 CFR part 5",
-    available: true,
-    unavailable_reason: null,
-    alcohol_content_required: true,
-    alcohol_content_note: null,
-  },
-];
-
 export default function App() {
-  const [types, setTypes] = useState<BeverageTypeOption[]>(FALLBACK_TYPES);
-  const [beverageType, setBeverageType] = useState("spirits");
   const [declared, setDeclared] = useState<DeclaredFields>(EMPTY_DECLARED);
   const [image, setImage] = useState<File | null>(null);
   const [step, setStep] = useState<Step>("queue");
@@ -64,16 +45,6 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!agent) return;
-    fetchBeverageTypes()
-      .then(setTypes)
-      .catch(() => {
-        // The selector still works with spirits alone; the API being briefly
-        // unreachable must not leave an agent staring at an empty screen.
-      });
-  }, [agent]);
-
-  useEffect(() => {
     if (!image) {
       setPreviewUrl(null);
       return;
@@ -91,13 +62,8 @@ export default function App() {
     const controller = new AbortController();
     request.current = controller;
     try {
-      const result = await verifyLabel(
-        image,
-        beverageType,
-        declared,
-        controller.signal,
-        setUploaded,
-      );
+      // Spirits is the product's scope; there is no selector (ui-spec, 2026-08-11).
+      const result = await verifyLabel(image, "spirits", declared, controller.signal, setUploaded);
       setResponse(result);
       setQueueVersion((version) => version + 1);
       setStep("results");
@@ -120,7 +86,7 @@ export default function App() {
     <>
       <header className="masthead">
         {agent ? <Logo className="masthead__logo" /> : null}
-        <span className="masthead__name">Label Check</span>
+        <span className="masthead__name">Alcohol Label Verification</span>
         {agent && step !== "input" && step !== "batch" && step !== "processing" ? (
           <button
             className="button button--small button--primary"
@@ -186,9 +152,6 @@ export default function App() {
 
         {step === "input" ? (
           <InputScreen
-            beverageTypes={types}
-            beverageType={beverageType}
-            onBeverageType={setBeverageType}
             declared={declared}
             onDeclared={setDeclared}
             image={image}

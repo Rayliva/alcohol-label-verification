@@ -96,16 +96,24 @@ a:hover {
   gap: 16px;
 }
 
+/* The asset is seal + wordmark, 262 units wide with the round seal in the
+   left 64. The wordmark half renders illegibly at these sizes and its width is
+   what pushed the product name a hand's width away from the mark, so a square
+   window over the left edge shows the seal alone. */
 .signin__logo {
   height: 52px;
-  width: auto;
+  width: 52px;
+  object-fit: cover;
+  object-position: left center;
   display: block;
   margin-bottom: 20px;
 }
 
 .masthead__logo {
   height: 34px;
-  width: auto;
+  width: 34px;
+  object-fit: cover;
+  object-position: left center;
   display: block;
   /* The masthead is a flex row. Without this a narrow viewport squeezes the
      width while the height holds, and the seal comes out oval. */
@@ -233,7 +241,7 @@ a:hover {
 }
 
 /* Constraint 5: the asterisk is never the only signal. Every required field is
-   also named in the blocked line above the button, and screen readers get the
+   also named in the alert a too-early press raises, and screen readers get the
    word "required" beside it. */
 .field__required {
   color: var(--fail-text);
@@ -264,35 +272,6 @@ a:hover {
   resize: vertical;
 }
 
-.choice-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-
-.choice {
-  min-height: 60px;
-  font-size: var(--size-body);
-  font-weight: 600;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-control);
-  background: var(--surface);
-  color: var(--ink);
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.choice[aria-pressed="true"] {
-  background: var(--ink);
-  color: var(--surface);
-  border-color: var(--ink);
-}
-
-.choice:disabled {
-  background: var(--disabled-fill);
-  color: var(--ink-quiet);
-  cursor: not-allowed;
-}
 
 /* Drop zone -------------------------------------------------------------- */
 
@@ -496,6 +475,13 @@ a:hover {
   overflow: hidden;
   display: grid;
   place-items: center;
+  width: 100%;
+  padding: 0;
+}
+
+.crop--clickable {
+  cursor: zoom-in;
+  font: inherit;
 }
 
 .crop img {
@@ -528,8 +514,18 @@ a:hover {
   }
 }
 
+.result__why {
+  font-weight: 600;
+}
+
+.result__details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 2px solid var(--divider);
+}
+
 .result__reason {
-  margin: 10px 0 0;
+  margin: 0;
 }
 
 .result__meta {
@@ -885,4 +881,60 @@ a:hover {
     border: 0;
     padding: 4px 0;
   }
+}
+
+/* --- Enlarged image overlay --------------------------------------------- */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(26, 25, 23, 0.82);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+  padding: 18px;
+}
+
+.lightbox__bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.lightbox__bar .button {
+  background: var(--surface);
+}
+
+.lightbox__stage {
+  overflow: auto;
+  display: grid;
+  place-items: center;
+}
+
+.lightbox__stage img {
+  max-width: 100%;
+  max-height: calc(100vh - 110px);
+  background: var(--surface);
+  border-radius: var(--radius-control);
+}
+
+/* Zoomed: natural size or twice it, whichever is larger, scrolled rather than
+   squeezed. place-items: start so the top-left corner is reachable. */
+.lightbox__stage--zoomed {
+  place-items: start;
+}
+
+.lightbox__stage--zoomed img {
+  max-width: none;
+  max-height: none;
+  min-width: 150%;
+}
+
+.review__artwork-button {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: zoom-in;
+  display: block;
 }

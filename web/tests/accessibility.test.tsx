@@ -6,7 +6,7 @@ import { InputScreen } from "../src/screens/InputScreen";
 import { SignInScreen } from "../src/screens/SignInScreen";
 import { ResultsScreen } from "../src/screens/ResultsScreen";
 import { EMPTY_DECLARED } from "../src/api/types";
-import type { BeverageTypeOption, DeclaredFields, VerificationResponse } from "../src/api/types";
+import type { DeclaredFields, VerificationResponse } from "../src/api/types";
 
 /**
  * The nine hard constraints in .claude/rules/accessibility.md, checked.
@@ -16,27 +16,6 @@ import type { BeverageTypeOption, DeclaredFields, VerificationResponse } from ".
  * could figure out — she's 73". Visual layout is verified in a browser; these
  * are the parts a test can actually observe.
  */
-
-const TYPES: BeverageTypeOption[] = [
-  {
-    beverage_type: "spirits",
-    display_name: "Spirits",
-    citation: "27 CFR part 5",
-    available: true,
-    unavailable_reason: null,
-    alcohol_content_required: true,
-    alcohol_content_note: null,
-  },
-  {
-    beverage_type: "wine",
-    display_name: "Wine",
-    citation: "27 CFR part 4",
-    available: false,
-    unavailable_reason: "Wine checking is coming next. Distilled spirits work today.",
-    alcohol_content_required: false,
-    alcohol_content_note: 'Wine at 14% or less may omit the percentage if it says "table wine".',
-  },
-];
 
 const FILLED: DeclaredFields = {
   ...EMPTY_DECLARED,
@@ -49,9 +28,6 @@ const FILLED: DeclaredFields = {
 
 function renderInput(overrides: Partial<Parameters<typeof InputScreen>[0]> = {}) {
   const props = {
-    beverageTypes: TYPES,
-    beverageType: "spirits",
-    onBeverageType: vi.fn(),
     declared: EMPTY_DECLARED,
     onDeclared: vi.fn(),
     image: null,
@@ -144,12 +120,6 @@ describe("Constraint 7 — every control is queryable by role and name", () => {
     expect(screen.getByRole("button", { name: /check this label/i })).toBeInTheDocument();
   });
 
-  it("gives every beverage type a text label, not an icon", () => {
-    renderInput();
-    expect(screen.getByRole("button", { name: /spirits/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /wine/i })).toBeInTheDocument();
-  });
-
   it("labels every declared field", () => {
     renderInput();
     for (const label of [
@@ -171,46 +141,43 @@ describe("Constraint 7 — every control is queryable by role and name", () => {
   });
 });
 
-describe("Constraint 9 — a disabled control explains itself", () => {
-  it("names every missing item beside the disabled button", () => {
-    renderInput();
-    expect(screen.getByRole("button", { name: /check this label/i })).toBeDisabled();
-    const blocked = screen.getByText(/still needed before this button works/i);
+describe("Constraint 9 — the primary action is never a silent dead end", () => {
+  // The button is always enabled, so rule 9 (a disabled control explains
+  // itself) is satisfied by never disabling it. What it must do instead is
+  // explain itself when pressed too early.
+
+  it("names every missing item when pressed with nothing filled in", async () => {
+    const user = userEvent.setup();
+    const { props } = renderInput();
+    await user.click(screen.getByRole("button", { name: /check this label/i }));
+
+    const blocked = screen.getByRole("alert");
     expect(blocked).toHaveTextContent("a label image");
     expect(blocked).toHaveTextContent("Brand name");
     expect(blocked).toHaveTextContent("Net contents");
+    expect(props.onSubmit).not.toHaveBeenCalled();
   });
 
-  it("names only what is actually missing", () => {
+  it("names only what is actually missing", async () => {
+    const user = userEvent.setup();
     renderInput({ declared: FILLED });
-    const blocked = screen.getByText(/still needed before this button works/i);
+    await user.click(screen.getByRole("button", { name: /check this label/i }));
+
+    const blocked = screen.getByRole("alert");
     expect(blocked).toHaveTextContent("a label image");
     expect(blocked).not.toHaveTextContent("Brand name");
   });
 
-  it("says so plainly once nothing is missing", () => {
-    renderInput({
+  it("submits without commentary once nothing is missing", async () => {
+    const user = userEvent.setup();
+    const { props } = renderInput({
       declared: FILLED,
       image: new File(["x"], "label.png", { type: "image/png" }),
     });
-    expect(screen.getByText(/everything required is filled in/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /check this label/i })).toBeEnabled();
-  });
+    await user.click(screen.getByRole("button", { name: /check this label/i }));
 
-  it("explains why an unavailable beverage type is disabled", () => {
-    renderInput();
-    expect(screen.getByRole("button", { name: /wine/i })).toBeDisabled();
-    expect(screen.getByText(/wine checking is coming next/i)).toBeInTheDocument();
-  });
-});
-
-describe("Conditional rules reach the form", () => {
-  it("stops requiring alcohol content when the beverage type does not", () => {
-    renderInput({ beverageType: "wine", declared: FILLED });
-    // Wine at 14% or less may omit it (27 CFR 4.36), so its absence must not
-    // block the button.
-    const blocked = screen.getByText(/still needed before this button works/i);
-    expect(blocked).not.toHaveTextContent("Alcohol content");
+    expect(props.onSubmit).toHaveBeenCalledOnce();
+    expect(screen.queryByRole("alert")).toBeNull();
   });
 });
 
@@ -249,16 +216,47 @@ describe("Problems first", () => {
   });
 });
 
+describe("The Why? disclosure — detail on demand, essentials in the open", () => {
+  // A deliberate deviation from rule 5, decided by the product owner on
+  // 2026-08-11: the reason, confidence, citation, and decision controls sit
+  // behind a per-card disclosure. What an agent acts on — verdict, declared,
+  // detected, evidence — never moves behind it.
+
+  it("reveals the reason, confidence and rule on request", async () => {
+    const user = userEvent.setup();
+    render(<ResultsScreen response={RESPONSE} reviewer="" onCheckAnother={vi.fn()} />);
+    const card = screen.getByRole("region", { name: /net contents/i });
+
+    expect(within(card).queryByText(/reading confidence/i)).toBeNull();
+    const why = within(card).getByRole("button", { name: /why/i });
+    expect(why).toHaveAttribute("aria-expanded", "false");
+    await user.click(why);
+
+    expect(why).toHaveAttribute("aria-expanded", "true");
+    expect(within(card).getByText(/net contents were not found/i)).toBeInTheDocument();
+    expect(within(card).getByText(/reading confidence/i)).toBeInTheDocument();
+    expect(within(card).getByText(/27 CFR 5\.70/)).toBeInTheDocument();
+  });
+});
+
 describe("Override — the tool advises, the agent decides", () => {
-  it("asks only about the fields it flagged", () => {
+  const openWhy = async (user: ReturnType<typeof userEvent.setup>, card: HTMLElement) => {
+    await user.click(within(card).getByRole("button", { name: /why/i }));
+  };
+
+  it("asks agreement on flagged fields and offers only a flag on passing ones", async () => {
+    const user = userEvent.setup();
     render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
-    // One FAIL, one NEEDS_REVIEW, and the government warning. The passing
-    // field is not asked about: there is nothing to disagree with.
-    expect(screen.getAllByRole("button", { name: /accept this field/i }).length).toBe(3);
-    expect(screen.getAllByRole("button", { name: /it is a problem/i }).length).toBe(3);
+
+    const flagged = screen.getByRole("region", { name: /net contents/i });
+    await openWhy(user, flagged);
+    expect(within(flagged).getByRole("button", { name: /accept this field/i })).toBeInTheDocument();
+    expect(within(flagged).getByRole("button", { name: /it is a problem/i })).toBeInTheDocument();
 
     const passing = screen.getByRole("region", { name: /brand name/i });
+    await openWhy(user, passing);
     expect(within(passing).queryByRole("button", { name: /accept this field/i })).toBeNull();
+    expect(within(passing).getByRole("button", { name: /flag as a problem/i })).toBeInTheDocument();
   });
 
   it("keeps the tool's verdict visible after the agent accepts a field", async () => {
@@ -266,6 +264,7 @@ describe("Override — the tool advises, the agent decides", () => {
     render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
 
     const card = screen.getByRole("region", { name: /net contents/i });
+    await openWhy(user, card);
     await user.click(within(card).getByRole("button", { name: /accept this field/i }));
 
     expect(within(card).getByText(/you: accepted/i)).toBeInTheDocument();
@@ -278,9 +277,20 @@ describe("Override — the tool advises, the agent decides", () => {
     const user = userEvent.setup();
     render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
     const card = screen.getByRole("region", { name: /net contents/i });
+    await openWhy(user, card);
     await user.click(within(card).getByRole("button", { name: /accept this field/i }));
     expect(within(card).getByText(/R\. Delgado/)).toBeInTheDocument();
     expect(within(card).getByText(/nothing is stored after this session/i)).toBeInTheDocument();
+  });
+
+  it("lets the agent flag a passing field the tool missed", async () => {
+    const user = userEvent.setup();
+    render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
+    const passing = screen.getByRole("region", { name: /brand name/i });
+    await openWhy(user, passing);
+    await user.click(within(passing).getByRole("button", { name: /flag as a problem/i }));
+    expect(within(passing).getByText(/you: a problem/i)).toBeInTheDocument();
+    expect(within(passing).getByText(/flagged as a problem by you/i)).toBeInTheDocument();
   });
 
   it("lets the agent disagree with the government warning too", async () => {
@@ -289,6 +299,21 @@ describe("Override — the tool advises, the agent decides", () => {
     const block = screen.getByRole("region", { name: /government warning/i });
     await user.click(within(block).getByRole("button", { name: /accept this field/i }));
     expect(within(block).getByText(/you: accepted/i)).toBeInTheDocument();
+  });
+});
+
+describe("Evidence crops enlarge on request", () => {
+  it("opens a dialog and closes it with Escape", async () => {
+    const user = userEvent.setup();
+    render(<ResultsScreen response={RESPONSE} reviewer="" onCheckAnother={vi.fn()} />);
+
+    const crop = screen.getAllByRole("button", { name: /click to enlarge/i })[0];
+    await user.click(crop);
+    expect(screen.getByRole("dialog", { name: /enlarged/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /zoom in/i })).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 });
 

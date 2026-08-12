@@ -1,4 +1,4 @@
-# Label Check: AI-powered alcohol label verification
+# Alcohol Label Verification
 
 Verifies alcohol beverage label artwork against the data declared in a TTB COLA
 application. An agent supplies the label image and the declared values; within a
@@ -543,7 +543,7 @@ Not built, and named rather than left implied:
 | Extraction | Claude Haiku 4.5, structured outputs, thinking disabled, temperature 0 | Benchmarked against Opus 5 and Sonnet 5 during the spike. Structured outputs remove the parse-and-retry loop; temperature 0 because the same label must get the same verdict twice |
 | Rules | Pure Python, no dependencies | Unit-testable with no network. The whole engine runs in 5 ms |
 | Frontend | React 19, Vite, TypeScript, hand-written CSS tokens | The design specifies exact values throughout, and each is an accessibility decision with a reason |
-| Tests | pytest, Vitest, Testing Library | 415 backend, 21 frontend |
+| Tests | pytest, Vitest, Testing Library | 423 backend, 21 frontend |
 | Hosting | Render, always-on tier, from `api/Dockerfile` | Cold starts sabotage the evaluator's first click |
 
 ---

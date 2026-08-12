@@ -43,9 +43,7 @@ export function ResultsScreen({
   reviewer,
   onCheckAnother,
   /** True when this sits inside the review screen, which owns the page's one
-   * dominant action and its own back button. It also means the verdict was
-   * read back from a recording, so the elapsed time belongs to the machine
-   * that recorded it rather than to anything the agent just waited for. */
+   * dominant action and its own back button. */
   embedded = false,
 }: {
   response: VerificationResponse;
@@ -65,7 +63,6 @@ export function ResultsScreen({
   const warning = response.fields.find((field) => field.field === "government_warning");
 
   const counts = response.counts ?? {};
-  const seconds = (response.processing_ms / 1000).toFixed(1);
 
   const download = () => {
     const blob = new Blob([toCsv(response, overrides)], { type: "text/csv" });
@@ -91,12 +88,13 @@ export function ResultsScreen({
               {counts.fail ?? 0} fail
             </p>
           )}
-          <p className="summary__meta">
-            {response.label_id ? `Application ${response.label_id} · ` : ""}
-            {response.beverage_type}
-            {embedded ? "" : ` · read in ${seconds} seconds`}
-            {reviewer ? ` · reviewed by ${reviewer}` : ""}
-          </p>
+          {response.label_id || reviewer ? (
+            <p className="summary__meta">
+              {response.label_id ? `Application ${response.label_id}` : ""}
+              {response.label_id && reviewer ? " · " : ""}
+              {reviewer ? `Reviewed by ${reviewer}` : ""}
+            </p>
+          ) : null}
         </div>
         <div className="summary__actions">
           <button type="button" className="button" onClick={download}>

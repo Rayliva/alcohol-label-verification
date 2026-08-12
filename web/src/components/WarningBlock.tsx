@@ -106,7 +106,7 @@ export function WarningBlock({
             {field.reason}
           </p>
         </div>
-        <EvidenceCrop src={field.crop_url} fieldName="government_warning" tall />
+        <EvidenceCrop src={field.crop_url} fieldName="government_warning" detected={!!field.detected} tall />
       </div>
 
       <hr className="result__divider" />
@@ -122,16 +122,14 @@ export function WarningBlock({
         ))}
       </div>
 
-      {field.verdict === "pass" ? null : (
-        <FieldDecision
-          fieldKey="government_warning"
-          displayName="the government warning"
-          verdict={field.verdict}
-          reviewer={reviewer}
-          override={override}
-          onOverride={onOverride}
-        />
-      )}
+      <FieldDecision
+        fieldKey="government_warning"
+        displayName="the government warning"
+        verdict={field.verdict}
+        reviewer={reviewer}
+        override={override}
+        onOverride={onOverride}
+      />
     </section>
   );
 }

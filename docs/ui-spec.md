@@ -393,3 +393,38 @@ control, is implemented as specified.
 The handoff also specifies an `Undo my decision` control and a confidence bar.
 Neither shipped: pressing the chosen decision again clears it, which is what
 `aria-pressed` already communicates, and the bar repeated the number beside it.
+
+---
+
+## Session 6 decisions (2026-08-11, later that day)
+
+All decided by the product owner in review of the running app.
+
+1. **The product is called Alcohol Label Verification**, not Label Check.
+2. **No beverage type selector.** Spirits is the scope; a selector offering two
+   disabled choices was two explanations nobody needed. The API keeps its
+   config-driven engine and `/api/beverage-types`; the UI sends `spirits`.
+3. **No permanent status line above the primary action.** The button is always
+   enabled; pressing it with something missing raises an alert naming every
+   missing item. Rule 9 is satisfied by never disabling the control.
+4. **Per-card "Why?" disclosure.** The reason, reading confidence, rule
+   citation and the agent's decision controls sit behind a disclosure on each
+   field card. This is a deliberate deviation from rule 5, accepted because
+   six cards of rationale crowded out the results: the verdict, both values
+   and the evidence crop stay in the open.
+5. **A passing field can be flagged.** Behind its disclosure, a pass card
+   offers one action, "Flag as a problem", for the case where the agent spots
+   what the tool missed. Accepting a pass remains meaningless and is not
+   offered.
+6. **Images enlarge on click.** Evidence crops and the submitted artwork open
+   in a dialog with a zoom toggle; Esc, the backdrop or the close button
+   dismisses it. The inline view is never gated behind the click.
+7. **The summary drops "spirits" and "read in N seconds".** Elapsed time is
+   demonstrated live on the processing screen; restating it afterwards earned
+   its space nothing.
+8. **The masthead shows the TTB seal cropped square.** The asset's wordmark
+   half rendered illegibly at masthead size and pushed the product name a
+   hand's width from the mark.
+9. **Bottler address help corrected.** 27 CFR 5.66 requires city and State,
+   not a street address (verified against Cornell LII, 2026-08-11, recorded in
+   .claude/rules/verify-regulations.md).

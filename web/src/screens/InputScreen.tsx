@@ -1,14 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import type { BeverageTypeOption, DeclaredFields } from "../api/types";
+import type { DeclaredFields } from "../api/types";
 
 /**
  * Screen 1: collect an image and the values declared in the application.
  *
- * One job, one screen, one primary action. The button is disabled until it can
- * work, and a line above it names every missing item by its exact field label.
- * a disabled control that does not explain itself is a dead end
- * (.claude/rules/accessibility.md, rule 9).
+ * One job, one screen, one primary action. The button is always enabled;
+ * pressing it with something missing names every missing item in an alert
+ * rather than parking a permanent status line above the button. A disabled
+ * control would need adjacent text explaining why
+ * (.claude/rules/accessibility.md, rule 9); an enabled one that explains
+ * itself on demand needs nothing until asked.
+ *
+ * There is no beverage type selector. Spirits is the product's scope, and a
+ * selector offering two disabled choices was two explanations nobody needed
+ * (decided 2026-08-11; see docs/ui-spec.md).
  */
 
 interface FieldSpec {
@@ -37,7 +43,7 @@ const FIELDS: FieldSpec[] = [
   {
     name: "alcohol_content",
     label: "Alcohol content",
-    help: "Type it as written on the application, e.g. 45% Alc./Vol. (90 Proof).",
+    help: "e.g. 45% Alc./Vol. (90 Proof).",
     required: true,
     mono: true,
   },
@@ -51,7 +57,7 @@ const FIELDS: FieldSpec[] = [
   {
     name: "bottler_address",
     label: "Bottler or producer name and address",
-    help: "Full name and address, including street, city and state.",
+    help: "Name, city and state. A street address is optional (27 CFR 5.66).",
     required: true,
     textarea: true,
   },
@@ -65,9 +71,6 @@ const FIELDS: FieldSpec[] = [
 ];
 
 export function InputScreen({
-  beverageTypes,
-  beverageType,
-  onBeverageType,
   declared,
   onDeclared,
   image,
@@ -76,9 +79,6 @@ export function InputScreen({
   onBatch,
   onCancel,
 }: {
-  beverageTypes: BeverageTypeOption[];
-  beverageType: string;
-  onBeverageType: (value: string) => void;
   declared: DeclaredFields;
   onDeclared: (next: DeclaredFields) => void;
   image: File | null;
@@ -90,6 +90,7 @@ export function InputScreen({
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [attempted, setAttempted] = useState(false);
 
   useEffect(() => {
     if (!image) {
@@ -101,21 +102,26 @@ export function InputScreen({
     return () => URL.revokeObjectURL(url);
   }, [image]);
 
-  const selected = beverageTypes.find((type) => type.beverage_type === beverageType);
-  const alcoholRequired = selected?.alcohol_content_required ?? true;
-
   const missing = useMemo(() => {
     const gaps: string[] = [];
     if (!image) gaps.push("a label image");
     for (const field of FIELDS) {
-      const needed = field.name === "alcohol_content" ? alcoholRequired : field.required;
-      if (needed && !declared[field.name].trim()) gaps.push(field.label);
+      if (field.required && !declared[field.name].trim()) gaps.push(field.label);
     }
     return gaps;
-  }, [image, declared, alcoholRequired]);
+  }, [image, declared]);
 
   const update = (name: keyof DeclaredFields, value: string) =>
     onDeclared({ ...declared, [name]: value });
+
+  const submit = () => {
+    if (missing.length) {
+      setAttempted(true);
+      return;
+    }
+    setAttempted(false);
+    onSubmit();
+  };
 
   return (
     <div className="two-column">
@@ -189,39 +195,10 @@ export function InputScreen({
             onChange={(event) => onImage(event.target.files?.[0] ?? null)}
           />
         </section>
-
-        <section className="card" aria-labelledby="type-heading">
-          <h2 id="type-heading">2. What kind of drink is it?</h2>
-          <p className="help">This decides which rules apply.</p>
-          <div className="choice-grid" style={{ marginTop: 16 }}>
-            {beverageTypes.map((type) => (
-              <button
-                key={type.beverage_type}
-                type="button"
-                className="choice"
-                aria-pressed={type.beverage_type === beverageType}
-                disabled={!type.available}
-                onClick={() => onBeverageType(type.beverage_type)}
-              >
-                <span aria-hidden="true">
-                  {type.beverage_type === beverageType ? "◉" : "○"}{" "}
-                </span>
-                {type.display_name}
-              </button>
-            ))}
-          </div>
-          {beverageTypes
-            .filter((type) => !type.available)
-            .map((type) => (
-              <p className="help" key={type.beverage_type}>
-                {type.unavailable_reason}
-              </p>
-            ))}
-        </section>
       </div>
 
       <section className="card" aria-labelledby="declared-heading">
-        <h2 id="declared-heading">3. What the application says</h2>
+        <h2 id="declared-heading">2. What the application says</h2>
         <p className="help">
           Copy these from the COLA application, exactly as written. Fields marked{" "}
           <span className="field__required">*</span> are required.
@@ -243,50 +220,39 @@ export function InputScreen({
             </p>
           </div>
 
-          {FIELDS.map((field) => {
-            const needed = field.name === "alcohol_content" ? alcoholRequired : field.required;
-            // A required field is marked with an asterisk and nothing else. The
-            // note is kept for the cases where "optional" alone would not say
-            // enough: imports only, or optional for this drink specifically.
-            const note = field.name === "alcohol_content" && !alcoholRequired
-              ? selected?.alcohol_content_note ?? "optional for this drink"
-              : needed
-                ? null
-                : field.note ?? "optional";
-            return (
-              <div className="field" key={field.name}>
-                <label className="field__label" htmlFor={field.name}>
-                  {field.label}{" "}
-                  {needed ? (
-                    <>
-                      <span className="field__required" aria-hidden="true">
-                        *
-                      </span>
-                      <span className="visually-hidden">(required)</span>
-                    </>
-                  ) : null}
-                  {note ? <span className="field__note">({note})</span> : null}
-                </label>
-                {field.textarea ? (
-                  <textarea
-                    id={field.name}
-                    className="textarea"
-                    rows={3}
-                    value={declared[field.name]}
-                    onChange={(event) => update(field.name, event.target.value)}
-                  />
-                ) : (
-                  <input
-                    id={field.name}
-                    className={`input${field.mono ? " input--mono" : ""}`}
-                    value={declared[field.name]}
-                    onChange={(event) => update(field.name, event.target.value)}
-                  />
-                )}
-                <p className="help">{field.help}</p>
-              </div>
-            );
-          })}
+          {FIELDS.map((field) => (
+            <div className="field" key={field.name}>
+              <label className="field__label" htmlFor={field.name}>
+                {field.label}{" "}
+                {field.required ? (
+                  <>
+                    <span className="field__required" aria-hidden="true">
+                      *
+                    </span>
+                    <span className="visually-hidden">(required)</span>
+                  </>
+                ) : null}
+                {field.note ? <span className="field__note">({field.note})</span> : null}
+              </label>
+              {field.textarea ? (
+                <textarea
+                  id={field.name}
+                  className="textarea"
+                  rows={3}
+                  value={declared[field.name]}
+                  onChange={(event) => update(field.name, event.target.value)}
+                />
+              ) : (
+                <input
+                  id={field.name}
+                  className={`input${field.mono ? " input--mono" : ""}`}
+                  value={declared[field.name]}
+                  onChange={(event) => update(field.name, event.target.value)}
+                />
+              )}
+              <p className="help">{field.help}</p>
+            </div>
+          ))}
 
           <div className="field">
             <label className="field__label" htmlFor="reviewer">
@@ -299,26 +265,23 @@ export function InputScreen({
               onChange={(event) => update("reviewer", event.target.value)}
             />
             <p className="help">
-              Put on any field you accept or reject, so the record shows who decided.
+              Put on any field you accept or reject, so the export shows who decided.
             </p>
           </div>
         </div>
 
         <hr className="result__divider" />
 
-        {missing.length ? (
-          <p className="blocked">
-            Still needed before this button works: {missing.join(", ")}.
+        {attempted && missing.length ? (
+          <p className="blocked" role="alert">
+            Still needed before this label can be checked: {missing.join(", ")}.
           </p>
-        ) : (
-          <p className="ready">Everything required is filled in.</p>
-        )}
+        ) : null}
 
         <button
           type="button"
           className="button button--primary button--wide"
-          disabled={missing.length > 0}
-          onClick={onSubmit}
+          onClick={submit}
         >
           Check this label
         </button>

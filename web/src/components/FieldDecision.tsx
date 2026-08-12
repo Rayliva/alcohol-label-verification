@@ -1,11 +1,11 @@
 import type { Override, Verdict } from "../api/types";
 
 /**
- * The agent's call on one flagged field.
+ * The agent's call on one field.
  *
- * Only flagged fields get this. A field the tool passed has nothing to
- * disagree with, and offering "accept" on it asked the agent to confirm six
- * verdicts that were never in doubt before reaching the one that was.
+ * On a flagged field the question is "do you agree?", with both answers
+ * offered. On a passing field the only meaningful action is disagreement, so
+ * that is the only control: flag it as a problem the tool missed.
  *
  * What it does is stated on the control itself. These decisions travel with
  * the CSV export and nowhere else: nothing about an application is stored
@@ -39,27 +39,33 @@ export function FieldDecision({
     });
   };
 
+  const passed = verdict === "pass";
+
   return (
     <div className="decision">
       <div className="decision__controls">
         <span className="decision__ask">
-          The tool flagged this as {verdict.replace("_", " ")}. Do you agree?
+          {passed
+            ? "Spotted a problem the tool missed?"
+            : `The tool flagged this as ${verdict.replace("_", " ")}. Do you agree?`}
         </span>
-        <button
-          type="button"
-          className="button button--small"
-          aria-pressed={override?.decision === "accepted"}
-          onClick={() => decide("accepted")}
-        >
-          No, accept this field
-        </button>
+        {passed ? null : (
+          <button
+            type="button"
+            className="button button--small"
+            aria-pressed={override?.decision === "accepted"}
+            onClick={() => decide("accepted")}
+          >
+            No, accept this field
+          </button>
+        )}
         <button
           type="button"
           className="button button--small button--danger"
           aria-pressed={override?.decision === "rejected"}
           onClick={() => decide("rejected")}
         >
-          Yes, it is a problem
+          {passed ? "Flag as a problem" : "Yes, it is a problem"}
         </button>
         <label className="visually-hidden" htmlFor={`note-${fieldKey}`}>
           Note about {displayName}, optional
@@ -79,7 +85,7 @@ export function FieldDecision({
         <p className="decision__made">
           {override.decision === "accepted"
             ? "Accepted by you. The tool's verdict stays on the export beside your decision."
-            : "Confirmed as a problem by you."}{" "}
+            : "Flagged as a problem by you. The tool's verdict stays on the export beside your decision."}{" "}
           <span className="help">
             {reviewer ? `${reviewer}, ` : ""}
             {override.at}. Goes into the CSV export; nothing is stored after this session.
@@ -87,7 +93,9 @@ export function FieldDecision({
         </p>
       ) : (
         <p className="help decision__hint">
-          Pick one to enable the note. Both go into the CSV export.
+          {passed
+            ? "Flagging enables the note. Both go into the CSV export."
+            : "Pick one to enable the note. Both go into the CSV export."}
         </p>
       )}
     </div>

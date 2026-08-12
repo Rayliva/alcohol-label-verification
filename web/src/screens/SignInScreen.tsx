@@ -39,8 +39,8 @@ export function SignInScreen({ onSignedIn }: { onSignedIn: (who: string) => void
       <Logo className="signin__logo" />
       <h1>Sign in</h1>
       <p className="help">
-        Label Check compares label artwork against the values declared in a COLA
-        application.
+        Alcohol Label Verification compares label artwork against the values
+        declared in a COLA application.
       </p>
 
       {error ? (
