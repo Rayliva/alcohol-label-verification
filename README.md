@@ -12,9 +12,9 @@ agent confirms or overrides. **The tool advises; the agent decides.**
 
 ## Known trade-offs, up front
 
-The decisions most likely to matter to a reviewer, each argued in full further
-down ([Scope and trade-offs](#scope-and-trade-offs),
-[Approach](#approach), [Known limitations](#known-limitations)):
+The decisions that most shaped this prototype, in brief. Each is argued in
+full in [Scope and trade-offs](#scope-and-trade-offs),
+[Approach](#approach), and [Known limitations](#known-limitations).
 
 - **Spirits only.** The engine reads wine and malt rules from the same
   configuration, but their rule content is not shipped; the brief exemplifies
@@ -480,7 +480,7 @@ found both.
 
 **A geometric check with no measurement returns NEEDS REVIEW, never PASS.** A
 check that silently passes when it did not run is a false PASS, and false PASSes
-are the error class this product is scored on.
+are the error class this product exists to prevent.
 
 ---
 
@@ -617,7 +617,7 @@ Not built, and named rather than left implied:
 | Rules | Pure Python, no dependencies | Unit-testable with no network. The whole engine runs in 5 ms |
 | Frontend | React 19, Vite, TypeScript, hand-written CSS tokens | The design specifies exact values throughout, and each is an accessibility decision with a reason |
 | Tests | pytest, Vitest, Testing Library | 439 backend, 31 frontend (2026-08-12) |
-| Hosting | Render, always-on tier, from `api/Dockerfile` | Cold starts sabotage the evaluator's first click |
+| Hosting | Render, always-on tier, from `api/Dockerfile` | A spun-down instance would miss the 5-second budget on its first request |
 
 ---
 
