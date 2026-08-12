@@ -124,14 +124,13 @@ export function InputScreen({
   };
 
   return (
-    <div className="two-column">
-      <div className="stack">
-        {onCancel ? (
-          <button className="button button--quiet" type="button" onClick={onCancel}>
-            ← Back to the queue
-          </button>
-        ) : null}
-        <section className="card" aria-labelledby="artwork-heading">
+    <div className="stack form-column">
+      {onCancel ? (
+        <button className="back-link" type="button" onClick={onCancel}>
+          <span aria-hidden="true">←</span> Back to the queue
+        </button>
+      ) : null}
+      <section className="card" aria-labelledby="artwork-heading">
           <h2 id="artwork-heading">1. The label artwork</h2>
           <p className="help">A photograph or an export of the label. JPG or PNG.</p>
 
@@ -194,8 +193,7 @@ export function InputScreen({
             accept="image/png,image/jpeg"
             onChange={(event) => onImage(event.target.files?.[0] ?? null)}
           />
-        </section>
-      </div>
+      </section>
 
       <section className="card" aria-labelledby="declared-heading">
         <h2 id="declared-heading">2. What the application says</h2>

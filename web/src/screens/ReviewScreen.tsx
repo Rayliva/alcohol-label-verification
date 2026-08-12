@@ -91,8 +91,8 @@ export function ReviewScreen({
 
   return (
     <>
-      <button className="button button--quiet" type="button" onClick={onBack}>
-        ← Back to the queue
+      <button className="back-link" type="button" onClick={onBack}>
+        <span aria-hidden="true">←</span> Back to the queue
       </button>
 
       {item.has_image ? (

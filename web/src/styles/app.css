@@ -192,17 +192,45 @@ a:hover {
   gap: 14px;
 }
 
-.two-column {
-  display: grid;
-  grid-template-columns: minmax(560px, 1fr) minmax(640px, 1.1fr);
-  gap: 32px;
-  align-items: start;
+/* The single-label form: one centred column, cards stacked and lined up.
+   Was a two-column grid; stacked reads top to bottom like the paper form it
+   mirrors (product owner, 2026-08-11). */
+.form-column {
+  max-width: 880px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-@media (max-width: 1180px) {
-  .two-column {
-    grid-template-columns: 1fr;
-  }
+/* Navigation back to the queue, styled as the breadcrumb it is rather than
+   as an action button. Still a real button: 44px target, focus ring, and the
+   underline that says "this navigates". */
+.back-link {
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: var(--size-help);
+  font-weight: 600;
+  color: var(--link);
+  text-decoration: underline;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0;
+  justify-self: start;
+  align-self: start;
+}
+
+.back-link:hover {
+  color: var(--link-hover);
+}
+
+/* The text beside a choose-file button: one style whether it is a count or a
+   filename, because two fonts side by side on parallel steps read as a
+   mistake. */
+.file-status {
+  font-weight: 600;
 }
 
 /* Controls --------------------------------------------------------------- */

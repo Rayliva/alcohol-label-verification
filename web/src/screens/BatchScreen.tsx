@@ -132,7 +132,7 @@ export function BatchScreen({ onSingle }: { onSingle: () => void }) {
               >
                 Choose image files
               </button>
-              <span style={{ fontWeight: 600 }}>{images.length} images selected</span>
+              <span className="file-status">{images.length} images selected</span>
               {images.length ? (
                 <button type="button" className="button" onClick={() => setImages([])}>
                   Clear all
@@ -166,7 +166,7 @@ export function BatchScreen({ onSingle }: { onSingle: () => void }) {
               >
                 Choose spreadsheet
               </button>
-              <span className="filename">{manifest ? manifest.name : "none chosen yet"}</span>
+              <span className="file-status">{manifest ? manifest.name : "none chosen yet"}</span>
             </div>
             <label className="visually-hidden" htmlFor="batch-manifest">
               Application spreadsheet
@@ -179,16 +179,16 @@ export function BatchScreen({ onSingle }: { onSingle: () => void }) {
               accept=".csv,.json,text/csv,application/json"
               onChange={(event) => setManifest(event.target.files?.[0] ?? null)}
             />
-            <div className="notice" style={{ marginTop: 18, borderColor: "var(--border)" }}>
-              <p style={{ margin: "0 0 10px", fontWeight: 600 }}>
-                Not sure of the column names?
-              </p>
-              <a className="button" href={templateUrl} download>
+            <p className="help" style={{ marginTop: 10 }}>
+              Not sure of the column names?{" "}
+              <a href={templateUrl} download>
                 Download the template spreadsheet (CSV)
               </a>
-            </div>
+              .
+            </p>
           </section>
 
+          {images.length && manifest ? (
           <section className="card" aria-labelledby="preflight-heading">
             <h2 id="preflight-heading">3. Before we start</h2>
             {report ? (
@@ -228,18 +228,10 @@ export function BatchScreen({ onSingle }: { onSingle: () => void }) {
                 </button>
               </>
             ) : (
-              <p className="blocked">
-                {images.length && manifest
-                  ? "Checking your files…"
-                  : `Still needed before this can start: ${[
-                      images.length ? null : "label images",
-                      manifest ? null : "an application spreadsheet",
-                    ]
-                      .filter(Boolean)
-                      .join(", ")}.`}
-              </p>
+              <p className="help">Checking your files…</p>
             )}
           </section>
+          ) : null}
 
           <p>
             <button type="button" className="button button--quiet" onClick={onSingle}>
