@@ -22,7 +22,6 @@ interface FieldSpec {
   label: string;
   help?: string;
   required: boolean;
-  mono?: boolean;
   textarea?: boolean;
   note?: string;
 }
@@ -45,14 +44,12 @@ const FIELDS: FieldSpec[] = [
     label: "Alcohol content",
     help: "e.g. 45% Alc./Vol. (90 Proof).",
     required: true,
-    mono: true,
   },
   {
     name: "net_contents",
     label: "Net contents",
     help: "Volume in metric, e.g. 750 mL.",
     required: true,
-    mono: true,
   },
   {
     name: "bottler_address",
@@ -202,7 +199,7 @@ export function InputScreen({
             </label>
             <input
               id="application_id"
-              className="input input--mono"
+              className="input"
               value={declared.application_id}
               onChange={(event) => update("application_id", event.target.value)}
             />
@@ -236,7 +233,7 @@ export function InputScreen({
               ) : (
                 <input
                   id={field.name}
-                  className={`input${field.mono ? " input--mono" : ""}`}
+                  className="input"
                   value={declared[field.name]}
                   onChange={(event) => update(field.name, event.target.value)}
                 />

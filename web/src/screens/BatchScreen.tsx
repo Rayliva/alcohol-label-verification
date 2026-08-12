@@ -333,9 +333,7 @@ export function BatchScreen() {
                         <VerdictBadge verdict={rowResult.outcome as Outcome} small />
                       )}
                     </td>
-                    <td className="mono">
-                      {rowResult.application_id}
-                    </td>
+                    <td>{rowResult.application_id}</td>
                     <td>{rowResult.brand_name ?? "not read"}</td>
                     <td>
                       {rowResult.issues ? `${rowResult.issues} issues` : "none"}

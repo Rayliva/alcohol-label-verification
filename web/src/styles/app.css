@@ -391,11 +391,6 @@ a:hover {
   width: 100%;
 }
 
-.input--mono,
-.textarea--mono {
-  font-family: var(--mono);
-}
-
 .textarea {
   min-height: 96px;
   resize: vertical;
@@ -434,8 +429,7 @@ a:hover {
 }
 
 .filename {
-  font-family: var(--mono);
-  font-size: var(--size-file);
+  font-size: var(--size-help);
   color: var(--ink-secondary);
 }
 

@@ -66,6 +66,9 @@
      Public Sans is first in the stack but not shipped as a file, so most
      viewers get Segoe UI; the metrics were checked against both. */
   --font: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  /* The mono face appears only where character-exact comparison is the point:
+     declared vs detected evidence, and the government warning text. Forms and
+     tables stay in the one body face (product owner, 2026-08-12). */
   --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
 
   --size-h1: 29px;
@@ -74,7 +77,6 @@
   --size-body: 19px;
   --size-help: 17px;
   --size-micro: 16px;
-  --size-file: 15px;
 
   /* Square corners. Government sites do not have bubbles. */
   --radius-card: 0;

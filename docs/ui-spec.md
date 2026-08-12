@@ -505,3 +505,18 @@ All decided by the product owner in review of the running app.
   read "1 issue found", identically to a screen reader. The headline now
   names the outcome in words: "1 issue found. This label needs review." /
   "This label fails."
+
+### Session 7 amendments (2026-08-12)
+
+- **The counts breakdown is back** ("5 fields pass · 1 needs review · 0
+  fail"), beneath the outcome headline. The owner asked for it as an
+  accessibility aid; the README records it under "One deliberate redundancy".
+  The outcome word in the headline stays; the two carry the same fact in
+  two forms, which is the point.
+- **One typeface outside the evidence.** The submit flow had four faces in
+  view at once: mono inputs for the "exact" fields, a mono filename line, a
+  mono application-ID column in the batch table, and a prose sentence on the
+  processing screen set in mono. All of it is now the body face. The mono
+  face survives in exactly two places, where character-exact reading is the
+  job: declared-vs-detected evidence on result cards, and the government
+  warning text block.

@@ -105,7 +105,7 @@ export function ProcessingScreen({
         >
           <div className="progress__fill" style={{ width: `${progress}%` }} />
         </div>
-        <p className="mono" style={{ marginTop: 12 }}>
+        <p className="help" style={{ marginTop: 12 }}>
           {elapsed.toFixed(1)} seconds so far. Most labels come back in about{" "}
           {TYPICAL_CHECK_SECONDS} seconds once the image is up.
         </p>
