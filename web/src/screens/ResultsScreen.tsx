@@ -62,6 +62,7 @@ export function ResultsScreen({
     [response.fields],
   );
   const warning = response.fields.find((field) => field.field === "government_warning");
+  const counts = response.counts ?? {};
 
   const download = () => {
     const blob = new Blob([toCsv(response)], { type: "text/csv" });
@@ -81,6 +82,13 @@ export function ResultsScreen({
         </span>
         <div>
           <h1 id="summary-heading">{headline(response)}</h1>
+          {response.overall === "unreadable" ? null : (
+            <p className="summary__counts">
+              {counts.pass ?? 0} {(counts.pass ?? 0) === 1 ? "field passes" : "fields pass"} ·{" "}
+              {counts.needs_review ?? 0} {(counts.needs_review ?? 0) === 1 ? "needs" : "need"}{" "}
+              review · {counts.fail ?? 0} {(counts.fail ?? 0) === 1 ? "fails" : "fail"}
+            </p>
+          )}
           {response.label_id || reviewer ? (
             <p className="summary__meta">
               {response.label_id ? `Application ${response.label_id}` : ""}

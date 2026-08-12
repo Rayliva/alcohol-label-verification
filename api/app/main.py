@@ -248,6 +248,23 @@ def health() -> dict[str, Any]:
 # app/static is built by `npm run build` in web/ and copied here; see the README.
 _STATIC = Path(__file__).resolve().parent / "static"
 
+
+@app.middleware("http")
+async def html_is_never_cached(request, call_next):  # type: ignore[no-untyped-def]
+    """The HTML entry must always be revalidated.
+
+    The bundle's assets are content-hashed and each deploy deletes the old
+    pair, so a browser that cached index.html keeps asking for assets that no
+    longer exist — or, served from its own cache, keeps showing last week's
+    UI while the changelog says otherwise. The assets themselves stay
+    cacheable; only the document that names them must not be.
+    """
+    response = await call_next(request)
+    if response.headers.get("content-type", "").startswith("text/html"):
+        response.headers["Cache-Control"] = "no-cache"
+    return response
+
+
 if _STATIC.is_dir():
     app.mount("/", StaticFiles(directory=_STATIC, html=True), name="frontend")
 else:

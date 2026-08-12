@@ -33,6 +33,8 @@
   /* The institutional colours. Navy from the TTB seal; link blue from USWDS. */
   --primary: #1b3e6e; /* 10.7:1 on white */
   --primary-dark: #122c50;
+  --primary-tint: #dbe4f0; /* hover ground for navy text, 8.4:1 */
+  --on-primary-muted: #d5deeb; /* quiet text on the navy masthead, 7.9:1 */
   --accent: #e7d568; /* the seal's gold; decorative only */
   --link: #005ea2; /* 6.7:1 */
   --link-hover: #1a4480;
@@ -60,7 +62,9 @@
   --disabled-fill: #c9c9c9;
   --highlight: #f6e3a8;
 
-  /* Type. Body is 19px because 16px is the floor, not the target. */
+  /* Type. Body is 19px because 16px is the floor, not the target.
+     Public Sans is first in the stack but not shipped as a file, so most
+     viewers get Segoe UI; the metrics were checked against both. */
   --font: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
   --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
 

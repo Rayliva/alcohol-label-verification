@@ -124,7 +124,7 @@ export function BatchScreen() {
           <section className="card" aria-labelledby="images-heading">
             <h2 id="images-heading">The label artwork</h2>
             <p className="help">Every label image for this batch, selected at once. JPG or PNG.</p>
-            <div style={{ marginTop: 16, display: "flex", gap: 12, alignItems: "center" }}>
+            <div className="file-picker">
               <button
                 type="button"
                 className="button"
@@ -149,7 +149,12 @@ export function BatchScreen() {
               type="file"
               multiple
               accept="image/png,image/jpeg"
-              onChange={(event) => setImages(Array.from(event.target.files ?? []))}
+              onChange={(event) => {
+                // Reset after reading, or picking the same files again fires
+                // no change event and the screen looks like it ignored you.
+                setImages(Array.from(event.target.files ?? []));
+                event.target.value = "";
+              }}
             />
           </section>
 
@@ -159,7 +164,7 @@ export function BatchScreen() {
               A spreadsheet, one row per application, naming the image file it
               belongs to. CSV or JSON.
             </p>
-            <div style={{ marginTop: 16, display: "flex", gap: 12, alignItems: "center" }}>
+            <div className="file-picker">
               <button
                 type="button"
                 className="button"
@@ -178,7 +183,10 @@ export function BatchScreen() {
               className="visually-hidden"
               type="file"
               accept=".csv,.json,text/csv,application/json"
-              onChange={(event) => setManifest(event.target.files?.[0] ?? null)}
+              onChange={(event) => {
+                setManifest(event.target.files?.[0] ?? null);
+                event.target.value = "";
+              }}
             />
             <p className="help" style={{ marginTop: 10 }}>
               Not sure of the column names?{" "}
@@ -194,7 +202,7 @@ export function BatchScreen() {
             <h2 id="preflight-heading">Before we start</h2>
             {report ? (
               <>
-                <p style={{ fontSize: 20 }}>
+                <p style={{ fontSize: "var(--size-h3)" }}>
                   {report.image_count} images · {report.row_count} spreadsheet rows ·{" "}
                   <strong>{report.matched_count} matched</strong>
                   {report.problem_count ? ` · ${report.problem_count} need attention` : ""}
@@ -283,7 +291,7 @@ export function BatchScreen() {
 
           <section className="card" aria-labelledby="table-heading">
             <h2 id="table-heading">Results, problems first</h2>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", margin: "16px 0" }}>
+            <div className="filter-row">
               {FILTERS.map((option) => (
                 <button
                   key={option.key}
@@ -297,26 +305,23 @@ export function BatchScreen() {
               ))}
             </div>
 
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <table className="batch-table">
               <caption className="visually-hidden">
                 Every label checked so far, worst outcome first
               </caption>
               <thead>
                 <tr>
-                  <th style={{ textAlign: "left", padding: "10px 8px" }}>Status</th>
-                  <th style={{ textAlign: "left", padding: "10px 8px" }}>Application ID</th>
-                  <th style={{ textAlign: "left", padding: "10px 8px" }}>Brand name</th>
-                  <th style={{ textAlign: "left", padding: "10px 8px" }}>Issues</th>
-                  <th style={{ textAlign: "left", padding: "10px 8px" }}>Image</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Application ID</th>
+                  <th scope="col">Brand name</th>
+                  <th scope="col">Issues</th>
+                  <th scope="col">Image</th>
                 </tr>
               </thead>
               <tbody>
                 {results.map((rowResult) => (
-                  <tr
-                    key={`${rowResult.application_id}-${rowResult.image}`}
-                    style={{ borderTop: "2px solid var(--divider)" }}
-                  >
-                    <td style={{ padding: "12px 8px" }}>
+                  <tr key={`${rowResult.application_id}-${rowResult.image}`}>
+                    <td>
                       {rowResult.outcome === "error" ? (
                         <span className="badge badge--unreadable">
                           <span className="badge__glyph" aria-hidden="true">
@@ -328,14 +333,14 @@ export function BatchScreen() {
                         <VerdictBadge verdict={rowResult.outcome as Outcome} small />
                       )}
                     </td>
-                    <td className="mono" style={{ padding: "12px 8px" }}>
+                    <td className="mono">
                       {rowResult.application_id}
                     </td>
-                    <td style={{ padding: "12px 8px" }}>{rowResult.brand_name ?? "not read"}</td>
-                    <td style={{ padding: "12px 8px" }}>
+                    <td>{rowResult.brand_name ?? "not read"}</td>
+                    <td>
                       {rowResult.issues ? `${rowResult.issues} issues` : "none"}
                     </td>
-                    <td className="filename" style={{ padding: "12px 8px" }}>
+                    <td className="filename">
                       {rowResult.image}
                       {rowResult.error ? `. ${rowResult.error.message}` : ""}
                     </td>

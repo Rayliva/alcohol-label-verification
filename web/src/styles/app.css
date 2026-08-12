@@ -111,8 +111,8 @@ a:hover {
 /* The global primary hover darkens the fill, which on the navy bar turned
    this chip navy-on-navy. Hovering here lightens instead: navy text stays. */
 .masthead .button--primary:hover:not(:disabled) {
-  background: #dbe4f0;
-  border-color: #dbe4f0;
+  background: var(--primary-tint);
+  border-color: var(--primary-tint);
   color: var(--primary);
 }
 
@@ -124,7 +124,8 @@ a:hover {
 }
 
 .masthead__who {
-  color: #d5deeb;
+  color: var(--on-primary-muted);
+  font-size: 0.9375rem;
 }
 
 /* The asset is seal + wordmark, 262 units wide with the round seal in the
@@ -403,10 +404,10 @@ a:hover {
 /* Drop zone -------------------------------------------------------------- */
 
 .dropzone {
-  border: 3px dashed var(--border);
-  background: var(--zebra);
+  border: 2px solid var(--border);
+  background: var(--zebra-soft);
   border-radius: var(--radius-card);
-  padding: 40px 28px;
+  padding: 32px 28px;
   text-align: center;
 }
 
@@ -537,6 +538,11 @@ a:hover {
 }
 .summary--unreadable .summary__glyph {
   color: var(--ink-secondary);
+}
+
+.summary__counts {
+  font-size: 18px;
+  margin: 6px 0 0;
 }
 
 .summary__meta {
@@ -775,10 +781,16 @@ a:hover {
   font-weight: 600;
 }
 
+.stage--active .stage__marker {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--surface);
+}
+
 .stage__marker {
   width: 34px;
   height: 34px;
-  border-radius: 50%;
+  border-radius: var(--radius-control);
   border: 2px solid var(--border);
   display: grid;
   place-items: center;
@@ -802,27 +814,30 @@ a:hover {
 
 .progress__fill {
   height: 100%;
-  background: var(--ink);
+  background: var(--primary);
 }
 
 /* Notices ---------------------------------------------------------------- */
 
 .notice {
-  border: 2px solid;
+  border: 2px solid var(--border);
+  border-left-width: 8px;
   border-radius: var(--radius-control);
-  padding: 18px 20px;
+  padding: 16px 20px;
+}
+
+.notice p:last-child {
+  margin-bottom: 0;
 }
 
 .notice--warn {
   background: var(--review-tint);
-  border-color: var(--review-border);
-  color: var(--review-text);
+  border-left-color: var(--review-border);
 }
 
 .notice--error {
   background: var(--fail-tint);
-  border-color: var(--fail-border);
-  color: var(--fail-text);
+  border-left-color: var(--fail-border);
 }
 
 .blocked {
@@ -858,29 +873,50 @@ a:hover {
   margin-bottom: 20px;
 }
 
-.queue {
+/* One table anatomy for the whole product: the queue and the batch results
+   share it, because two tables with two designs read as two products. */
+.queue,
+.batch-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 1rem;
 }
 
 .queue th,
-.queue td {
+.queue td,
+.batch-table th,
+.batch-table td {
   text-align: left;
   padding: 14px 16px;
   border-bottom: 1px solid var(--divider);
   vertical-align: middle;
 }
 
-.queue thead th {
+.queue thead th,
+.batch-table thead th {
   font-size: 0.9375rem;
   color: var(--ink-secondary);
   border-bottom: 2px solid var(--border);
   white-space: nowrap;
 }
 
-.queue tbody tr:nth-child(even) {
+.queue tbody tr:nth-child(even),
+.batch-table tbody tr:nth-child(even) {
   background: var(--zebra-soft);
+}
+
+.filter-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.file-picker {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .queue__brand {
@@ -896,7 +932,7 @@ a:hover {
 
 .queue__tag {
   display: block;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 400;
   color: var(--ink-quiet);
 }
@@ -917,7 +953,7 @@ a:hover {
   max-height: 340px;
   width: auto;
   height: auto;
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: var(--radius-control);
 }
 
@@ -953,9 +989,7 @@ a:hover {
   gap: 14px;
 }
 
-.masthead__who {
-  font-size: 0.9375rem;
-}
+
 
 @media (max-width: 640px) {
   .queue thead {
@@ -982,7 +1016,7 @@ a:hover {
   position: fixed;
   inset: 0;
   z-index: 40;
-  background: rgba(26, 25, 23, 0.82);
+  background: rgba(27, 27, 27, 0.82);
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 10px;
@@ -995,9 +1029,6 @@ a:hover {
   gap: 12px;
 }
 
-.lightbox__bar .button {
-  background: var(--surface);
-}
 
 .lightbox__stage {
   overflow: auto;

@@ -172,6 +172,14 @@ That set also found two real defects on arrival: a country of origin declared
 as `PRODUCT OF ENGLAND` failing against a label reading `ENGLAND`, and an
 imported label naming no country passing clean.
 
+### A ready-made batch test
+
+`api/app/samples/` holds 31 sample labels **and** `batch-manifest.csv`, which
+names exactly those images. Select all 31 JPGs from that folder and that CSV
+on the batch half of the submit page; preflight matches 31 of 31 with no
+skips. Using images from anywhere else with this CSV will report every row as
+unmatched, because rows name files by their exact filename.
+
 ### Batch throughput
 
 | | Measured |
@@ -252,6 +260,17 @@ review queue to anyone who finds the URL. `.env.example` lists every variable.
 
 `/health` reports what warmed and what did not, and says which conditions are
 known rather than actionable.
+
+### One deliberate redundancy
+
+The results summary states the verdict three ways: the headline names the
+outcome in words ("2 issues found. This label needs review."), a counts line
+breaks the fields down ("5 fields pass · 1 needs review · 0 fail", with the
+verbs agreeing in number), and the
+left bar and glyph carry it visually. The counts line was removed once as
+clutter and put back as an accessibility choice: the glyph is decorative to a
+screen reader, so the words have to carry everything, and the breakdown says
+at a glance what kind of attention the label needs before any card is read.
 
 ### The frontend
 

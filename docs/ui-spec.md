@@ -491,8 +491,8 @@ All decided by the product owner in review of the running app.
   2026-08-09), so that line is a requirement, not decoration.
 - **Sign out matches "Signed in as" in size**, so leaving is not louder than
   being here.
-- **`samples/batch-manifest.csv`** pairs with the 31 images in
-  `api/app/samples/` for a full batch test through the UI.
+- **`api/app/samples/batch-manifest.csv`** sits beside the 31 images it
+  names, for a full batch test through the UI.
 
 ### Session 6 amendments, summary bar
 

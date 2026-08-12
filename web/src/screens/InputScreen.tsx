@@ -139,10 +139,7 @@ export function InputScreen({
                   type="button"
                   className="button"
                   style={{ marginTop: 12 }}
-                  onClick={() => {
-                    onImage(null);
-                    if (fileInput.current) fileInput.current.value = "";
-                  }}
+                  onClick={() => onImage(null)}
                 >
                   Remove this file
                 </button>
@@ -182,7 +179,12 @@ export function InputScreen({
             className="visually-hidden"
             type="file"
             accept="image/png,image/jpeg"
-            onChange={(event) => onImage(event.target.files?.[0] ?? null)}
+            onChange={(event) => {
+              // Reset after reading, so choosing the same file again after
+              // removing it still fires a change event.
+              onImage(event.target.files?.[0] ?? null);
+              event.target.value = "";
+            }}
           />
       </section>
 
