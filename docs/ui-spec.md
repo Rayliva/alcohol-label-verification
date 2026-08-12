@@ -474,3 +474,22 @@ All decided by the product owner in review of the running app.
 - **The masthead chip hovers legible.** The global primary hover darkens the
   fill, which on the navy bar turned the white chip navy-on-navy; in the
   masthead it lightens instead.
+
+### Session 6 amendments, once more
+
+- **The review decision card is controls, not commentary.** "Your decision",
+  a note field, Approve, Reject. The session-only disclaimer, the note's
+  explanation, and the approval-over-flags hint are gone; the README carries
+  the persistence story.
+- **One vocabulary on the submit page.** Both halves say "The label artwork"
+  and "What the application(s) say". Batch had said "Label images" and
+  "Application spreadsheet" for the same two ideas.
+- **The form sheds redundancy.** Country of origin's help repeated its own
+  "(imports only)" note and is gone; the "Your name or initials" field is
+  gone entirely. Net contents keeps "Volume in metric" because for spirits
+  the metric statement is the mandatory declaration (27 CFR 5.70, verified
+  2026-08-09), so that line is a requirement, not decoration.
+- **Sign out matches "Signed in as" in size**, so leaving is not louder than
+  being here.
+- **`samples/batch-manifest.csv`** pairs with the 31 images in
+  `api/app/samples/` for a full batch test through the UI.

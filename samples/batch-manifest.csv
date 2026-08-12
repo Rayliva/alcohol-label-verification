@@ -1,0 +1,32 @@
+application_id,image,beverage_type,brand_name,class_type,alcohol_content,net_contents,bottler_address,country_of_origin
+APP-001,001_bourbon_clean.jpg,spirits,OLD TOM DISTILLERY,Kentucky Straight Bourbon Whiskey,45% Alc./Vol. (90 Proof),750 mL,"DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+APP-002,002_brandy_clean.jpg,spirits,Stone's Throw,Apple Brandy,42% Alc./Vol. (84 Proof),750 mL,"DISTILLED AND BOTTLED BY STONE'S THROW DISTILLERY, ST. HELENA, CA",
+APP-003,003_rum_clean.jpg,spirits,HALF-LIGHT,Aged Dark Rum,43% Alc./Vol. (86 Proof),750 mL,"DISTILLED AND BOTTLED BY HALF-LIGHT DISTILLING CO., PORTLAND, OR",
+APP-004,004_gin_clean.jpg,spirits,NORTHFIELD,London Dry Gin,47% Alc./Vol. (94 Proof),700 mL,"DISTILLED BY NORTHFIELD DISTILLERY CO., LONDON, ENGLAND",PRODUCT OF ENGLAND
+APP-005,005_scotch_clean.jpg,spirits,GLEN MIRAVAL,Single Malt Scotch Whisky,43% Alc./Vol. (86 Proof),750 mL,"IMPORTED BY MERIDIAN SPIRITS IMPORTS, NEWARK, NJ",PRODUCT OF SCOTLAND
+APP-006,006_abv_mismatch.jpg,spirits,OLD TOM DISTILLERY,Kentucky Straight Bourbon Whiskey,40% Alc./Vol. (80 Proof),750 mL,"DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+APP-007,007_proof_inconsistent.jpg,spirits,OLD TOM DISTILLERY,Kentucky Straight Bourbon Whiskey,45% Alc./Vol. (90 Proof),750 mL,"DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+APP-008,008_brand_mismatch.jpg,spirits,Stonesthrow Distillery,Apple Brandy,42% Alc./Vol. (84 Proof),750 mL,"DISTILLED AND BOTTLED BY STONE'S THROW DISTILLERY, ST. HELENA, CA",
+APP-009,009_missing_net_contents.jpg,spirits,HALF-LIGHT,Aged Dark Rum,43% Alc./Vol. (86 Proof),750 mL,"DISTILLED AND BOTTLED BY HALF-LIGHT DISTILLING CO., PORTLAND, OR",
+APP-010,010_missing_bottler.jpg,spirits,Stone's Throw,Apple Brandy,42% Alc./Vol. (84 Proof),750 mL,BOTTLED BY Stone's Throw,
+APP-011,011_missing_origin.jpg,spirits,GLEN MIRAVAL,Single Malt Scotch Whisky,43% Alc./Vol. (86 Proof),750 mL,"IMPORTED BY MERIDIAN SPIRITS IMPORTS, NEWARK, NJ",
+APP-012,012_class_type_mismatch.jpg,spirits,NORTHFIELD,Old Tom Gin,47% Alc./Vol. (94 Proof),700 mL,"DISTILLED BY NORTHFIELD DISTILLERY CO., LONDON, ENGLAND",PRODUCT OF ENGLAND
+APP-013,013_warning_missing.jpg,spirits,OLD TOM DISTILLERY,Kentucky Straight Bourbon Whiskey,45% Alc./Vol. (90 Proof),750 mL,"DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+APP-014,014_warning_titlecase.jpg,spirits,Stone's Throw,Apple Brandy,42% Alc./Vol. (84 Proof),750 mL,"DISTILLED AND BOTTLED BY STONE'S THROW DISTILLERY, ST. HELENA, CA",
+APP-015,015_warning_not_bold.jpg,spirits,HALF-LIGHT,Aged Dark Rum,43% Alc./Vol. (86 Proof),750 mL,"DISTILLED AND BOTTLED BY HALF-LIGHT DISTILLING CO., PORTLAND, OR",
+APP-016,016_warning_tiny.jpg,spirits,WINDFALL,Vodka Distilled from Grain,40% Alc./Vol. (80 Proof),1 L,"DISTILLED AND BOTTLED BY WINDFALL DISTILLERY, HOOD RIVER, OR",
+APP-017,017_warning_truncated.jpg,spirits,NORTHFIELD,London Dry Gin,47% Alc./Vol. (94 Proof),700 mL,"DISTILLED BY NORTHFIELD DISTILLERY CO., LONDON, ENGLAND",PRODUCT OF ENGLAND
+APP-018,018_warning_paraphrased.jpg,spirits,GLEN MIRAVAL,Single Malt Scotch Whisky,43% Alc./Vol. (86 Proof),750 mL,"IMPORTED BY MERIDIAN SPIRITS IMPORTS, NEWARK, NJ",PRODUCT OF SCOTLAND
+APP-019,019_warning_faint.jpg,spirits,OLD TOM DISTILLERY,Kentucky Straight Bourbon Whiskey,45% Alc./Vol. (90 Proof),750 mL,"DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+APP-020,020_brand_case_only.jpg,spirits,Stone's Throw,Apple Brandy,42% Alc./Vol. (84 Proof),750 mL,"DISTILLED AND BOTTLED BY STONE'S THROW DISTILLERY, ST. HELENA, CA",
+APP-021,021_net_contents_format.jpg,spirits,OLD TOM DISTILLERY,Kentucky Straight Bourbon Whiskey,45% Alc./Vol. (90 Proof),750 mL,"DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+APP-022,022_abv_rounding.jpg,spirits,NORTHFIELD,London Dry Gin,47.0% Alc./Vol. (94 Proof),700 mL,"DISTILLED BY NORTHFIELD DISTILLERY CO., LONDON, ENGLAND",PRODUCT OF ENGLAND
+APP-023,023_punctuation_diff.jpg,spirits,HALF-LIGHT,Aged Dark Rum,43% Alc./Vol. (86 Proof),750 mL,"DISTILLED AND BOTTLED BY HALF-LIGHT DISTILLING CO., PORTLAND, OR",
+APP-024,024_angle.jpg,spirits,OLD TOM DISTILLERY,Kentucky Straight Bourbon Whiskey,45% Alc./Vol. (90 Proof),750 mL,"DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+APP-025,025_glare.jpg,spirits,Stone's Throw,Apple Brandy,42% Alc./Vol. (84 Proof),750 mL,"DISTILLED AND BOTTLED BY STONE'S THROW DISTILLERY, ST. HELENA, CA",
+APP-026,026_dim.jpg,spirits,NORTHFIELD,London Dry Gin,47% Alc./Vol. (94 Proof),700 mL,"DISTILLED BY NORTHFIELD DISTILLERY CO., LONDON, ENGLAND",PRODUCT OF ENGLAND
+APP-027,027_curved.jpg,spirits,HALF-LIGHT,Aged Dark Rum,43% Alc./Vol. (86 Proof),750 mL,"DISTILLED AND BOTTLED BY HALF-LIGHT DISTILLING CO., PORTLAND, OR",
+APP-028,029_blur.jpg,spirits,WINDFALL,Vodka Distilled from Grain,40% Alc./Vol. (80 Proof),1 L,"DISTILLED AND BOTTLED BY WINDFALL DISTILLERY, HOOD RIVER, OR",
+APP-029,030_blur_heavy.jpg,spirits,Stone's Throw,Apple Brandy,42% Alc./Vol. (84 Proof),750 mL,"DISTILLED AND BOTTLED BY STONE'S THROW DISTILLERY, ST. HELENA, CA",
+APP-030,031_blur_warning_titlecase.jpg,spirits,OLD TOM DISTILLERY,Kentucky Straight Bourbon Whiskey,45% Alc./Vol. (90 Proof),750 mL,"DISTILLED AND BOTTLED BY OLD TOM DISTILLERY, BARDSTOWN, KENTUCKY",
+APP-031,028_angle_glare_abv_mismatch.jpg,spirits,GLEN MIRAVAL,Single Malt Scotch Whisky,12.5% Alc./Vol.,750 mL,"IMPORTED BY MERIDIAN SPIRITS IMPORTS, NEWARK, NJ",PRODUCT OF SCOTLAND

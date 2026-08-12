@@ -122,8 +122,8 @@ export function BatchScreen() {
       {!job ? (
         <>
           <section className="card" aria-labelledby="images-heading">
-            <h2 id="images-heading">Label images</h2>
-            <p className="help">Select every label image for this batch at once.</p>
+            <h2 id="images-heading">The label artwork</h2>
+            <p className="help">Every label image for this batch, selected at once. JPG or PNG.</p>
             <div style={{ marginTop: 16, display: "flex", gap: 12, alignItems: "center" }}>
               <button
                 type="button"
@@ -154,9 +154,10 @@ export function BatchScreen() {
           </section>
 
           <section className="card" aria-labelledby="manifest-heading">
-            <h2 id="manifest-heading">Application spreadsheet</h2>
+            <h2 id="manifest-heading">What the applications say</h2>
             <p className="help">
-              One row per application, naming the image file it belongs to. CSV or JSON.
+              A spreadsheet, one row per application, naming the image file it
+              belongs to. CSV or JSON.
             </p>
             <div style={{ marginTop: 16, display: "flex", gap: 12, alignItems: "center" }}>
               <button

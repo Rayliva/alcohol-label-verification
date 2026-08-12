@@ -20,7 +20,7 @@ import type { DeclaredFields } from "../api/types";
 interface FieldSpec {
   name: keyof DeclaredFields;
   label: string;
-  help: string;
+  help?: string;
   required: boolean;
   mono?: boolean;
   textarea?: boolean;
@@ -64,7 +64,8 @@ const FIELDS: FieldSpec[] = [
   {
     name: "country_of_origin",
     label: "Country of origin",
-    help: "Required only when the product is imported.",
+    // No help line: the "(imports only)" note beside the label already says
+    // the whole rule.
     required: false,
     note: "imports only",
   },
@@ -238,22 +239,10 @@ export function InputScreen({
                   onChange={(event) => update(field.name, event.target.value)}
                 />
               )}
-              <p className="help">{field.help}</p>
+              {field.help ? <p className="help">{field.help}</p> : null}
             </div>
           ))}
 
-          <div className="field">
-            <label className="field__label" htmlFor="reviewer">
-              Your name or initials <span className="field__note">(optional)</span>
-            </label>
-            <input
-              id="reviewer"
-              className="input"
-              value={declared.reviewer}
-              onChange={(event) => update("reviewer", event.target.value)}
-            />
-            <p className="help">Shown on the results as the reviewer.</p>
-          </div>
         </div>
 
         <hr className="result__divider" />

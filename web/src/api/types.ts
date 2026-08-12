@@ -47,7 +47,6 @@ export interface VerificationResponse {
 
 export interface DeclaredFields {
   application_id: string;
-  reviewer: string;
   brand_name: string;
   class_type: string;
   alcohol_content: string;
@@ -58,7 +57,6 @@ export interface DeclaredFields {
 
 export const EMPTY_DECLARED: DeclaredFields = {
   application_id: "",
-  reviewer: "",
   brand_name: "",
   class_type: "",
   alcohol_content: "",

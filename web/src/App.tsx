@@ -191,7 +191,7 @@ export default function App() {
         {step === "results" && response ? (
           <ResultsScreen
             response={response}
-            reviewer={declared.reviewer}
+            reviewer=""
             onCheckAnother={() => {
               setResponse(null);
               setImage(null);

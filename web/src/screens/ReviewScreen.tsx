@@ -153,17 +153,7 @@ export function ReviewScreen({
                 value={note}
                 onChange={(event) => setNote(event.target.value)}
               />
-              <span className="help">
-                Anything the next person reading this application should know. It
-                is saved with whichever button you press below, and only then.
-              </span>
             </label>
-            {flagged ? (
-              <p className="help">
-                The tool flagged this label, so approving it is recorded as an
-                approval over the flags.
-              </p>
-            ) : null}
             <div className="review__actions">
               <button
                 className="button button--primary"
@@ -184,10 +174,6 @@ export function ReviewScreen({
                 {saving === "reject" ? "Saving…" : "Reject this application"}
               </button>
             </div>
-            <p className="help" style={{ marginTop: 12 }}>
-              Decisions are kept for this session only. Nothing about an
-              application is stored, so a restart clears them.
-            </p>
           </>
         )}
       </section>

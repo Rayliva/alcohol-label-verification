@@ -118,6 +118,9 @@ a:hover {
 
 .masthead .button--quiet {
   color: var(--surface);
+  /* The same size as "Signed in as", so leaving is not louder than being
+     here. Still a 44px target through min-height. */
+  font-size: 0.9375rem;
 }
 
 .masthead__who {
