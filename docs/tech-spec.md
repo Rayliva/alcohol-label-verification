@@ -56,13 +56,16 @@ Python for the OpenCV and OCR ecosystem — image preprocessing (P1-11) and boun
 | Service | Platform | Note |
 |---|---|---|
 | API | Render, **paid always-on tier**, deployed from `api/Dockerfile` | Free tier sleeps after 15 min and takes ~50s to wake — fatal to the demo |
-| Frontend | Vercel, free static | No container needed |
+| Frontend | Vercel, free static | Superseded: the built bundle ships inside the API container from `api/app/static`, because Render's build context cannot reach `web/`. Vercel remains the production shape (README, Known limitations) |
 
 The paid tier is a requirement, not a preference. Cold starts are risk #2 in the PRD. Container deployment (see §11) keeps the OpenCV system dependencies reproducible between local and production.
 
 ## 5. Auth
 
-**None** (OS-1). No accounts, no sessions, no tokens.
+**Superseded** (see `docs/specs/review-queue.md`): the deployed URL is public,
+so a demonstration gate shipped — one shared credential from the environment
+in a signed HttpOnly session cookie. Still no accounts, no stored credentials,
+no identity system; OS-1's spirit (no auth *system*) stands.
 
 ## 6. External services
 
@@ -102,7 +105,7 @@ fields = response.parsed_output
 ```
 
 - **Structured outputs** guarantee schema-valid JSON — no regex, no retry-on-parse loop.
-- **Prompt caching** on the system prompt: identical across all 200 labels in a batch, so it is written once and read at ~0.1× cost thereafter.
+- **Prompt caching** on the system prompt: identical across all 200 labels in a batch, so it is written once and read at ~0.1× cost thereafter. *As shipped this never engages*: the prompt is below Haiku 4.5's minimum cacheable prefix, `/health` reports it, and padding a prompt to game a cache was declined (README, Known limitations).
 - **Thinking disabled at low effort** for latency. Benchmarked against `{"type": "adaptive"}` + `effort: "low"`; whichever wins on the corpus is what ships.
 
 **Vision fallback:** `claude-opus-5` for degraded images — it has the high-resolution tier (2576px long edge), which matters for small warning text.

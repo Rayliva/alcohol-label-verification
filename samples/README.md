@@ -11,8 +11,8 @@ repository a sensible size; the originals are PNG and roughly ten times larger.
 
 | Directory | Count | Purpose |
 |---|---|---|
-| `labels/` | 31 | One case per requirement — clean baselines, field mismatches, warning defects, judgment calls, degraded photographs. Source for the seeded review queue |
-| `batch/` | 25 | A drag-and-drop batch upload, drawn from a 300-label set |
+| `api/app/samples/` | 31 | One case per requirement — clean baselines, field mismatches, warning defects, judgment calls, degraded photographs. They live beside the app because they seed the review queue and are served as its artwork |
+| `batch/` (here) | 25 | A drag-and-drop batch upload, drawn from a 300-label set |
 
 `manifest.json` in each directory pairs every image against a simulated COLA
 application and the verdict the tool should reach. Its `expected_verdict` values

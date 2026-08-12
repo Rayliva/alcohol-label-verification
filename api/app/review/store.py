@@ -161,9 +161,10 @@ def _from_record(record: dict[str, Any], offset: int) -> QueueItem:
         outcome=outcome,
         processing_ms=processing_ms,
         source="seeded",
-        # Stable, ordered, and in the past, so seeded rows keep manifest order
-        # and anything uploaded later sorts above them within its verdict.
-        received_at=float(offset),
+        # Negative offset because _rank sorts newest-first (-received_at):
+        # real uploads carry a large epoch time and land first, and seeded
+        # rows keep manifest order behind them instead of reversing it.
+        received_at=float(-offset),
         result=result,
         unreadable=record.get("unreadable"),
         image_name=record.get("image"),

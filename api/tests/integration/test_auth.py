@@ -37,8 +37,11 @@ class TestTheGateHolds:
             ("get", "/api/queue/001_bourbon_clean"),
             ("get", "/api/queue/001_bourbon_clean/image"),
             ("post", "/api/queue/001_bourbon_clean/decision"),
+            ("get", "/api/session"),
             ("post", "/api/verify"),
             ("get", "/api/beverage-types"),
+            ("get", "/api/batch/template"),
+            ("post", "/api/batch/preflight"),
         ],
     )
     def test_a_signed_out_request_is_refused(

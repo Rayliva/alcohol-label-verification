@@ -23,6 +23,11 @@ from app.auth import COOKIE_NAME, check_credentials, issue_session, require_agen
 from app.config import settings
 from app.review.store import SAMPLES, queue
 
+# Two routers so the gate is structural: `public` carries exactly the two
+# routes that must work without a session (sign in, sign out), and everything
+# on `router` is guarded at include time in main.py. A route added here is
+# closed by default rather than open by default.
+public = APIRouter(prefix="/api", tags=["review"])
 router = APIRouter(prefix="/api", tags=["review"])
 
 
@@ -40,7 +45,7 @@ class DecisionBody(BaseModel):
     note: str = Field(default="", max_length=2000)
 
 
-@router.post("/login", response_model=SessionBody)
+@public.post("/login", response_model=SessionBody)
 def login(credentials: Credentials, response: Response) -> SessionBody:
     if not check_credentials(credentials.username, credentials.password):
         # One message for both wrong-user and wrong-password: saying which was
@@ -68,7 +73,7 @@ def login(credentials: Credentials, response: Response) -> SessionBody:
     return SessionBody(username=credentials.username)
 
 
-@router.post("/logout")
+@public.post("/logout")
 def logout(response: Response) -> dict[str, bool]:
     response.delete_cookie(COOKIE_NAME, path="/")
     return {"signed_out": True}

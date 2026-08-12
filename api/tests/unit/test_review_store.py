@@ -33,6 +33,18 @@ def fresh() -> ReviewQueue:
     return queue
 
 
+class TestSeededOrder:
+    def test_seed_order_is_kept_and_uploads_land_first(self) -> None:
+        # Seeded rows carry received_at = -offset; an upload carries epoch
+        # time. Newest-first ranking must keep manifest order for seeds and
+        # still put the upload above them within a verdict.
+        queue = ReviewQueue()
+        queue.add(item("seed-first", received_at=-0.0))
+        queue.add(item("seed-second", received_at=-1.0))
+        queue.add(item("uploaded-later", received_at=1_700_000_000.0))
+        assert [i.id for i in queue.list()] == ["uploaded-later", "seed-first", "seed-second"]
+
+
 class TestNextUndecided:
     def test_the_next_item_is_the_queues_own_first_undecided(self, fresh: ReviewQueue) -> None:
         # needs_review sorts first, so it is also what "next" means.

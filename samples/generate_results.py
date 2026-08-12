@@ -1,4 +1,4 @@
-"""Run the real pipeline over samples/labels and store what it found.
+"""Run the real pipeline over api/app/samples and store what it found.
 
 The seeded review queue must show verdicts the moment it loads, on every
 restart, without spending an OCR or model call. So the answers are computed
@@ -105,7 +105,7 @@ def main(limit: int | None = None) -> None:
             print(f"  {entry['id']:32s} unreadable: {exc.code}")
         else:
             response = _to_response(
-                result, application_id=entry["id"], reviewer=None
+                result, application_id=entry["id"]
             )
             payload = response.model_dump(mode="json")
             # Crops are 99% of the stored bytes as base64 PNG. JPEG carries the

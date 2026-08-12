@@ -62,8 +62,10 @@ This spec makes the queue the front door and keeps upload as a secondary action.
 
 ### 3. Queue screen — the landing screen after sign-in
 
-- A table, one row per application: brand, beverage type, verdict chip, and the
-  decision, if one has been made.
+- A table, one row per application: brand (with the declared application ID
+  and an "Uploaded by you" tag beneath it where they apply), verdict chip,
+  and the decision, if one has been made. Beverage type is not a column;
+  everything in the queue is spirits by scope.
 
   **No timing column.** These verdicts were recorded at build time rather than
   computed when the row was opened, so a stopwatch beside them reports the

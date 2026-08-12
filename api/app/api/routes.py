@@ -2,8 +2,12 @@
 
 Two of them, and one is a lookup:
 
-    GET  /api/beverage-types   what the selector should offer, and what to say
-                               about the options it must disable
+    GET  /api/beverage-types   the config-driven type roster, with the reason
+                               each unavailable type is unavailable. The UI no
+                               longer renders a selector (spirits is the
+                               product's scope; ui-spec, Session 6) but the
+                               engine is config-driven and this is its honest
+                               inventory, kept for API callers
     POST /api/verify           one label, one application, one report
 
 An unreadable image comes back **200 with `overall: "unreadable"`**, not an
@@ -20,7 +24,7 @@ import time
 import uuid
 
 import structlog
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 
 from app.api.models import (
     BeverageTypeOption,
@@ -64,9 +68,10 @@ _WARNING_CHECK_NAMES = {
 def beverage_types() -> list[BeverageTypeOption]:
     """Every beverage type, including the ones that are not ready.
 
-    The unavailable ones are returned rather than hidden so the UI can show
-    them disabled with the reason beside them. Hiding scope makes a product
-    look smaller than it is and leaves an agent guessing.
+    The unavailable ones are returned rather than hidden, with the reason
+    attached. The web UI sends spirits without asking (its selector was
+    removed with the scope decision, ui-spec Session 6); this stays as the
+    API's statement of what the config-driven engine knows.
     """
     options = []
     for rules in available_beverage_types():
@@ -96,7 +101,6 @@ def _to_response(
     result: VerificationResult,
     *,
     application_id: str | None,
-    reviewer: str | None,
 ) -> VerificationResponse:
     rules = rules_for(result.report.beverage_type)
     display_names = {rule.field: rule.display_name for rule in rules.fields}
@@ -108,7 +112,6 @@ def _to_response(
         beverage_type=result.report.beverage_type,
         overall=result.report.overall.value,
         processing_ms=round(result.timings.total_ms),
-        reviewer=reviewer or None,
         ocr_engine=result.ocr_engine,
         counts={verdict.value: count for verdict, count in result.report.counts.items()},
         stage_ms=result.timings.as_dict(),
@@ -140,10 +143,10 @@ def _to_response(
 
 @router.post("/verify", response_model=VerificationResponse)
 async def verify_label(
+    request: Request,
     image: UploadFile = File(description="Label artwork, JPG or PNG"),
     beverage_type: str = Form("spirits"),
     application_id: str | None = Form(None),
-    reviewer: str | None = Form(None),
     brand_name: str | None = Form(None),
     class_type: str | None = Form(None),
     alcohol_content: str | None = Form(None),
@@ -153,6 +156,19 @@ async def verify_label(
 ) -> VerificationResponse:
     """Check one label against the values declared in its application."""
     started = time.perf_counter()
+    # Refuse an oversized request before buffering it, when the browser says
+    # how big it is. The post-read check below still stands for senders that
+    # stream without a length.
+    declared_length = request.headers.get("content-length")
+    if declared_length and declared_length.isdigit() and int(declared_length) > MAX_UPLOAD_BYTES * 2:
+        raise _bad_request(
+            code="image_too_large",
+            message=(
+                f"That request is {int(declared_length) // (1024 * 1024)} MB, far over the "
+                f"{MAX_UPLOAD_BYTES // (1024 * 1024)} MB image limit."
+            ),
+            what_to_do="Send a smaller copy. A normal photograph is a few megabytes.",
+        )
     image_bytes = await image.read()
     if not image_bytes:
         raise _bad_request(
@@ -209,7 +225,6 @@ async def verify_label(
             beverage_type=beverage_type,
             overall="unreadable",
             processing_ms=round((time.perf_counter() - started) * 1000),
-            reviewer=reviewer or None,
             error=ErrorBody(**exc.as_dict(), partial_fields_shown=False),
         )
         # Unreadable is one of the four outcomes, so it joins the queue like
@@ -245,7 +260,7 @@ async def verify_label(
             },
         ) from exc
 
-    response = _to_response(result, application_id=application_id, reviewer=reviewer)
+    response = _to_response(result, application_id=application_id)
     _join_queue(
         response,
         brand=brand_name or application_id,

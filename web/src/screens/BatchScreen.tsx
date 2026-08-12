@@ -33,6 +33,8 @@ const FILTERS: { key: Filter; label: string }[] = [
   { key: "error", label: "Could not be checked" },
 ];
 
+// Mirrors the server's export ordering in api/app/api/batch_routes.py; a
+// re-ordering must change both or the table and the CSV will disagree.
 const ORDER: Record<string, number> = {
   fail: 0,
   unreadable: 1,
@@ -51,6 +53,7 @@ export function BatchScreen() {
   const [manifest, setManifest] = useState<File | null>(null);
   const [report, setReport] = useState<PreflightReport | null>(null);
   const [job, setJob] = useState<BatchProgress | null>(null);
+  const [starting, setStarting] = useState(false);
   const [error, setError] = useState<ErrorBody | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
   const imageInput = useRef<HTMLInputElement>(null);
@@ -86,18 +89,34 @@ export function BatchScreen() {
   useEffect(() => {
     if (!job || job.state === "finished" || job.state === "stopped") return;
     const timer = window.setInterval(() => {
-      batchProgress(job.job_id).then(setJob).catch(() => undefined);
+      batchProgress(job.job_id)
+        .then(setJob)
+        .catch((cause) => {
+          // A server that answers with an error (a restart lost the job) is
+          // told to the agent; polling a dead job forever while the bar sits
+          // frozen is the silent failure this project bans. A network blip
+          // stays quiet and the next tick retries.
+          if (cause instanceof ApiError) {
+            setError(cause.body);
+            setJob((current) => (current ? { ...current, state: "stopped" } : current));
+          }
+        });
     }, 700);
     return () => window.clearInterval(timer);
   }, [job]);
 
   const begin = async () => {
-    if (!manifest || !report?.ready) return;
+    // The guard against a second click: starting a 200-image upload takes
+    // seconds, and two clicks would run the whole batch twice.
+    if (!manifest || !report?.ready || starting) return;
+    setStarting(true);
     try {
       const started = await startBatch(images, manifest);
       setJob(await batchProgress(started.job_id));
     } catch (cause) {
       setError(cause instanceof ApiError ? cause.body : null);
+    } finally {
+      setStarting(false);
     }
   };
 
@@ -230,10 +249,10 @@ export function BatchScreen() {
                 <button
                   type="button"
                   className="button button--primary button--wide"
-                  disabled={!report.ready}
+                  disabled={!report.ready || starting}
                   onClick={begin}
                 >
-                  Check these {report.matched_count} labels
+                  {starting ? "Starting…" : `Check these ${report.matched_count} labels`}
                 </button>
               </>
             ) : (

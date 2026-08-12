@@ -3,6 +3,11 @@ import type { ErrorBody, Outcome } from "./types";
 
 const BASE = import.meta.env.VITE_API_BASE ?? "";
 
+/** Batch routes require the session like everything else; without this,
+ * cross-origin development gets a 401 on every call while same-origin
+ * production quietly works. */
+const CREDENTIALED: RequestInit = { credentials: "include" };
+
 export interface PreflightProblem {
   kind: string;
   detail: string;
@@ -64,7 +69,11 @@ async function unwrap<T>(response: Response): Promise<T> {
 
 export async function preflight(images: File[], manifest: File): Promise<PreflightReport> {
   return unwrap(
-    await fetch(`${BASE}/api/batch/preflight`, { method: "POST", body: body(images, manifest) }),
+    await fetch(`${BASE}/api/batch/preflight`, {
+      method: "POST",
+      body: body(images, manifest),
+      ...CREDENTIALED,
+    }),
   );
 }
 
@@ -72,15 +81,21 @@ export async function startBatch(
   images: File[],
   manifest: File,
 ): Promise<PreflightReport & { job_id: string }> {
-  return unwrap(await fetch(`${BASE}/api/batch`, { method: "POST", body: body(images, manifest) }));
+  return unwrap(
+    await fetch(`${BASE}/api/batch`, {
+      method: "POST",
+      body: body(images, manifest),
+      ...CREDENTIALED,
+    }),
+  );
 }
 
 export async function batchProgress(jobId: string): Promise<BatchProgress> {
-  return unwrap(await fetch(`${BASE}/api/batch/${jobId}`));
+  return unwrap(await fetch(`${BASE}/api/batch/${jobId}`, CREDENTIALED));
 }
 
 export async function stopBatch(jobId: string): Promise<BatchProgress> {
-  return unwrap(await fetch(`${BASE}/api/batch/${jobId}/stop`, { method: "POST" }));
+  return unwrap(await fetch(`${BASE}/api/batch/${jobId}/stop`, { method: "POST", ...CREDENTIALED }));
 }
 
 export const templateUrl = `${BASE}/api/batch/template`;

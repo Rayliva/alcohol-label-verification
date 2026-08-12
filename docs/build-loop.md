@@ -8,19 +8,27 @@
 
 # CURRENT STATE — read before doing anything
 
-Last updated: 2026-08-11, end of session 5.
+Last updated: 2026-08-12, end of session 7 (pre-submission).
 
 ## Where we are
 
 **Phases 0 to 3 are complete and deployed.** Phase 4 is the only phase left,
 and every item in it is a documented scope decision rather than an oversight.
 
-423 backend tests and 18 frontend tests, all green, all offline. Lint, format
-and mypy clean (mypy carries 8 long-standing errors in three files). Pushed to
-`main`; Render is serving it.
+439 backend tests and 31 frontend tests as of 2026-08-12, all green, all
+offline. Pushed to `main`; Render is serving it.
 
-Four independent audits ran on 2026-08-11. Every false-PASS, false-FAIL and
-wrong-status finding is closed. What remains is in
+Session 6-7 (2026-08-12) reworked the review flow at the owner's direction:
+queue search and Decision/Result dropdown filters, an opt-in "Start
+reviewing" run that advances on each decision under a live-region banner,
+uploads and batch results joining the in-memory queue (searchable by declared
+application ID), Approve/Reject on a fresh upload's results, the measured
+wait shown on results, one typeface everywhere, and a four-dimension
+pre-submission audit whose findings are S4-S19 in
+[`audit-findings.md`](audit-findings.md).
+
+Four independent audits ran on 2026-08-11 and four more on 2026-08-12. Every
+false-PASS, false-FAIL and wrong-status finding is closed. What remains is in
 [`audit-findings.md`](audit-findings.md), which is the list to work from.
 
 | Stopping condition | Result |
@@ -28,7 +36,7 @@ wrong-status finding is closed. What remains is in
 | p95 < 5s, measured and published | **2,889 ms**, n=20, against the deployed instance, 2026-08-11 |
 | Zero false PASS on warning violations | **0** |
 | ≥95% field-verdict accuracy | **99.0% end to end**, 100.0% for the rules alone |
-| 200-label batch with visible progress | **69 s**, 174/min, determinate throughout (measured 2026-08-09, before the resampling change; unaffected, no corpus image reaches the cap) |
+| 200-label batch with visible progress | **81 s**, 147.5/min, determinate throughout (re-measured 2026-08-11; the README's number is the current one) |
 | All P0 and P1 features shipped | Yes |
 | Deployed URL live and verified | <https://alcohol-label-verification-3sn4.onrender.com> — UI, API and batch all verified live |
 | README with setup, approach, numbers, limitations | Yes |
@@ -41,10 +49,15 @@ wrong-status finding is closed. What remains is in
 - `app/batch/` — manifest parsing, pre-flight, in-memory job store, worker pool
 - `app/api/` — single-label and batch routes, typed errors, a 500 backstop
 - `app/bench/latency.py` — the harness behind every number in the README
-- `web/` — React 19 + Vite, Screens 1–6, built bundle served from the API
+- `app/review/` + `app/auth.py` — in-memory review queue seeded from recorded
+  results, one-credential demonstration gate
+- `web/` — React 19 + Vite: sign-in, queue (search/filter/Start reviewing),
+  review, one submit page (single + batch), processing, results with
+  decisions; built bundle served from the API
 - `corpus/` — 61 curated labels, 200-label fixture, malformed manifests,
   ground-truth OCR
-- Specs: `docs/specs/rule-engine.md`, `pipeline.md`, `batch.md`
+- Specs: `docs/specs/rule-engine.md`, `pipeline.md`, `batch.md`,
+  `review-queue.md`
 
 ### What is deliberately not built (Phase 4)
 
@@ -128,8 +141,9 @@ reopening any of them.
   disabled *with the reason attached*.
 - **One shared agent credential**, from the environment, in a signed HttpOnly
   cookie. The app refuses to start without it. Not an identity system: no
-  accounts, no reset, no roles. An optional "your name or initials" attributes
-  field-level decisions within a session.
+  accounts, no reset, no roles. Decisions are attributed to the signed-in
+  agent; the "your name or initials" field and per-field decisions were both
+  removed (ui-spec, Sessions 6-7).
 - **Nothing is stored.** A restart loses in-flight batch jobs and the API says
   so when asked about one.
 - **`unreadable` is a fourth label-level outcome**, produced by the pipeline and

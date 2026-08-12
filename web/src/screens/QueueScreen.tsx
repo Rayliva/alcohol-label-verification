@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { ApiError, fetchQueue } from "../api/client";
 import type { QueueListing, QueueRow } from "../api/types";
-import { VerdictBadge } from "../components/VerdictBadge";
+import { VerdictBadge, verdictWord } from "../components/VerdictBadge";
 import { DECISION_LABEL } from "./ReviewScreen";
 
 /**
@@ -21,13 +21,6 @@ import { DECISION_LABEL } from "./ReviewScreen";
  * recording. The five-second budget is demonstrated where it is actually spent,
  * on the upload screen.
  */
-
-const OUTCOME_LABEL: Record<string, string> = {
-  needs_review: "Needs review",
-  unreadable: "Could not be read",
-  fail: "Fail",
-  pass: "Pass",
-};
 
 type DecidedFilter = "all" | "undecided" | "decided";
 type OutcomeFilter = "all" | "needs_review" | "unreadable" | "fail" | "pass";
@@ -225,9 +218,7 @@ export function QueueScreen({
                   onClick={() => onOpen(row.id)}
                 >
                   Review {row.brand}
-                  <span className="visually-hidden">
-                    , {OUTCOME_LABEL[row.outcome] ?? row.outcome}
-                  </span>
+                  <span className="visually-hidden">, {verdictWord(row.outcome)}</span>
                 </button>
               </td>
             </tr>

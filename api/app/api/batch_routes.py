@@ -64,7 +64,23 @@ def template() -> PlainTextResponse:
     )
 
 
+# The single-label route's per-image cap, applied per file here; and a count
+# cap comfortably above the brief's 200-300 peak-season dump. Without these,
+# one request could hold arbitrarily much in memory before preflight even ran.
+MAX_IMAGE_BYTES = 25 * 1024 * 1024
+MAX_BATCH_IMAGES = 400
+
+
 async def _collect(images: list[UploadFile], manifest: UploadFile) -> ManifestUpload:
+    if len(images) > MAX_BATCH_IMAGES:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "code": "too_many_images",
+                "message": f"{len(images)} images is over the {MAX_BATCH_IMAGES} per-batch limit.",
+                "what_to_do": "Split the batch and submit the halves separately.",
+            },
+        )
     upload = ManifestUpload(
         manifest=await manifest.read(),
         filename=manifest.filename or "",
@@ -74,7 +90,20 @@ async def _collect(images: list[UploadFile], manifest: UploadFile) -> ManifestUp
         if name in upload.images:
             upload.duplicates.append(name)
             continue
-        upload.images[name] = await image.read()
+        data = await image.read()
+        if len(data) > MAX_IMAGE_BYTES:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "code": "image_too_large",
+                    "message": (
+                        f"{name} is {len(data) // (1024 * 1024)} MB, over the "
+                        f"{MAX_IMAGE_BYTES // (1024 * 1024)} MB per-image limit."
+                    ),
+                    "what_to_do": "Send a smaller copy. A normal photograph is a few megabytes.",
+                },
+            )
+        upload.images[name] = data
     return upload
 
 
@@ -134,11 +163,7 @@ def _check_one(image_bytes: bytes, declared: dict[str, Any]) -> tuple[str, dict[
         )
         return "unreadable", {"error": exc.as_dict(), "brand_name": None, "issues": 0}
 
-    response = _to_response(
-        result,
-        application_id=application.application_id,
-        reviewer=None,
-    )
+    response = _to_response(result, application_id=application.application_id)
     _join_queue(
         response,
         brand=declared_brand or application.application_id,
@@ -220,6 +245,10 @@ def label_detail(job_id: str, index: int) -> dict[str, object]:
     Served on demand rather than inside every progress poll: the report carries
     base64 evidence crops, and 300 of those is about 21 MB — re-sent on every
     tick of a run that lasts minutes.
+
+    No UI consumer today: batch results join the review queue as they
+    complete, and rows are opened from there. Kept as API surface for
+    programmatic callers, and exercised by the integration tests.
     """
     job = _job_or_404(job_id)
     results = list(job.results)
@@ -267,6 +296,7 @@ def stop(job_id: str) -> dict[str, object]:
 def export(job_id: str) -> PlainTextResponse:
     """Every result so far as a CSV, problems first."""
     job = _job_or_404(job_id)
+    # Mirrored by ORDER in web/src/screens/BatchScreen.tsx; change both.
     order = {"fail": 0, "unreadable": 1, "error": 2, "needs_review": 3, "pass": 4}
     rows = sorted(job.snapshot()["results"], key=lambda r: order.get(r["outcome"], 9))  # type: ignore[index,arg-type]
 

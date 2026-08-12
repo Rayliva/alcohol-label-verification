@@ -77,11 +77,14 @@ Rationale for the asymmetry: false FAILs cost an agent seconds. False PASSes let
 ### P1 — Required by the brief
 
 9. **Batch mode.** Multi-image upload plus CSV/JSON manifest pairing images to application records. Live progress. Results table sorted problems-first.
-10. **Agent override.** Accept or reject any verdict the tool flagged, attach
-    a note. A verdict of `pass` carries no control: there is nothing to
-    disagree with, and asking made an agent confirm five settled fields before
-    reaching the one in question. The decision travels with the CSV export and
-    is not stored (C-2).
+10. **Agent override.** As shipped (revised 2026-08-11/12, docs/ui-spec.md
+    Sessions 6-7): the agent decides once per application — Approve or
+    Reject, with an optional note — on the review screen or directly on a
+    fresh upload's results. Approving a flagged application is recorded as
+    an override. Per-field accept/reject was built, then removed: it asked
+    the same question up to seven times per label. Decisions live in the
+    in-memory queue for the session and are not stored (C-2); the batch CSV
+    export carries verdicts, not decisions.
 11. **Imperfect image handling.** Preprocessing for skew, low light, and glare. When a label genuinely cannot be read, report the specific reason rather than failing generically.
 
 ### P2 — Deliberate additions beyond the brief
@@ -155,7 +158,7 @@ AI generation is *better* for clean baselines and realism, because rendered labe
 
 | Tier | Purpose | Count | Source | Contents |
 |---|---|---|---|---|
-| 1 | Clean baseline | 12 | **AI-generated**, ground truth read off the image | Realistic artwork, fully compliant |
+| 1 | Clean baseline | 12 | **Rendered** (as built — `corpus/generate.py`; the planned AI-generated artwork became the separate unscored smoke set, which is absent) | Realistic artwork, fully compliant |
 | 2 | Single-field violations | 28 | Rendered | Brand 5 · class/type 3 · ABV 5 · net contents 4 · bottler 3 · warning 8 |
 | 3 | Conditional rules | 6 | Rendered | Wine/malt ABV conditionals, both directions |
 | 4 | Image quality | 12 | Rendered, degraded programmatically | 6 degraded-but-readable, 6 genuinely unreadable |

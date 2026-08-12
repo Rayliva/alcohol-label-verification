@@ -83,9 +83,12 @@ The default landing screen. One job: collect an image and the declared field val
 
 **Image upload**
 - Large drop zone with a visible "Choose file" button — drag-and-drop alone is not discoverable
-- Accepts JPG, PNG, PDF
+- Accepts JPG, PNG, PDF *(superseded: PDF is rejected by name — README,
+  "Deliberately not built")*
 - After selection: thumbnail preview, filename, and a clear "Remove" control
-- Beverage type selector: **Spirits / Wine / Malt beverage** — three visible options, not a dropdown
+- Beverage type selector: **Spirits / Wine / Malt beverage** — three visible
+  options, not a dropdown *(superseded: no selector ships — Session 6
+  decision 2; the UI sends spirits)*
 
 **Declared fields** (this is the COLA application data)
 
@@ -175,6 +178,12 @@ It is the only exact-match check and has the most failure modes. Show the full d
 
 **Agent override**
 
+*(This whole block is superseded — Session 6 amendments, final round, and
+Session 7: per-field decisions were removed entirely. The agent decides once
+per application, with Approve/Reject on the review screen and on a fresh
+upload's results; approving a flagged application is recorded as an
+override.)*
+
 **Only the rows the tool flagged carry a decision.** A field verdicted `pass` has nothing to disagree with, and asking about it made an agent confirm five verdicts that were never in doubt before reaching the one that was. `needs_review` and `fail` rows, and the government warning block, carry the question the controls are actually asking, `The tool flagged this as X. Do you agree?`, with `No, accept this field` and `Yes, it is a problem`. The note is enabled once a decision is picked, so it is never typed into a void.
 
 Decided rows are visibly marked as agent-decided, showing both the original verdict and the decision, never silently replaced. A rejected row must not render a `pass` badge, which it did until 2026-08-11.
@@ -226,9 +235,9 @@ Runs for several minutes. Must remain informative throughout.
 | Application ID | From the manifest |
 | Brand name | |
 | Issues | "2 issues" or "—" |
-| Thumbnail | Small label preview |
+| Thumbnail | Small label preview *(superseded: the shipped column is the image filename)* |
 
-Row height generous. Clicking any row opens the full Screen 3 detail for that label, with prev/next navigation so an agent can work the queue without returning to the table.
+Row height generous. Clicking any row opens the full Screen 3 detail for that label, with prev/next navigation so an agent can work the queue without returning to the table. *(Superseded: batch results join the review queue as they complete — docs/specs/review-queue.md, 2026-08-12 amendments — and are opened and decided from there; the batch table itself does not open rows.)*
 
 Above the table: filter chips (`All` / `Failures` / `Needs review` / `Passed`) with counts on each.
 
@@ -311,7 +320,7 @@ Six items reconciled between the design handoff and the requirements. All are sm
 
 What changed is that the prototype is deployed at a public URL. A review queue of applications served to anyone who finds it is worse than the small amount of auth needed to close it, so there is **one shared agent credential**, read from the environment, carried in a signed HttpOnly cookie. The app refuses to start without it. That is the whole of it: no accounts, no password hash at rest, no reset, no roles, nothing stored.
 
-The optional **"Your name or initials"** field stays, and is still what populates `Reviewed by R. Delgado`. Blank is valid and common; when blank, omit the attribution clause entirely rather than showing a dangling "Reviewed by".
+The optional **"Your name or initials"** field stays, and is still what populates `Reviewed by R. Delgado`. Blank is valid and common; when blank, omit the attribution clause entirely rather than showing a dangling "Reviewed by". *(Superseded: the field was removed in Session 7 — "the form sheds redundancy" — and attribution now comes from the signed-in agent recorded on the decision.)*
 
 Production auth (agency SSO / PIV, role separation, audit logging) is documented in the README as a production consideration, not built.
 
@@ -355,7 +364,7 @@ Spirits only — hide the row for wine and malt. This is a P2 feature; reserve t
 
 ### 7–9. Minor
 
-- **Self-host the fonts.** Public Sans and IBM Plex Mono ship with the app rather than loading from `fonts.googleapis.com`. Removes a runtime dependency on an external domain, which matters given the firewall constraint (C-3) and keeps the on-prem story honest.
+- **Self-host the fonts.** Public Sans and IBM Plex Mono ship with the app rather than loading from `fonts.googleapis.com`. Removes a runtime dependency on an external domain, which matters given the firewall constraint (C-3) and keeps the on-prem story honest. *(Superseded: no font files ship at all — nothing loads from any external domain, `--font` names Public Sans and falls through to Segoe UI, and the mono face was removed entirely in Session 7.)*
 - **Batch time estimate is computed**, from measured throughput — never a hardcoded constant. See `.claude/rules/measure-dont-claim.md`.
 - **Wine and Malt beverage buttons ship disabled** for Phase 1 (spirits only), with adjacent text: *"Wine and malt beverage checking is coming next."* Per accessibility constraint 9, a disabled control always explains itself. Keep the buttons visible rather than hiding them — they document the intended scope.
 

@@ -10,6 +10,38 @@ agent confirms or overrides. **The tool advises; the agent decides.**
 · [health](https://alcohol-label-verification-3sn4.onrender.com/health)
 · [API docs](https://alcohol-label-verification-3sn4.onrender.com/docs)
 
+## Known trade-offs, up front
+
+The decisions most likely to matter to a reviewer, each argued in full further
+down ([Scope and trade-offs](#scope-and-trade-offs),
+[Approach](#approach), [Known limitations](#known-limitations)):
+
+- **Spirits only.** The engine reads wine and malt rules from the same
+  configuration, but their rule content is not shipped; the brief exemplifies
+  spirits, and one type complete beats three half-finished. The UI says so
+  rather than hiding it.
+- **The vision model is off the hot path.** OCR plus text-only extraction
+  meets the 5-second budget; a vision call per label would not. The cost:
+  no glare or skew correction. An unreadable photo is refused with the
+  specific reason (glare, blur, resolution) instead of guessed at.
+- **Nothing is persisted.** The review queue lives in memory, seeded at boot
+  from results recorded at build time; a restart loses uploads and
+  decisions. That is the honest shape for a prototype told not to store
+  anything sensitive.
+- **Warning type size is a proportional proxy.** Absolute millimetres are
+  not derivable from an uncalibrated photo, so size relative to surrounding
+  text stands in, documented as a proxy.
+- **Sign-in is a demonstration gate, not an identity system.** One shared
+  credential from the environment keeps a public URL off the open web; there
+  are no accounts and no stored credentials, and concurrent agents are not
+  coordinated.
+- **Seeded queue verdicts are recorded, not recomputed.** They came from the
+  real pipeline via a checked-in script; the queue renders instantly and
+  identically on every boot, at the cost of being fixtures.
+- **Every published number is a measurement** with a date and corpus, the
+  unflattering ones included (cold start, phone-photo tail). What was not
+  measured is listed as such.
+
 ---
 
 ## Measured results
@@ -222,12 +254,11 @@ cd api
 uv sync --extra server
 
 # The corpus images are gitignored, so generate them first: the accuracy
-# suite and most of the integration suite read them, and 81 of the 285
-# tests below fail without them.
+# suite and most of the integration suite read them and fail without them.
 uv run python ../corpus/generate.py --all       # 61 curated labels + fixtures
 uv run python ../corpus/generate.py --batch 200 # the throughput fixture
 
-uv run pytest -q                      # 285 tests
+uv run pytest -q                      # 439 tests as of 2026-08-12
 uv run pytest -q -m accuracy          # the corpus accuracy suite on its own
 ```
 
@@ -245,7 +276,7 @@ always calls the Anthropic API, so a server started without
 ### With real OCR and extraction
 
 ```bash
-cp .env.example .env      # then fill in the two credentials
+cp .env.example .env      # then fill in the four values the table below marks
 cd api
 uv run uvicorn app.main:app --reload
 ```
@@ -282,7 +313,7 @@ at a glance what kind of attention the label needs before any card is read.
 cd web
 npm install
 npm run dev        # http://localhost:5173, proxying /api to port 8000
-npm run test       # 18 accessibility and behaviour tests, single pass
+npm run test       # 31 accessibility and behaviour tests, single pass
 npm run test:watch # the same, in watch mode
 npm run build
 ```
@@ -534,6 +565,18 @@ size in memory for the life of the process.
   which reach the cap, so the claim is only that resampling is harmless at the
   sizes measured. Very small print on a very large photograph is the case that
   would test it, and it is not in the corpus.
+- **The sign-in gate has prototype-grade edges, on purpose.** There is no
+  throttle on the login route, so the single shared credential is guessable
+  at network speed by anyone determined; and signing out deletes the cookie
+  without revoking the signed session token, which stays valid for its
+  12-hour life (rotating `SESSION_SECRET` is the kill switch). Both are the
+  cost of storing no credential state, which is the gate's entire design.
+- **Text printed on the artwork reaches the extraction model.** OCR output is
+  interpolated into the model's input, so a label could carry printed text
+  that tries to steer what the model reports as "detected". The deterministic
+  rule engine and the structured output schema bound what that can change,
+  and the evidence crops show the agent the actual pixels, but the channel
+  exists and a compliance deployment would want it adversarially tested.
 - **Two image checks are resolution-sensitive by construction.** Focus and
   border ink are measured in pixels, so what counts as blurred or as running
   off the frame depends on how big the image is. The border band is a fraction
@@ -573,7 +616,7 @@ Not built, and named rather than left implied:
 | Extraction | Claude Haiku 4.5, structured outputs, thinking disabled, temperature 0 | Benchmarked against Opus 5 and Sonnet 5 during the spike. Structured outputs remove the parse-and-retry loop; temperature 0 because the same label must get the same verdict twice |
 | Rules | Pure Python, no dependencies | Unit-testable with no network. The whole engine runs in 5 ms |
 | Frontend | React 19, Vite, TypeScript, hand-written CSS tokens | The design specifies exact values throughout, and each is an accessibility decision with a reason |
-| Tests | pytest, Vitest, Testing Library | 423 backend, 18 frontend |
+| Tests | pytest, Vitest, Testing Library | 439 backend, 31 frontend (2026-08-12) |
 | Hosting | Render, always-on tier, from `api/Dockerfile` | Cold starts sabotage the evaluator's first click |
 
 ---
@@ -587,7 +630,7 @@ docs/
   tech-spec.md           stack and architecture
   ui-spec.md             screens, data shape, design resolutions
   build-loop.md          current state and the build procedure
-  specs/                 rule-engine, pipeline, batch
+  specs/                 rule-engine, pipeline, batch, review-queue
 docker-compose.yml       one command; fixture OCR, still needs an Anthropic key
 api/
   Dockerfile             multi-stage; Render deploys from this

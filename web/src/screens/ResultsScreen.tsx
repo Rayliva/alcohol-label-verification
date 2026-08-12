@@ -27,6 +27,14 @@ function headline(response: VerificationResponse): string {
   return `${issues} ${issues === 1 ? "issue" : "issues"} found. ${outcome}`;
 }
 
+/** Excel and Sheets treat a cell opening with any of these as a formula, and
+ * quoting does not stop them. `detected` is OCR of whatever was printed on
+ * the artwork, which makes it attacker-authored; the server's batch export
+ * escapes the same way (batch_routes._csv_safe). */
+export function csvSafe(cell: string): string {
+  return /^[=+\-@\t\r]/.test(cell) ? `'${cell}` : cell;
+}
+
 function toCsv(response: VerificationResponse): string {
   const rows = [
     ["field", "declared", "detected", "verdict", "confidence", "reason"],
@@ -39,7 +47,9 @@ function toCsv(response: VerificationResponse): string {
       field.reason,
     ]),
   ];
-  return rows.map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(",")).join("\n");
+  return rows
+    .map((row) => row.map((cell) => `"${csvSafe(cell).replace(/"/g, '""')}"`).join(","))
+    .join("\n");
 }
 
 export function ResultsScreen({

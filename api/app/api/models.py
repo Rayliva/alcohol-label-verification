@@ -36,7 +36,6 @@ class FieldOutcome(BaseModel):
     # (ui-spec resolution 3).
     crop_url: str | None = None
     citation: str | None = None
-    override: None = None
 
 
 class WarningSubCheck(BaseModel):
@@ -57,7 +56,6 @@ class VerificationResponse(BaseModel):
     beverage_type: str
     overall: Outcome
     processing_ms: int
-    reviewer: str | None = None
     error: ErrorBody | None = None
     fields: list[FieldOutcome] = Field(default_factory=list)
     warning_checks: list[WarningSubCheck] = Field(default_factory=list)

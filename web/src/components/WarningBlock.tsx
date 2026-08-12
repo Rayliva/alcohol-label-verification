@@ -11,7 +11,10 @@ import { VerdictBadge } from "./VerdictBadge";
  * a separate diff view an agent has to open.
  */
 
-/** The statutory text, for highlighting differences inline. */
+/** The statutory text, for highlighting differences inline. Byte-identical
+ * to the server's copy in api/app/rules/warning.py, both copied from 27 CFR
+ * 16.21, never retyped (.claude/rules/verify-regulations.md). A one-character
+ * drift here would highlight the wrong words as the difference. */
 export const STATUTORY_WARNING =
   "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not " +
   "drink alcoholic beverages during pregnancy because of the risk of birth defects. " +

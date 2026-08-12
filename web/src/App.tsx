@@ -104,6 +104,8 @@ export default function App() {
             // in-flight request resolves seconds later and yanks the user
             // off the queue onto the results screen.
             if (step === "processing") request.current?.abort();
+            // A stale failure notice must not follow the agent to the queue.
+            setError(null);
             setStep("queue");
           }}
         >
@@ -115,7 +117,10 @@ export default function App() {
           <button
             className="button button--small button--primary"
             type="button"
-            onClick={() => setStep("submit")}
+            onClick={() => {
+              setError(null);
+              setStep("submit");
+            }}
           >
             <span className="masthead__plus" aria-hidden="true">
               +
@@ -129,6 +134,10 @@ export default function App() {
               className="button button--quiet"
               type="button"
               onClick={async () => {
+                // Signing out cancels any in-flight check: without the abort
+                // it resolves later and lands the next sign-in on a previous
+                // session's results.
+                request.current?.abort();
                 await signOut();
                 setAgent(null);
                 setStep("queue");
@@ -187,18 +196,26 @@ export default function App() {
           />
         ) : null}
 
-        {step === "submit" ? (
+        {/* Hidden, never unmounted while signed in. BatchScreen lives inside
+            and owns its running job; unmounting on navigation (opening a
+            review, checking a single label, going home) would strand a
+            200-label run with no progress view, no Stop, and no export while
+            the server worked on. */}
+        <div hidden={step !== "submit"}>
           <SubmitScreen
             mode={mode}
             onMode={setMode}
-            onBack={() => setStep("queue")}
+            onBack={() => {
+              setError(null);
+              setStep("queue");
+            }}
             declared={declared}
             onDeclared={setDeclared}
             image={image}
             onImage={setImage}
             onSubmit={submit}
           />
-        ) : null}
+        </div>
 
         {step === "processing" ? (
           <ProcessingScreen

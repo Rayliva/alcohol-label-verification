@@ -37,7 +37,6 @@ export interface VerificationResponse {
   beverage_type: string;
   overall: Outcome;
   processing_ms: number;
-  reviewer: string | null;
   error: ErrorBody | null;
   fields: FieldOutcome[];
   warning_checks: WarningSubCheck[];

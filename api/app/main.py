@@ -24,6 +24,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api.batch_routes import router as batch_router
+from app.api.review_routes import public as review_public
 from app.api.review_routes import router as review_router
 from app.api.routes import router
 from app.auth import credentials_are_configured, require_agent
@@ -190,8 +191,9 @@ async def unhandled(_request: Request, exc: Exception) -> JSONResponse:
 _signed_in = [Depends(require_agent)]
 app.include_router(router, dependencies=_signed_in)
 app.include_router(batch_router, dependencies=_signed_in)
-# Its own login and logout must stay reachable without a session.
-app.include_router(review_router)
+app.include_router(review_router, dependencies=_signed_in)
+# Exactly two routes work without a session: sign in and sign out.
+app.include_router(review_public)
 
 
 @app.get("/health")

@@ -59,7 +59,6 @@ const RESPONSE: VerificationResponse = {
   beverage_type: "spirits",
   overall: "needs_review",
   processing_ms: 2310,
-  reviewer: null,
   error: null,
   counts: { pass: 4, needs_review: 1, fail: 1 },
   stage_ms: {},

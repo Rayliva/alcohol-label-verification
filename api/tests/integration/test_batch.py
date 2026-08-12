@@ -162,6 +162,17 @@ class TestRunningABatch:
         files.append(("manifest", ("manifest.csv", manifest.encode(), "text/csv")))
         return files
 
+    def test_an_oversized_batch_image_is_refused_by_name(self, client, labels) -> None:
+        files = [
+            ("images", ("huge.png", b"x" * (25 * 1024 * 1024 + 1), "image/png")),
+            ("manifest", ("manifest.csv", (HEADER + row("huge.png")).encode(), "text/csv")),
+        ]
+        response = client.post("/api/batch/preflight", files=files)
+        assert response.status_code == 400
+        body = response.json()["detail"]
+        assert body["code"] == "image_too_large"
+        assert "huge.png" in body["message"]
+
     def test_preflight_runs_before_anything_is_checked(self, client, labels) -> None:
         files = self._upload(client, labels, ["t1-clean-classic-1"])
         response = client.post("/api/batch/preflight", files=files)
