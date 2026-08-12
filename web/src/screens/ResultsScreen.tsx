@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
-import type { Override, VerificationResponse, Verdict } from "../api/types";
+import type { VerificationResponse, Verdict } from "../api/types";
 import { FieldResultCard } from "../components/FieldResultCard";
 import { verdictGlyph } from "../components/VerdictBadge";
 import { WarningBlock } from "../components/WarningBlock";
@@ -21,9 +21,9 @@ function headline(response: VerificationResponse): string {
   return `${issues} ${issues === 1 ? "issue" : "issues"} found on this label`;
 }
 
-function toCsv(response: VerificationResponse, overrides: Record<string, Override>): string {
+function toCsv(response: VerificationResponse): string {
   const rows = [
-    ["field", "declared", "detected", "verdict", "confidence", "reason", "agent_decision", "note"],
+    ["field", "declared", "detected", "verdict", "confidence", "reason"],
     ...response.fields.map((field) => [
       field.field,
       field.declared ?? "",
@@ -31,8 +31,6 @@ function toCsv(response: VerificationResponse, overrides: Record<string, Overrid
       field.verdict,
       String(field.confidence),
       field.reason,
-      overrides[field.field]?.decision ?? "",
-      overrides[field.field]?.note ?? "",
     ]),
   ];
   return rows.map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(",")).join("\n");
@@ -51,8 +49,6 @@ export function ResultsScreen({
   onCheckAnother: () => void;
   embedded?: boolean;
 }) {
-  const [overrides, setOverrides] = useState<Record<string, Override>>({});
-
   const ordered = useMemo(
     () =>
       [...response.fields]
@@ -65,7 +61,7 @@ export function ResultsScreen({
   const counts = response.counts ?? {};
 
   const download = () => {
-    const blob = new Blob([toCsv(response, overrides)], { type: "text/csv" });
+    const blob = new Blob([toCsv(response)], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -117,39 +113,11 @@ export function ResultsScreen({
 
       <div className="results-grid">
       {ordered.map((field) => (
-        <FieldResultCard
-          key={field.field}
-          field={field}
-          reviewer={reviewer}
-          override={overrides[field.field] ?? null}
-          onOverride={(next) =>
-            setOverrides((current) => {
-              const copy = { ...current };
-              if (next) copy[field.field] = next;
-              else delete copy[field.field];
-              return copy;
-            })
-          }
-        />
+        <FieldResultCard key={field.field} field={field} />
       ))}
       </div>
 
-      {warning ? (
-        <WarningBlock
-          field={warning}
-          checks={response.warning_checks}
-          reviewer={reviewer}
-          override={overrides.government_warning ?? null}
-          onOverride={(next) =>
-            setOverrides((current) => {
-              const copy = { ...current };
-              if (next) copy.government_warning = next;
-              else delete copy.government_warning;
-              return copy;
-            })
-          }
-        />
-      ) : null}
+      {warning ? <WarningBlock field={warning} checks={response.warning_checks} /> : null}
     </div>
   );
 }

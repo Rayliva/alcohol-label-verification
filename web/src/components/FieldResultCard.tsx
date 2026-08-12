@@ -1,8 +1,7 @@
 import { useState } from "react";
 
-import type { FieldOutcome, Override } from "../api/types";
+import type { FieldOutcome } from "../api/types";
 import { EvidenceCrop } from "./EvidenceCrop";
-import { FieldDecision } from "./FieldDecision";
 import { VerdictBadge } from "./VerdictBadge";
 
 /**
@@ -14,13 +13,14 @@ import { VerdictBadge } from "./VerdictBadge";
  * disclosure expands is visibly attached to the verdict it explains.
  *
  * The prose behind the disclosure — reason, reading confidence, rule
- * citation, and on flagged fields the agent's decision controls — is a
- * deliberate deviation from accessibility rule 5 ("no important content
- * behind disclosure"), decided by the product owner on 2026-08-11: six cards
- * of rationale crowded out the results themselves.
+ * citation — is a deliberate deviation from accessibility rule 5 ("no
+ * important content behind disclosure"), decided by the product owner on
+ * 2026-08-11: six cards of rationale crowded out the results themselves.
  *
- * An override never replaces the tool's verdict. Both stay visible: the tool
- * advises, the agent decides, and the export needs to show both.
+ * There are no per-field decision controls. The tool advises field by field;
+ * the agent decides once, per application, with Approve and Reject on the
+ * review screen (product owner, 2026-08-11 — the per-field accept/reject
+ * asked the same question up to seven times per label).
  */
 
 function confidenceWord(confidence: number): string {
@@ -29,29 +29,16 @@ function confidenceWord(confidence: number): string {
   return "low, look closely";
 }
 
-export function FieldResultCard({
-  field,
-  reviewer,
-  override,
-  onOverride,
-}: {
-  field: FieldOutcome;
-  reviewer: string;
-  override: Override | null;
-  onOverride: (next: Override | null) => void;
-}) {
+export function FieldResultCard({ field }: { field: FieldOutcome }) {
   const [open, setOpen] = useState(false);
-  const rail = override ? "override" : field.verdict;
 
   return (
-    <section className={`card result result--${rail}`} aria-labelledby={`field-${field.field}`}>
+    <section
+      className={`card result result--${field.verdict}`}
+      aria-labelledby={`field-${field.field}`}
+    >
       <div className="result__head">
         <h3 id={`field-${field.field}`}>{field.display_name}</h3>
-        {override ? (
-          <span className="agent-mark">
-            You: {override.decision === "accepted" ? "accepted" : "a problem"}
-          </span>
-        ) : null}
       </div>
 
       <div className="result__values">
@@ -86,16 +73,6 @@ export function FieldResultCard({
             Reading confidence {field.confidence.toFixed(2)} ({confidenceWord(field.confidence)})
             {field.citation ? ` · Rule: ${field.citation}` : ""}
           </p>
-          {field.verdict === "pass" ? null : (
-            <FieldDecision
-              fieldKey={field.field}
-              displayName={field.display_name}
-              verdict={field.verdict}
-              reviewer={reviewer}
-              override={override}
-              onOverride={onOverride}
-            />
-          )}
         </div>
       ) : null}
     </section>

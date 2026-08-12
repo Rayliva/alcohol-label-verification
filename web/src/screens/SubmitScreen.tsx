@@ -33,7 +33,7 @@ export function SubmitScreen({
   onSubmit: () => void;
 }) {
   return (
-    <div className={`stack${mode === "single" ? " form-column" : ""}`}>
+    <div className="stack form-column">
       <button className="back-link" type="button" onClick={onBack}>
         <span aria-hidden="true">←</span> Back to the queue
       </button>

@@ -10,12 +10,6 @@ export interface ErrorBody {
   partial_fields_shown?: boolean;
 }
 
-export interface Override {
-  decision: "accepted" | "rejected";
-  note: string;
-  at: string;
-}
-
 export interface FieldOutcome {
   field: string;
   display_name: string;

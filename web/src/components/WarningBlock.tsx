@@ -1,6 +1,5 @@
-import type { FieldOutcome, Override, WarningSubCheck } from "../api/types";
+import type { FieldOutcome, WarningSubCheck } from "../api/types";
 import { EvidenceCrop } from "./EvidenceCrop";
-import { FieldDecision } from "./FieldDecision";
 import { VerdictBadge } from "./VerdictBadge";
 
 /**
@@ -52,32 +51,18 @@ export function highlightDifferences(detected: string): { text: string; differs:
 export function WarningBlock({
   field,
   checks,
-  reviewer,
-  override,
-  onOverride,
 }: {
   field: FieldOutcome;
   checks: WarningSubCheck[];
-  reviewer: string;
-  override: Override | null;
-  onOverride: (next: Override | null) => void;
 }) {
   const detected = field.detected ?? "";
   const segments = detected ? highlightDifferences(detected) : [];
   const anyDifference = segments.some((segment) => segment.differs);
 
   return (
-    <section
-      className={`card result result--${override ? "override" : field.verdict}`}
-      aria-labelledby="warning-heading"
-    >
+    <section className={`card result result--${field.verdict}`} aria-labelledby="warning-heading">
       <div className="result__head">
         <h3 id="warning-heading">Government warning</h3>
-        {override ? (
-          <span className="agent-mark">
-            You: {override.decision === "accepted" ? "accepted" : "a problem"}
-          </span>
-        ) : null}
         <VerdictBadge verdict={field.verdict} />
       </div>
 
@@ -122,16 +107,6 @@ export function WarningBlock({
         ))}
       </div>
 
-      {field.verdict === "pass" ? null : (
-        <FieldDecision
-          fieldKey="government_warning"
-          displayName="the government warning"
-          verdict={field.verdict}
-          reviewer={reviewer}
-          override={override}
-          onOverride={onOverride}
-        />
-      )}
     </section>
   );
 }

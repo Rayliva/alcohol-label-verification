@@ -461,3 +461,16 @@ All decided by the product owner in review of the running app.
   (glyph and word in the verdict colour, contrast re-checked on the zebra
   stripes) and the per-row Review action is an underlined link rather than an
   outlined button, both still 44px targets.
+
+### Session 6 amendments, final round
+
+- **Per-field decision controls are gone entirely.** The accept/reject pair
+  and its note asked the same question up to seven times per label. The agent
+  decides once, per application, with Approve and Reject on the review
+  screen; the cards only ever advise. The CSV export drops its
+  agent_decision and note columns, since nothing can populate them.
+- **Batch matches the single-label column.** Both halves of the submit page
+  share the same centred 880px column.
+- **The masthead chip hovers legible.** The global primary hover darkens the
+  fill, which on the navy bar turned the white chip navy-on-navy; in the
+  masthead it lightens instead.

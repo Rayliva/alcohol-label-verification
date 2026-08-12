@@ -252,9 +252,7 @@ export function InputScreen({
               value={declared.reviewer}
               onChange={(event) => update("reviewer", event.target.value)}
             />
-            <p className="help">
-              Put on any field you accept or reject, so the export shows who decided.
-            </p>
+            <p className="help">Shown on the results as the reviewer.</p>
           </div>
         </div>
 

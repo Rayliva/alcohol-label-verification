@@ -239,61 +239,23 @@ describe("The Why? disclosure — detail on demand, essentials in the open", () 
   });
 });
 
-describe("Override — the tool advises, the agent decides", () => {
-  const openWhy = async (user: ReturnType<typeof userEvent.setup>, card: HTMLElement) => {
-    await user.click(within(card).getByRole("button", { name: /why/i }));
-  };
+describe("The agent decides once, per application", () => {
+  // Per-field accept/reject controls were removed on 2026-08-11: they asked
+  // the same question up to seven times per label. The decision lives on the
+  // review screen as Approve/Reject for the whole application; the cards
+  // only ever advise.
 
-  it("asks agreement on flagged fields and asks nothing on passing ones", async () => {
+  it("offers no decision controls on any field card", async () => {
     const user = userEvent.setup();
     render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
 
     const flagged = screen.getByRole("region", { name: /net contents/i });
-    await openWhy(user, flagged);
-    expect(within(flagged).getByRole("button", { name: /accept this field/i })).toBeInTheDocument();
-    expect(within(flagged).getByRole("button", { name: /it is a problem/i })).toBeInTheDocument();
+    await user.click(within(flagged).getByRole("button", { name: /why/i }));
+    expect(within(flagged).queryByRole("button", { name: /accept this field/i })).toBeNull();
+    expect(within(flagged).queryByRole("button", { name: /it is a problem/i })).toBeNull();
 
-    // A passing field explains itself but carries no decision controls: the
-    // recorded disagreement with a clean label is the application-level
-    // Reject on the review screen (decided 2026-08-11).
-    const passing = screen.getByRole("region", { name: /brand name/i });
-    await openWhy(user, passing);
-    expect(within(passing).getByText(/matches once formatting differences/i)).toBeInTheDocument();
-    expect(within(passing).queryByRole("button", { name: /accept this field/i })).toBeNull();
-    expect(within(passing).queryByRole("button", { name: /flag as a problem/i })).toBeNull();
-  });
-
-  it("keeps the tool's verdict visible after the agent accepts a field", async () => {
-    const user = userEvent.setup();
-    render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
-
-    const card = screen.getByRole("region", { name: /net contents/i });
-    await openWhy(user, card);
-    await user.click(within(card).getByRole("button", { name: /accept this field/i }));
-
-    expect(within(card).getByText(/you: accepted/i)).toBeInTheDocument();
-    expect(within(card).getByText(/stays on the export beside your decision/i)).toBeInTheDocument();
-    // The tool's own verdict is still shown, not replaced.
-    expect(within(card).getAllByText("Fail").length).toBeGreaterThan(0);
-  });
-
-  it("says where the decision goes rather than claiming it is stored", async () => {
-    const user = userEvent.setup();
-    render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
-    const card = screen.getByRole("region", { name: /net contents/i });
-    await openWhy(user, card);
-    await user.click(within(card).getByRole("button", { name: /accept this field/i }));
-    expect(within(card).getByText(/R\. Delgado/)).toBeInTheDocument();
-    expect(within(card).getByText(/nothing is stored after this session/i)).toBeInTheDocument();
-  });
-
-
-  it("lets the agent disagree with the government warning too", async () => {
-    const user = userEvent.setup();
-    render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
-    const block = screen.getByRole("region", { name: /government warning/i });
-    await user.click(within(block).getByRole("button", { name: /accept this field/i }));
-    expect(within(block).getByText(/you: accepted/i)).toBeInTheDocument();
+    const warningBlock = screen.getByRole("region", { name: /government warning/i });
+    expect(within(warningBlock).queryByRole("button", { name: /accept/i })).toBeNull();
   });
 });
 

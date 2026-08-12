@@ -108,6 +108,14 @@ a:hover {
   border-color: var(--surface);
 }
 
+/* The global primary hover darkens the fill, which on the navy bar turned
+   this chip navy-on-navy. Hovering here lightens instead: navy text stays. */
+.masthead .button--primary:hover:not(:disabled) {
+  background: #dbe4f0;
+  border-color: #dbe4f0;
+  color: var(--primary);
+}
+
 .masthead .button--quiet {
   color: var(--surface);
 }
@@ -389,7 +397,6 @@ a:hover {
   resize: vertical;
 }
 
-
 /* Drop zone -------------------------------------------------------------- */
 
 .dropzone {
@@ -468,11 +475,6 @@ a:hover {
   color: var(--ink-secondary);
   border-color: var(--border);
   background: var(--zebra);
-}
-.badge--override {
-  color: var(--override-text);
-  border-color: var(--override-border);
-  background: var(--override-tint);
 }
 
 /* The queue's small badge sheds the tinted pill: glyph and word in the
@@ -557,9 +559,6 @@ a:hover {
 .result--fail {
   border-left-color: var(--fail-border);
 }
-.result--override {
-  border-left-color: var(--override-border);
-}
 
 .result__head {
   display: flex;
@@ -625,8 +624,6 @@ a:hover {
   text-align: center;
 }
 
-/* The agent's call on a flagged field ------------------------------------ */
-
 .results-grid {
   display: grid;
   gap: 14px;
@@ -665,67 +662,11 @@ a:hover {
   margin: 6px 0 0;
 }
 
-.agent-mark {
-  font-size: var(--size-micro);
-  font-weight: 700;
-  color: var(--override-text);
-  background: var(--override-tint);
-  border: 2px solid var(--override-border);
-  border-radius: var(--radius-control);
-  padding: 2px 8px;
-}
-
-.decision {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 2px solid var(--divider);
-}
-
-.decision__controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-
-.decision__ask {
-  font-size: var(--size-help);
-  font-weight: 600;
-}
-
-.decision__controls .input {
-  flex: 1;
-  min-width: 220px;
-  margin-top: 0;
-}
-
-.decision__made {
-  margin: 8px 0 0;
-  font-size: var(--size-help);
-  font-weight: 600;
-}
-
-.decision__made .help {
-  display: block;
-  font-weight: 400;
-  margin-top: 2px;
-}
-
-.decision__hint {
-  margin-top: 8px;
-}
-
 /* Constraint 1 still holds: 44px is the floor, and these clear it. */
 .button--small {
   min-height: 44px;
   font-size: var(--size-help);
   padding: 8px 16px;
-}
-
-.input--small {
-  min-height: 44px;
-  padding: 8px 12px;
-  font-size: var(--size-help);
 }
 
 /* Warning block ---------------------------------------------------------- */
@@ -953,7 +894,6 @@ a:hover {
   font-weight: 400;
   color: var(--ink-quiet);
 }
-
 
 .queue__decision {
   color: var(--ink-secondary);
