@@ -17,12 +17,14 @@ from __future__ import annotations
 
 import csv
 import io
+import time
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile
 from fastapi.responses import PlainTextResponse
 
-from app.api.routes import _to_response
+from app.api.models import ErrorBody, VerificationResponse
+from app.api.routes import _join_queue, _to_response
 from app.batch.manifest import (
     COLUMNS,
     ManifestError,
@@ -104,6 +106,8 @@ def _check_one(image_bytes: bytes, declared: dict[str, Any]) -> tuple[str, dict[
         application_id=declared.get("application_id") or None,
         fields=declared.get("fields", {}),
     )
+    declared_brand = declared.get("fields", {}).get("brand_name")
+    started = time.perf_counter()
     try:
         result = verify(
             image_bytes,
@@ -112,12 +116,33 @@ def _check_one(image_bytes: bytes, declared: dict[str, Any]) -> tuple[str, dict[
             extract=lambda text: extract_from_text(text).fields,
         )
     except UnreadableImageError as exc:
+        # Joins the queue like a single unreadable upload: a reason, no
+        # result. A row whose check *errors* does not join — a verdict means
+        # the check ran, and the queue is a list of verdicts.
+        response = VerificationResponse(
+            label_id=application.application_id,
+            beverage_type=application.beverage_type,
+            overall="unreadable",
+            processing_ms=round((time.perf_counter() - started) * 1000),
+            error=ErrorBody(**exc.as_dict(), partial_fields_shown=False),
+        )
+        _join_queue(
+            response,
+            brand=declared_brand or application.application_id,
+            application_id=application.application_id,
+            unreadable=exc.as_dict(),
+        )
         return "unreadable", {"error": exc.as_dict(), "brand_name": None, "issues": 0}
 
     response = _to_response(
         result,
         application_id=application.application_id,
         reviewer=None,
+    )
+    _join_queue(
+        response,
+        brand=declared_brand or application.application_id,
+        application_id=application.application_id,
     )
     brand = next((f for f in response.fields if f.field == "brand_name"), None)
     return response.overall, {

@@ -470,9 +470,11 @@ batch upload with pre-flight, live progress and CSV export · specific reasons
 for unreadable images · a review queue with search, decision and result
 filters, and an opt-in "Start reviewing" run where each decision opens the
 next undecided application · uploads join the queue whatever their outcome,
-searchable by their declared application ID, with the wall-clock wait
-("Checked in 4.2 seconds") shown on the result and Approve/Reject offered
-right there.
+batch results included, searchable by their declared application ID, with
+the wall-clock wait ("Checked in 4.2 seconds") shown on the result and
+Approve/Reject offered right there. A batch's full reports are held both by
+the job and by the queue, so a 300-label run costs roughly twice its report
+size in memory for the life of the process.
 
 ### Deliberately not built
 

@@ -53,8 +53,10 @@ a:hover {
   color: var(--link-hover);
 }
 
-.mono {
-  font-family: var(--mono);
+/* Declared and detected values. These were monospace for character-exact
+   comparison, but a second typeface read as inconsistency, not signal
+   (product owner, 2026-08-12). One face everywhere now. */
+.value {
   font-size: var(--size-body);
   line-height: 1.45;
 }
@@ -695,7 +697,6 @@ a:hover {
   border: 2px solid var(--divider);
   border-radius: var(--radius-control);
   padding: 18px;
-  font-family: var(--mono);
   font-size: var(--size-body);
   line-height: 1.7;
   white-space: pre-wrap;

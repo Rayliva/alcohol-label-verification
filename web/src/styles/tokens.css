@@ -65,11 +65,11 @@
   /* Type. Body is 19px because 16px is the floor, not the target.
      Public Sans is first in the stack but not shipped as a file, so most
      viewers get Segoe UI; the metrics were checked against both. */
+  /* One typeface. The mono face that marked "exact" values read as
+     inconsistency rather than signal, and left the product on 2026-08-12 at
+     the owner's request. Exactness is carried by the words and the highlight
+     marks, not by a font. */
   --font: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
-  /* The mono face appears only where character-exact comparison is the point:
-     declared vs detected evidence, and the government warning text. Forms and
-     tables stay in the one body face (product owner, 2026-08-12). */
-  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
 
   --size-h1: 29px;
   --size-h2: 22px;

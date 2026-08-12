@@ -522,6 +522,15 @@ All decided by the product owner in review of the running app.
   second voice next to every other label in the product. Now sentence case,
   matching the queue's column headers. Verdict badges stay uppercase; they
   are the same on every screen.
+- **One typeface, full stop.** The earlier "one typeface outside the
+  evidence" decision below kept monospace on declared-vs-detected values and
+  the warning text; the owner saw those values ("43% Alc./Vol.") as the same
+  inconsistency and asked for one face everywhere. The mono token is gone.
+  Exactness on the warning text is carried by the highlight marks, not a
+  font.
+- **Batch results join the queue** as they complete, same shape as single
+  uploads; rows whose check errored do not, because a verdict means the
+  check ran. Specified in `docs/specs/review-queue.md`.
 - **One typeface outside the evidence.** The submit flow had four faces in
   view at once: mono inputs for the "exact" fields, a mono filename line, a
   mono application-ID column in the batch table, and a prose sentence on the

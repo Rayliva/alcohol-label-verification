@@ -192,6 +192,30 @@ class TestRunningABatch:
             "error",
         }
 
+    def test_a_finished_batch_joins_the_review_queue(self, client, labels) -> None:
+        # Same promise as a single upload: what was checked is waiting in the
+        # queue, including the unreadable ones with their reason.
+        before = {row["id"] for row in client.get("/api/queue").json()["items"]}
+        ids = ["t1-clean-classic-1", "t4-tiny"]
+        job_id = client.post("/api/batch", files=self._upload(client, labels, ids)).json()["job_id"]
+        deadline = time.time() + 30
+        while time.time() < deadline:
+            body = client.get(f"/api/batch/{job_id}").json()
+            if body["state"] in ("finished", "stopped"):
+                break
+            time.sleep(0.05)
+        assert body["state"] == "finished"
+
+        new = [
+            row
+            for row in client.get("/api/queue").json()["items"]
+            if row["id"] not in before
+        ]
+        assert len(new) == 2
+        assert {row["source"] for row in new} == {"uploaded"}
+        assert {row["application_id"] for row in new} == {"APP-1", "APP-2"}
+        assert "unreadable" in {row["outcome"] for row in new}
+
     def test_progress_is_determinate_throughout(self, client, labels) -> None:
         # "47 of 200 checked", never a spinner (accessibility rule 8).
         ids = ["t1-clean-classic-1", "t1-clean-modern-1"]

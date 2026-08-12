@@ -44,11 +44,11 @@ export function FieldResultCard({ field }: { field: FieldOutcome }) {
       <div className="result__values">
         <div>
           <p className="micro-label">Declared in application</p>
-          <p className="mono">{field.declared || "nothing declared"}</p>
+          <p className="value">{field.declared || "nothing declared"}</p>
         </div>
         <div>
           <p className="micro-label">Detected on label</p>
-          <p className="mono">{field.detected || "not found on the label"}</p>
+          <p className="value">{field.detected || "not found on the label"}</p>
         </div>
         <EvidenceCrop src={field.crop_url} fieldName={field.field} detected={!!field.detected} />
       </div>

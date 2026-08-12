@@ -129,6 +129,13 @@ This spec makes the queue the front door and keeps upload as a secondary action.
   the row shows it under the brand). Seeded rows already answer to their id.
   This was the owner's bug report: an upload declared as application 1234
   was unfindable, because the row only knew its internal `upload-` id.
+- **Batch results join the queue too.** Every label a batch run checks
+  becomes a queue row as it completes, same shape as a single upload: the
+  declared application ID, source "uploaded", the full result, unreadable
+  rows with their reason. Rows whose check *errored* (provider down, key
+  missing) do not join: a verdict means the check ran, and the queue is a
+  list of verdicts. The batch table remains the run's own view; the queue is
+  where the decisions happen.
 - **The decision is offered where the result is.** A fresh upload's results
   screen ends with the same decision card the review screen has — approve
   (recorded as an override when anything is flagged) or reject, with the
