@@ -167,7 +167,7 @@ async def verify_label(
                 f"That file is {len(image_bytes) // (1024 * 1024)} MB, over the "
                 f"{MAX_UPLOAD_BYTES // (1024 * 1024)} MB limit."
             ),
-            what_to_do="Send a smaller copy — a normal photograph is a few megabytes.",
+            what_to_do="Send a smaller copy. A normal photograph is a few megabytes.",
         )
 
     application = Application(
@@ -230,7 +230,7 @@ async def verify_label(
             detail={
                 "code": "service_unavailable",
                 "message": "Can't reach the label reading service right now.",
-                "what_to_do": "Your entry has been kept — try again in a moment.",
+                "what_to_do": "Your entry has been kept. Try again in a moment.",
             },
         ) from exc
 

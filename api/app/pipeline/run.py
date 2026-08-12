@@ -50,6 +50,19 @@ EXTRACTED_FIELDS = (
 # into. Capping it keeps a 200-label batch from carrying 200 full photographs.
 MAX_CROP_EDGE = 900
 
+# Above this, every stage that touches pixels is paying for resolution no part
+# of the check can use. Measured on the deployed instance, 2026-08-11: the same
+# label at 1372x1852 and at 4116x5556 came back in 2.7 s and 9.3 s. The extra
+# 6.6 s was entirely image work - the quality gate went 302 ms to 2,923 ms and
+# geometric measurement 299 ms to 2,602 ms - and it bought nothing, because the
+# text was legible at both sizes.
+#
+# 2400 is chosen to sit above the corpus rather than inside it: the largest
+# curated label is 2000 px on its long edge and the largest sample is 1932, so
+# every image any threshold was calibrated against passes through untouched.
+# Only photographs bigger than anything we have ever measured are resampled.
+MAX_WORKING_EDGE = 2400
+
 Extractor = Callable[[str], ExtractedFields]
 
 
@@ -89,8 +102,11 @@ class VerificationResult:
     crops_missing: tuple[str, ...] = field(default_factory=tuple)
 
 
-def _decode(image_bytes: bytes) -> Image.Image:
+def _decode(image_bytes: bytes) -> tuple[Image.Image, bytes]:
     """Open an upload as an upright RGB image, or say why it could not be.
+
+    Returns the image and the bytes the OCR engine should be given, which are
+    the original bytes unless the photograph was resampled.
 
     Three failures reach this function from real submissions and none of them
     may become a bare 500: a file that is not an image at all, a file that is
@@ -120,7 +136,7 @@ def _decode(image_bytes: bytes) -> Image.Image:
     except OSError as exc:
         raise UnreadableImageError(
             code="image_truncated",
-            message="The image file is incomplete — it ends part way through.",
+            message="The image file is incomplete. It ends part way through.",
             what_to_do="Upload the file again; it may have been cut short in transit.",
         ) from exc
 
@@ -128,7 +144,23 @@ def _decode(image_bytes: bytes) -> Image.Image:
     # tag. Ignoring it hands the agent sideways evidence crops and makes a
     # one-panel label look like a two-panel container to the field-of-vision
     # check.
-    return ImageOps.exif_transpose(image).convert("RGB")
+    upright = ImageOps.exif_transpose(image).convert("RGB")
+
+    if max(upright.size) <= MAX_WORKING_EDGE:
+        return upright, image_bytes
+
+    # Resampled once, here, so that every stage downstream - the quality gate,
+    # OCR, geometric measurement, the crops - sees the same pixels. Measuring
+    # focus on the image OCR actually reads is also the more honest question:
+    # a blur that vanishes under resampling was never obscuring the text.
+    scale = MAX_WORKING_EDGE / max(upright.size)
+    working = upright.resize(
+        (max(1, round(upright.width * scale)), max(1, round(upright.height * scale))),
+        Image.Resampling.LANCZOS,
+    )
+    buffer = BytesIO()
+    working.save(buffer, format="JPEG", quality=92)
+    return working, buffer.getvalue()
 
 
 def _detected_fields(fields: ExtractedFields) -> dict[str, str | None]:
@@ -160,7 +192,12 @@ def _crops(
             continue
         region.thumbnail((MAX_CROP_EDGE, MAX_CROP_EDGE))
         buffer = BytesIO()
-        region.save(buffer, format="PNG", optimize=True)
+        # PNG, because an agent is looking at this crop to decide whether we
+        # misread the label, and JPEG ringing around small type is exactly the
+        # artefact that would make them doubt a correct reading. Not optimised:
+        # measured over seven crops, optimize=True cost 48 ms against 13 ms and
+        # saved about a kilobyte each.
+        region.save(buffer, format="PNG")
         crops[name] = buffer.getvalue()
     return crops, tuple(missing)
 
@@ -201,7 +238,7 @@ def temper_by_reading(results: Sequence[FieldResult], ocr: OcrResult) -> list[Fi
                 reason=(
                     f"{result.reason} This text could not be read confidently "
                     f"({confidence:.0%}), so the finding may be about the "
-                    "photograph rather than the label — compare it against the "
+                    "photograph rather than the label, so compare it against the "
                     "artwork before deciding."
                 ),
             )
@@ -225,7 +262,7 @@ def verify(
     started = time.perf_counter()
 
     mark = time.perf_counter()
-    image = _decode(image_bytes)
+    image, ocr_bytes = _decode(image_bytes)
     decode_ms = (time.perf_counter() - mark) * 1000
 
     mark = time.perf_counter()
@@ -233,7 +270,7 @@ def verify(
     quality_ms = (time.perf_counter() - mark) * 1000
 
     mark = time.perf_counter()
-    ocr_result = ocr.extract(image_bytes)
+    ocr_result = ocr.extract(ocr_bytes)
     ocr_ms = (time.perf_counter() - mark) * 1000
 
     quality.require_text(ocr_result)

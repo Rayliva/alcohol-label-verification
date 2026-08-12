@@ -3,10 +3,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { BeverageTypeOption, DeclaredFields } from "../api/types";
 
 /**
- * Screen 1 — collect an image and the values declared in the application.
+ * Screen 1: collect an image and the values declared in the application.
  *
  * One job, one screen, one primary action. The button is disabled until it can
- * work, and a line above it names every missing item by its exact field label —
+ * work, and a line above it names every missing item by its exact field label.
  * a disabled control that does not explain itself is a dead end
  * (.claude/rules/accessibility.md, rule 9).
  */
@@ -222,7 +222,10 @@ export function InputScreen({
 
       <section className="card" aria-labelledby="declared-heading">
         <h2 id="declared-heading">3. What the application says</h2>
-        <p className="help">Copy these from the COLA application, exactly as written.</p>
+        <p className="help">
+          Copy these from the COLA application, exactly as written. Fields marked{" "}
+          <span className="field__required">*</span> are required.
+        </p>
 
         <div style={{ marginTop: 20 }}>
           <div className="field">
@@ -242,13 +245,27 @@ export function InputScreen({
 
           {FIELDS.map((field) => {
             const needed = field.name === "alcohol_content" ? alcoholRequired : field.required;
+            // A required field is marked with an asterisk and nothing else. The
+            // note is kept for the cases where "optional" alone would not say
+            // enough: imports only, or optional for this drink specifically.
             const note = field.name === "alcohol_content" && !alcoholRequired
               ? selected?.alcohol_content_note ?? "optional for this drink"
-              : field.note ?? (needed ? "required" : "optional");
+              : needed
+                ? null
+                : field.note ?? "optional";
             return (
               <div className="field" key={field.name}>
                 <label className="field__label" htmlFor={field.name}>
-                  {field.label} <span className="field__note">({note})</span>
+                  {field.label}{" "}
+                  {needed ? (
+                    <>
+                      <span className="field__required" aria-hidden="true">
+                        *
+                      </span>
+                      <span className="visually-hidden">(required)</span>
+                    </>
+                  ) : null}
+                  {note ? <span className="field__note">({note})</span> : null}
                 </label>
                 {field.textarea ? (
                   <textarea

@@ -3,17 +3,23 @@ import { useEffect, useState } from "react";
 import { ApiError, fetchQueue } from "../api/client";
 import type { QueueListing, QueueRow } from "../api/types";
 import { VerdictBadge } from "../components/VerdictBadge";
+import { DECISION_LABEL } from "./ReviewScreen";
 
 /**
  * What an agent sees when they sign in.
  *
  * The brief describes an agent pulling up an application that is already
- * waiting, not keying one in — so this is the front door, and the verdicts are
+ * waiting, not keying one in, so this is the front door, and the verdicts are
  * already computed by the time a row appears.
  *
  * Rows sort judgment-first. A NEEDS_REVIEW is the work only a person can do; a
  * FAIL the tool is confident about still needs signing off but is not where an
  * agent's attention is scarcest. Anything already decided drops to the bottom.
+ *
+ * No timings here. These verdicts were recorded rather than computed on demand,
+ * so a stopwatch beside them would be reporting the machine that made the
+ * recording. The five-second budget is demonstrated where it is actually spent,
+ * on the upload screen.
  */
 
 const OUTCOME_LABEL: Record<string, string> = {
@@ -23,22 +29,11 @@ const OUTCOME_LABEL: Record<string, string> = {
   pass: "Pass",
 };
 
-function Timing({ ms }: { ms: number | null }) {
-  if (ms === null) return <span className="queue__timing">—</span>;
-  return (
-    <span className="queue__timing">
-      Checked in {(ms / 1000).toFixed(1)}s
-    </span>
-  );
-}
-
 export function QueueScreen({
   onOpen,
-  onUpload,
   reloadKey,
 }: {
   onOpen: (id: string) => void;
-  onUpload: () => void;
   reloadKey: number;
 }) {
   const [listing, setListing] = useState<QueueListing | null>(null);
@@ -92,9 +87,6 @@ export function QueueScreen({
               : `${waiting} of ${listing.items.length} still need a decision. Those needing judgment are listed first.`}
           </p>
         </div>
-        <button className="button button--primary" type="button" onClick={onUpload}>
-          Check a new label
-        </button>
       </div>
 
       <table className="queue">
@@ -105,7 +97,6 @@ export function QueueScreen({
           <tr>
             <th scope="col">Brand</th>
             <th scope="col">Result</th>
-            <th scope="col">Time taken</th>
             <th scope="col">Decision</th>
             <th scope="col">
               <span className="visually-hidden">Open</span>
@@ -125,12 +116,9 @@ export function QueueScreen({
                 <VerdictBadge verdict={row.outcome} small />
               </td>
               <td>
-                <Timing ms={row.processing_ms} />
-              </td>
-              <td>
                 {row.decision ? (
                   <span className="queue__decision">
-                    {row.decision.action[0].toUpperCase() + row.decision.action.slice(1)}d
+                    {DECISION_LABEL[row.decision.action]}
                   </span>
                 ) : (
                   <span className="queue__decision queue__decision--none">

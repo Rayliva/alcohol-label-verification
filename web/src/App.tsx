@@ -53,6 +53,7 @@ export default function App() {
   const [response, setResponse] = useState<VerificationResponse | null>(null);
   const [error, setError] = useState<ErrorBody | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [uploaded, setUploaded] = useState(0);
   const request = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -84,11 +85,18 @@ export default function App() {
   const submit = async () => {
     if (!image) return;
     setError(null);
+    setUploaded(0);
     setStep("processing");
     const controller = new AbortController();
     request.current = controller;
     try {
-      const result = await verifyLabel(image, beverageType, declared, controller.signal);
+      const result = await verifyLabel(
+        image,
+        beverageType,
+        declared,
+        controller.signal,
+        setUploaded,
+      );
       setResponse(result);
       setQueueVersion((version) => version + 1);
       setStep("results");
@@ -111,9 +119,18 @@ export default function App() {
     <>
       <header className="masthead">
         <span className="masthead__name">Label Check</span>
-        <span className="masthead__what">
-          Compares label artwork against the values declared in a COLA application
-        </span>
+        {agent && step !== "input" && step !== "batch" && step !== "processing" ? (
+          <button
+            className="button button--small button--primary"
+            type="button"
+            onClick={() => setStep("input")}
+          >
+            <span className="masthead__plus" aria-hidden="true">
+              +
+            </span>
+            Submit new application
+          </button>
+        ) : null}
         {agent ? (
           <span className="masthead__agent">
             <span className="masthead__who">Signed in as {agent}</span>
@@ -151,7 +168,6 @@ export default function App() {
               setOpenId(id);
               setStep("review");
             }}
-            onUpload={() => setStep("input")}
           />
         ) : null}
 
@@ -186,6 +202,7 @@ export default function App() {
         {step === "processing" ? (
           <ProcessingScreen
             previewUrl={previewUrl}
+            uploaded={uploaded}
             onCancel={() => {
               request.current?.abort();
               setStep("input");

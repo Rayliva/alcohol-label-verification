@@ -92,6 +92,69 @@ class TestMalformedFiles:
         assert "PDF" in raised.value.message or "PDF" in raised.value.what_to_do
 
 
+class TestOversizedPhotographs:
+    """A 22-megapixel phone photo must not cost 9 seconds of image handling."""
+
+    def test_a_photograph_larger_than_any_label_is_resampled_once(self) -> None:
+        from app.pipeline.run import MAX_WORKING_EDGE, _decode
+
+        buffer = BytesIO()
+        Image.new("RGB", (4116, 5556), "white").save(buffer, format="JPEG", quality=92)
+
+        image, ocr_bytes = _decode(buffer.getvalue())
+
+        # Every downstream stage sees the resampled pixels, OCR included: the
+        # bytes handed to the engine are the resampled ones, not the upload.
+        assert max(image.size) == MAX_WORKING_EDGE
+        assert image.size == (1778, 2400)
+        assert Image.open(BytesIO(ocr_bytes)).size == image.size
+        assert len(ocr_bytes) < len(buffer.getvalue())
+
+    @pytest.mark.parametrize("inset", [10, 40, 120])
+    def test_resampling_never_changes_whether_a_label_is_cropped(self, inset: int) -> None:
+        """One photograph, two resolutions, one answer about the frame.
+
+        The border band used to be a fixed 6 px, so it asked a different
+        question at every resolution: 0.15% of a 4116 px frame, 1.1% of a
+        560 px one. Resampling turned that into a live false FAIL, because a
+        border printed 10 px inside a 4116 px frame lands 6 px inside a 2400 px
+        one. The same intact label went from 0.00 border ink to 0.33 and was
+        rejected as running off the edge of the frame, by an artefact of our
+        own resampling and nothing on the label.
+        """
+        from app.pipeline.quality import MAX_BORDER_INK, assess
+        from app.pipeline.run import _decode
+
+        image = Image.new("RGB", (4116, 5556), "white")
+        draw = ImageDraw.Draw(image)
+        draw.rectangle(
+            [inset, inset, 4116 - inset - 1, 5556 - inset - 1], outline="black", width=10
+        )
+        buffer = BytesIO()
+        image.save(buffer, format="JPEG", quality=92)
+
+        native = assess(Image.open(BytesIO(buffer.getvalue())).convert("RGB"))
+        resampled = assess(_decode(buffer.getvalue())[0])
+
+        assert (native.border_ink > MAX_BORDER_INK) == (resampled.border_ink > MAX_BORDER_INK)
+
+    def test_an_image_the_thresholds_were_calibrated_against_is_untouched(self) -> None:
+        # The largest curated label is 2000 px on its long edge. Nothing at or
+        # below the cap may be resampled, or every threshold in quality.py and
+        # warning.py would be measured against pixels it was never calibrated
+        # on.
+        from app.pipeline.run import _decode
+
+        buffer = BytesIO()
+        Image.new("RGB", (1480, 2000), "white").save(buffer, format="PNG")
+        original = buffer.getvalue()
+
+        image, ocr_bytes = _decode(original)
+
+        assert image.size == (1480, 2000)
+        assert ocr_bytes is original
+
+
 class TestPhotographOrientation:
     def test_a_portrait_photo_with_exif_rotation_is_uprighted(self, labels, ocr) -> None:
         # Every phone writes Orientation=6 for a portrait shot. Decoding without
@@ -108,7 +171,7 @@ class TestPhotographOrientation:
         upright.rotate(90, expand=True).save(buffer, format="JPEG", exif=exif, quality=95)
 
         assert Image.open(BytesIO(buffer.getvalue())).size == (1400, 1000)
-        assert _decode(buffer.getvalue()).size == upright.size
+        assert _decode(buffer.getvalue())[0].size == upright.size
 
         result = verify(
             buffer.getvalue(),

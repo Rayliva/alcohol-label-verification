@@ -199,7 +199,7 @@ def _check_bold(layout: LayoutMetrics | None) -> WarningCheck:
             WarningCheckName.BOLD,
             Verdict.NEEDS_REVIEW,
             f"GOVERNMENT WARNING is only {ratio:.2f} times the stroke weight of the "
-            "surrounding text. That is close to the line — look at it.",
+            "surrounding text. That is close to the line, so look at it.",
         )
     return WarningCheck(
         WarningCheckName.BOLD,
@@ -342,7 +342,7 @@ def _check_field_of_vision(layout: LayoutMetrics | None) -> WarningCheck:
         WarningCheckName.FIELD_OF_VISION,
         Verdict.NEEDS_REVIEW,
         f"27 CFR 5.63 requires brand name, class or type, and alcohol content in "
-        f"the same field of vision. This image appears to show {placements} — but "
+        f"the same field of vision. This image appears to show {placements}, but "
         "whether it is one panel or two cannot be told from the picture. Look at "
         "the artwork.",
     )

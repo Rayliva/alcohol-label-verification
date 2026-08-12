@@ -1,5 +1,6 @@
-import type { FieldOutcome, WarningSubCheck } from "../api/types";
+import type { FieldOutcome, Override, WarningSubCheck } from "../api/types";
 import { EvidenceCrop } from "./EvidenceCrop";
+import { FieldDecision } from "./FieldDecision";
 import { VerdictBadge } from "./VerdictBadge";
 
 /**
@@ -7,7 +8,7 @@ import { VerdictBadge } from "./VerdictBadge";
  *
  * It is the only exact-match check in the product and it has six ways to fail,
  * so one badge on one row would hide which rule was broken. The detected text
- * is shown in full with any difference from 27 CFR 16.21 marked inline — not in
+ * is shown in full with any difference from 27 CFR 16.21 marked inline, not in
  * a separate diff view an agent has to open.
  */
 
@@ -33,7 +34,7 @@ export function highlightDifferences(detected: string): { text: string; differs:
   // Both lengths, not just the label's. A warning cut short would otherwise
   // never be compared against the words it is missing, and the screen would
   // say the wording "matches the required text exactly" about a truncated
-  // statement — a false PASS on the one exact check in the product.
+  // statement: a false PASS on the one exact check in the product.
   const length = Math.max(expected.length, actual.length);
   for (let index = 0; index < length; index += 1) {
     const word = index < actual.length ? actual[index] : `[missing: ${expected[index]}]`;
@@ -51,18 +52,32 @@ export function highlightDifferences(detected: string): { text: string; differs:
 export function WarningBlock({
   field,
   checks,
+  reviewer,
+  override,
+  onOverride,
 }: {
   field: FieldOutcome;
   checks: WarningSubCheck[];
+  reviewer: string;
+  override: Override | null;
+  onOverride: (next: Override | null) => void;
 }) {
   const detected = field.detected ?? "";
   const segments = detected ? highlightDifferences(detected) : [];
   const anyDifference = segments.some((segment) => segment.differs);
 
   return (
-    <section className={`card result result--${field.verdict}`} aria-labelledby="warning-heading">
+    <section
+      className={`card result result--${override ? "override" : field.verdict}`}
+      aria-labelledby="warning-heading"
+    >
       <div className="result__head">
         <h3 id="warning-heading">Government warning</h3>
+        {override ? (
+          <span className="agent-mark">
+            You: {override.decision === "accepted" ? "accepted" : "a problem"}
+          </span>
+        ) : null}
         <VerdictBadge verdict={field.verdict} />
       </div>
 
@@ -106,6 +121,17 @@ export function WarningBlock({
           </div>
         ))}
       </div>
+
+      {field.verdict === "pass" ? null : (
+        <FieldDecision
+          fieldKey="government_warning"
+          displayName="the government warning"
+          verdict={field.verdict}
+          reviewer={reviewer}
+          override={override}
+          onOverride={onOverride}
+        />
+      )}
     </section>
   );
 }

@@ -31,7 +31,6 @@ export function EvidenceCrop({
           <p className="crop__empty">Not found anywhere on the label</p>
         )}
       </div>
-      <p className="filename">{src ? `crop · ${fieldName}.png` : "no crop — field not present"}</p>
     </div>
   );
 }

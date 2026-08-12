@@ -29,7 +29,7 @@ class ExtractedFields(BaseModel):
             "The complete bottler, producer or importer statement exactly as printed, "
             "including the introductory phrase. If the label reads 'Distilled and "
             "bottled by Stone's Throw Spirits, Louisville, Kentucky', return that "
-            "whole line — not just the name and address. 27 CFR 5.66 makes the "
+            "whole line, not just the name and address. 27 CFR 5.66 makes the "
             "phrase part of the required statement."
         )
     )

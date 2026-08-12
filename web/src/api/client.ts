@@ -12,7 +12,7 @@ import type {
  *
  * Every failure that leaves this module is an `ErrorBody`: a code, a sentence
  * saying what happened, and a sentence saying what to do next. A screen must
- * never have to render "something went wrong" — that is the message that makes
+ * never have to render "something went wrong", which is the message that makes
  * an agent stop using the tool.
  */
 
@@ -35,24 +35,29 @@ export class ApiError extends Error {
 const UNREACHABLE: ErrorBody = {
   code: "service_unreachable",
   message: "Can't reach the label checking service right now.",
-  what_to_do: "Your entry has been kept — try again in a moment.",
+  what_to_do: "Your entry has been kept. Try again in a moment.",
 };
+
+/** Shape whatever the API said into something a screen can render. */
+function errorFrom(payload: any): ErrorBody {
+  const detail = payload?.detail ?? payload;
+  if (detail && typeof detail.message === "string") {
+    return {
+      code: detail.code ?? "verification_failed",
+      message: detail.message,
+      what_to_do: detail.what_to_do ?? "Try again in a moment.",
+    };
+  }
+  return UNREACHABLE;
+}
 
 async function readError(response: Response): Promise<ErrorBody> {
   try {
-    const payload = await response.json();
-    const detail = payload?.detail ?? payload;
-    if (detail && typeof detail.message === "string") {
-      return {
-        code: detail.code ?? "verification_failed",
-        message: detail.message,
-        what_to_do: detail.what_to_do ?? "Try again in a moment.",
-      };
-    }
+    return errorFrom(await response.json());
   } catch {
-    // Fall through to the generic-but-actionable message below.
+    // Fall through to the generic-but-actionable message.
+    return UNREACHABLE;
   }
-  return UNREACHABLE;
 }
 
 export async function fetchBeverageTypes(): Promise<BeverageTypeOption[]> {
@@ -61,11 +66,22 @@ export async function fetchBeverageTypes(): Promise<BeverageTypeOption[]> {
   return response.json();
 }
 
-export async function verifyLabel(
+/**
+ * Check one label.
+ *
+ * XMLHttpRequest rather than fetch, for one reason: it reports how much of the
+ * image has actually gone up. The progress screen used to move through named
+ * stages on a timer, so "checking each field" was always the stage on screen
+ * when the wait got long, whether or not anything was being checked. Real
+ * upload progress is the one part of the wait a browser can honestly measure,
+ * so it is the only part the screen now claims to know.
+ */
+export function verifyLabel(
   image: File,
   beverageType: string,
   declared: DeclaredFields,
   signal?: AbortSignal,
+  onUploaded?: (fraction: number) => void,
 ): Promise<VerificationResponse> {
   const form = new FormData();
   form.append("image", image);
@@ -74,21 +90,50 @@ export async function verifyLabel(
     if (value) form.append(name, value);
   }
 
-  let response: Response;
-  try {
-    response = await fetch(`${BASE}/api/verify`, {
-      method: "POST",
-      body: form,
-      signal,
-      ...CREDENTIALED,
-    });
-  } catch (cause) {
-    if (cause instanceof DOMException && cause.name === "AbortError") throw cause;
-    throw new ApiError(UNREACHABLE);
-  }
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException("Aborted", "AbortError"));
+      return;
+    }
+    const request = new XMLHttpRequest();
+    request.open("POST", `${BASE}/api/verify`);
+    request.withCredentials = true;
 
-  if (!response.ok) throw new ApiError(await readError(response));
-  return response.json();
+    const abort = () => request.abort();
+    signal?.addEventListener("abort", abort);
+    const done = () => signal?.removeEventListener("abort", abort);
+
+    request.upload.onprogress = (event) => {
+      if (event.lengthComputable && onUploaded) onUploaded(event.loaded / event.total);
+    };
+    request.upload.onload = () => onUploaded?.(1);
+
+    request.onload = () => {
+      done();
+      let payload: unknown;
+      try {
+        payload = JSON.parse(request.responseText);
+      } catch {
+        reject(new ApiError(UNREACHABLE));
+        return;
+      }
+      if (request.status >= 200 && request.status < 300) {
+        resolve(payload as VerificationResponse);
+        return;
+      }
+      reject(new ApiError(errorFrom(payload)));
+    };
+    request.onerror = () => {
+      done();
+      reject(new ApiError(UNREACHABLE));
+    };
+    request.onabort = () => {
+      done();
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+
+    request.send(form);
+  });
 }
 
 

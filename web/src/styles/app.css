@@ -82,7 +82,7 @@ a:hover {
 /* Layout ----------------------------------------------------------------- */
 
 .page {
-  padding: 32px 40px 96px;
+  padding: 22px 32px 56px;
   max-width: 1840px;
   margin: 0 auto;
 }
@@ -90,32 +90,37 @@ a:hover {
 .masthead {
   background: var(--surface);
   border-bottom: 2px solid var(--border);
-  padding: 18px 40px;
+  padding: 14px 32px;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 16px;
 }
 
+/* The spacer lives on the wordmark, not on either thing to its right. Both of
+   those come and go with the screen, and a margin-left:auto that disappears
+   takes the right-hand alignment with it. */
 .masthead__name {
   font-size: var(--size-h3);
   font-weight: 700;
+  margin-right: auto;
 }
 
-.masthead__what {
-  font-size: var(--size-help);
-  color: var(--ink-secondary);
+.masthead__plus {
+  font-size: 22px;
+  font-weight: 700;
+  margin-right: 8px;
 }
 
 .card {
   background: var(--surface);
   border: 2px solid var(--border);
   border-radius: var(--radius-card);
-  padding: 26px 28px;
+  padding: 18px 20px;
 }
 
 .stack {
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
 .two-column {
@@ -209,6 +214,14 @@ a:hover {
 .field__note {
   font-weight: 400;
   color: var(--ink-secondary);
+}
+
+/* Constraint 5: the asterisk is never the only signal. Every required field is
+   also named in the blocked line above the button, and screen readers get the
+   word "required" beside it. */
+.field__required {
+  color: var(--fail-text);
+  font-weight: 700;
 }
 
 .input,
@@ -432,8 +445,9 @@ a:hover {
 .result__head {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .result__head h3 {
@@ -442,8 +456,8 @@ a:hover {
 
 .result__values {
   display: grid;
-  grid-template-columns: 1fr 1fr 340px;
-  gap: 24px;
+  grid-template-columns: 1fr 1fr 300px;
+  gap: 18px;
 }
 
 @media (max-width: 1180px) {
@@ -455,14 +469,14 @@ a:hover {
 .result__divider {
   border: 0;
   border-top: 2px solid var(--divider);
-  margin: 20px 0;
+  margin: 12px 0;
 }
 
 .crop {
   background: var(--inset);
   border: 2px solid var(--border);
   border-radius: var(--radius-control);
-  height: 110px;
+  height: 92px;
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -475,7 +489,7 @@ a:hover {
 }
 
 .crop--tall {
-  height: 200px;
+  height: 170px;
 }
 
 .crop__empty {
@@ -485,47 +499,90 @@ a:hover {
   text-align: center;
 }
 
-.confidence {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* The agent's call on a flagged field ------------------------------------ */
+
+.results-grid {
+  display: grid;
+  gap: 14px;
+}
+
+@media (min-width: 1500px) {
+  .results-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.result__reason {
+  margin: 10px 0 0;
+}
+
+.result__meta {
   font-size: var(--size-help);
-  margin-top: 10px;
+  color: var(--ink-secondary);
+  margin: 6px 0 0;
 }
 
-.confidence__track {
-  width: 160px;
-  height: 12px;
-  background: #e6e1d7;
-  border: 2px solid var(--border);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.confidence__fill {
-  height: 100%;
-  background: var(--ink-quiet);
-}
-
-.override-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-}
-
-.override-controls .input {
-  flex: 1;
-  min-width: 320px;
-  margin-top: 0;
-}
-
-.override-panel {
+.agent-mark {
+  font-size: var(--size-micro);
+  font-weight: 700;
+  color: var(--override-text);
   background: var(--override-tint);
   border: 2px solid var(--override-border);
   border-radius: var(--radius-control);
-  padding: 16px 18px;
-  margin-bottom: 16px;
+  padding: 2px 8px;
+}
+
+.decision {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 2px solid var(--divider);
+}
+
+.decision__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.decision__ask {
+  font-size: var(--size-help);
+  font-weight: 600;
+}
+
+.decision__controls .input {
+  flex: 1;
+  min-width: 220px;
+  margin-top: 0;
+}
+
+.decision__made {
+  margin: 8px 0 0;
+  font-size: var(--size-help);
+  font-weight: 600;
+}
+
+.decision__made .help {
+  display: block;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.decision__hint {
+  margin-top: 8px;
+}
+
+/* Constraint 1 still holds: 44px is the floor, and these clear it. */
+.button--small {
+  min-height: 44px;
+  font-size: var(--size-help);
+  padding: 8px 16px;
+}
+
+.input--small {
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: var(--size-help);
 }
 
 /* Warning block ---------------------------------------------------------- */
@@ -695,7 +752,7 @@ a:hover {
 /* --- The review queue -------------------------------------------------- */
 /* A table, because this is tabular data and an agent scanning for the next
    thing to do reads rows faster than cards. Every target clears 44px and no
-   meaning is carried by colour alone — the verdict badge already spells it. */
+   meaning is carried by colour alone: the verdict badge already spells it. */
 
 .card--narrow {
   max-width: 30rem;
@@ -741,7 +798,7 @@ a:hover {
   color: var(--ink);
 }
 
-/* Decided rows stay legible rather than being greyed into unreadability —
+/* Decided rows stay legible rather than being greyed into unreadability,
    "done" is not "unimportant", and low-contrast text fails the bar outright. */
 .queue__row--decided .queue__brand {
   font-weight: 500;
@@ -754,11 +811,6 @@ a:hover {
   color: var(--ink-quiet);
 }
 
-.queue__timing {
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-secondary);
-  white-space: nowrap;
-}
 
 .queue__decision {
   color: var(--ink-secondary);
@@ -773,6 +825,8 @@ a:hover {
 .review__artwork {
   display: block;
   max-width: 100%;
+  max-height: 340px;
+  width: auto;
   height: auto;
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -785,17 +839,9 @@ a:hover {
   margin-top: 8px;
 }
 
-.review__action {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-width: 15rem;
-}
-
 /* --- Who is signed in --------------------------------------------------- */
 
 .masthead__agent {
-  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 14px;

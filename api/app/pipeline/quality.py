@@ -67,7 +67,20 @@ MIN_MEAN_LUMINANCE = 30.0
 MIN_CONTRAST = 10.0
 
 # Ink running off the edge of the frame means content was cut off.
-BORDER_BAND_PX = 6
+#
+# The band is a fraction of the long edge, not a pixel count. "At the very edge
+# of the frame" is a question about proportion, and a fixed 6 px band answered
+# it differently at every resolution: on a 4116 px photograph 6 px is 0.15% of
+# the frame, and on a 560 px one it is 1.1%. That became a live false FAIL once
+# oversized photographs were resampled, because a border printed 10 px inside a
+# 4116 px frame lands 6 px inside a 2400 px one, and the same intact label went
+# from 0.00 to 0.33 border ink and was rejected as cropped.
+#
+# 0.006 reproduces the old 6 px at the ~1000 px the corpus renders at. Measured
+# across all 95 curated and sample labels on 2026-08-11: identical outcomes,
+# same two images over the threshold, no verdict moved.
+BORDER_BAND_FRACTION = 0.006
+MIN_BORDER_BAND_PX = 2
 MAX_BORDER_INK = 0.05
 
 # OCR that comes back this unsure has not read the label.
@@ -99,7 +112,7 @@ def _border_ink_fraction(grey: Image.Image) -> float:
     means the frame cut through the label.
     """
     width, height = grey.size
-    band = BORDER_BAND_PX
+    band = max(MIN_BORDER_BAND_PX, round(max(width, height) * BORDER_BAND_FRACTION))
     edges = [
         grey.crop((0, 0, width, band)),
         grey.crop((0, height - band, width, height)),

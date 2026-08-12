@@ -211,7 +211,7 @@ def health() -> dict[str, Any]:
         notes.append(
             f"Prompt caching is inactive: the system prompt is below "
             f"{settings.extraction_model}'s minimum cacheable prefix. Known and accepted "
-            f"— see README > Measured results. Costs a little per request, changes no behaviour."
+            f"See README > Measured results. Costs a little per request, changes no behaviour."
         )
     if _readiness["ocr"] == "fake":
         notes.append(

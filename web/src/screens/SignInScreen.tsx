@@ -5,7 +5,7 @@ import { ApiError, signIn } from "../api/client";
 /**
  * The gate on a public URL.
  *
- * Not an identity system — one shared credential, no accounts, no reset — and
+ * Not an identity system. One shared credential, no accounts, no reset, and
  * the copy says so rather than implying a password anyone could recover. The
  * credential is delivered out of band; nothing on this page hints at it, which
  * would defeat the point of having it.

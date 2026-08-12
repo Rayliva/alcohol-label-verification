@@ -249,31 +249,45 @@ describe("Problems first", () => {
 });
 
 describe("Override — the tool advises, the agent decides", () => {
-  it("offers accept and reject on every field", () => {
+  it("asks only about the fields it flagged", () => {
     render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
+    // One FAIL, one NEEDS_REVIEW, and the government warning. The passing
+    // field is not asked about: there is nothing to disagree with.
     expect(screen.getAllByRole("button", { name: /accept this field/i }).length).toBe(3);
-    expect(screen.getAllByRole("button", { name: /reject this field/i }).length).toBe(3);
+    expect(screen.getAllByRole("button", { name: /it is a problem/i }).length).toBe(3);
+
+    const passing = screen.getByRole("region", { name: /brand name/i });
+    expect(within(passing).queryByRole("button", { name: /accept this field/i })).toBeNull();
   });
 
-  it("keeps the original verdict on the record after an override", async () => {
+  it("keeps the tool's verdict visible after the agent accepts a field", async () => {
     const user = userEvent.setup();
     render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
 
     const card = screen.getByRole("region", { name: /net contents/i });
     await user.click(within(card).getByRole("button", { name: /accept this field/i }));
 
-    expect(within(card).getByText(/agent decision: accepted/i)).toBeInTheDocument();
-    expect(within(card).getByText(/kept on the record alongside your decision/i)).toBeInTheDocument();
+    expect(within(card).getByText(/you: accepted/i)).toBeInTheDocument();
+    expect(within(card).getByText(/stays on the export beside your decision/i)).toBeInTheDocument();
     // The tool's own verdict is still shown, not replaced.
     expect(within(card).getAllByText("Fail").length).toBeGreaterThan(0);
   });
 
-  it("attributes the decision when a name was given", async () => {
+  it("says where the decision goes rather than claiming it is stored", async () => {
     const user = userEvent.setup();
     render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
     const card = screen.getByRole("region", { name: /net contents/i });
     await user.click(within(card).getByRole("button", { name: /accept this field/i }));
-    expect(within(card).getByText(/by R\. Delgado/)).toBeInTheDocument();
+    expect(within(card).getByText(/R\. Delgado/)).toBeInTheDocument();
+    expect(within(card).getByText(/nothing is stored after this session/i)).toBeInTheDocument();
+  });
+
+  it("lets the agent disagree with the government warning too", async () => {
+    const user = userEvent.setup();
+    render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
+    const block = screen.getByRole("region", { name: /government warning/i });
+    await user.click(within(block).getByRole("button", { name: /accept this field/i }));
+    expect(within(block).getByText(/you: accepted/i)).toBeInTheDocument();
   });
 });
 

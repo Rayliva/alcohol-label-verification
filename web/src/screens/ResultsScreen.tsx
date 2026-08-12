@@ -6,7 +6,7 @@ import { verdictGlyph } from "../components/VerdictBadge";
 import { WarningBlock } from "../components/WarningBlock";
 
 /**
- * Screen 3 — the field-by-field result.
+ * Screen 3: the field-by-field result.
  *
  * Sorted problems first. An agent should never hunt for the failure; that is a
  * stated requirement, not a preference.
@@ -42,10 +42,16 @@ export function ResultsScreen({
   response,
   reviewer,
   onCheckAnother,
+  /** True when this sits inside the review screen, which owns the page's one
+   * dominant action and its own back button. It also means the verdict was
+   * read back from a recording, so the elapsed time belongs to the machine
+   * that recorded it rather than to anything the agent just waited for. */
+  embedded = false,
 }: {
   response: VerificationResponse;
   reviewer: string;
   onCheckAnother: () => void;
+  embedded?: boolean;
 }) {
   const [overrides, setOverrides] = useState<Record<string, Override>>({});
 
@@ -87,7 +93,8 @@ export function ResultsScreen({
           )}
           <p className="summary__meta">
             {response.label_id ? `Application ${response.label_id} · ` : ""}
-            {response.beverage_type} · read in {seconds} seconds
+            {response.beverage_type}
+            {embedded ? "" : ` · read in ${seconds} seconds`}
             {reviewer ? ` · reviewed by ${reviewer}` : ""}
           </p>
         </div>
@@ -95,9 +102,11 @@ export function ResultsScreen({
           <button type="button" className="button" onClick={download}>
             Export results (CSV)
           </button>
-          <button type="button" className="button button--primary" onClick={onCheckAnother}>
-            Check another label
-          </button>
+          {embedded ? null : (
+            <button type="button" className="button button--primary" onClick={onCheckAnother}>
+              Back to the queue
+            </button>
+          )}
         </div>
       </section>
 
@@ -108,6 +117,7 @@ export function ResultsScreen({
         </section>
       ) : null}
 
+      <div className="results-grid">
       {ordered.map((field) => (
         <FieldResultCard
           key={field.field}
@@ -124,8 +134,24 @@ export function ResultsScreen({
           }
         />
       ))}
+      </div>
 
-      {warning ? <WarningBlock field={warning} checks={response.warning_checks} /> : null}
+      {warning ? (
+        <WarningBlock
+          field={warning}
+          checks={response.warning_checks}
+          reviewer={reviewer}
+          override={overrides.government_warning ?? null}
+          onOverride={(next) =>
+            setOverrides((current) => {
+              const copy = { ...current };
+              if (next) copy.government_warning = next;
+              else delete copy.government_warning;
+              return copy;
+            })
+          }
+        />
+      ) : null}
     </div>
   );
 }

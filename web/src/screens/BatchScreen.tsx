@@ -14,7 +14,7 @@ import type { ErrorBody, Outcome } from "../api/types";
 import { VerdictBadge } from "../components/VerdictBadge";
 
 /**
- * Screens 4-6 — upload, progress, results table.
+ * Screens 4-6: upload, progress, results table.
  *
  * Peak season sends 200-300 applications at once. Three things make that
  * survivable and all three are non-negotiable: every mismatch is named before
@@ -73,7 +73,7 @@ export function BatchScreen({ onSingle }: { onSingle: () => void }) {
       .catch((cause) => {
         if (cancelled) return;
         // A rejected manifest must not leave the previous summary on screen
-        // with its button still armed — it would submit the file that was
+        // with its button still armed, and it would submit the file that was
         // just refused.
         setReport(null);
         setError(cause instanceof ApiError ? cause.body : null);
@@ -343,13 +343,13 @@ export function BatchScreen({ onSingle }: { onSingle: () => void }) {
                     <td className="mono" style={{ padding: "12px 8px" }}>
                       {rowResult.application_id}
                     </td>
-                    <td style={{ padding: "12px 8px" }}>{rowResult.brand_name ?? "—"}</td>
+                    <td style={{ padding: "12px 8px" }}>{rowResult.brand_name ?? "not read"}</td>
                     <td style={{ padding: "12px 8px" }}>
-                      {rowResult.issues ? `${rowResult.issues} issues` : "—"}
+                      {rowResult.issues ? `${rowResult.issues} issues` : "none"}
                     </td>
                     <td className="filename" style={{ padding: "12px 8px" }}>
                       {rowResult.image}
-                      {rowResult.error ? ` — ${rowResult.error.message}` : ""}
+                      {rowResult.error ? `. ${rowResult.error.message}` : ""}
                     </td>
                   </tr>
                 ))}

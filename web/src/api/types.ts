@@ -24,7 +24,7 @@ export interface FieldOutcome {
   verdict: Verdict;
   confidence: number;
   reason: string;
-  /** Null when the field is not on the label — there is no region to crop. */
+  /** Null when the field is not on the label, so there is no region to crop. */
   crop_url: string | null;
   citation: string | null;
 }
@@ -92,7 +92,7 @@ export interface QueueRow {
   outcome: "pass" | "needs_review" | "fail" | "unreadable";
   processing_ms: number | null;
   source: "seeded" | "uploaded";
-  decision: { action: string; note: string; decided_by: string } | null;
+  decision: { action: "approve" | "reject" | "override"; note: string; decided_by: string } | null;
 }
 
 export interface QueueListing {

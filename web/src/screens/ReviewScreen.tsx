@@ -8,21 +8,18 @@ import { ResultsScreen } from "./ResultsScreen";
  * One application, opened from the queue.
  *
  * The verdict was computed before the agent arrived, so nothing is recomputed
- * here — the same results screen an upload produces, with the artwork and a
+ * here. It is the same results screen an upload produces, with the artwork and a
  * decision beside it.
  */
 
 type Action = "approve" | "reject" | "override";
 
-const ACTIONS: { action: Action; label: string; hint: string }[] = [
-  { action: "approve", label: "Approve", hint: "The label matches the application." },
-  { action: "reject", label: "Reject", hint: "Send this back to the applicant." },
-  {
-    action: "override",
-    label: "Approve with a note",
-    hint: "The tool flagged something you have judged acceptable.",
-  },
-];
+/** How a recorded decision reads back. "Overrided" is not a word. */
+export const DECISION_LABEL: Record<Action, string> = {
+  approve: "Approved",
+  reject: "Rejected",
+  override: "Approved over the flags",
+};
 
 export function ReviewScreen({
   id,
@@ -88,6 +85,8 @@ export function ReviewScreen({
     );
   }
 
+  const flagged = item.outcome !== "pass";
+
   return (
     <>
       <button className="button button--quiet" type="button" onClick={onBack}>
@@ -117,6 +116,7 @@ export function ReviewScreen({
           response={item.result}
           reviewer={item.decision?.decided_by ?? ""}
           onCheckAnother={onBack}
+          embedded
         />
       ) : null}
 
@@ -124,7 +124,7 @@ export function ReviewScreen({
         <h2>Your decision</h2>
         {item.decision ? (
           <p className="help">
-            Already {item.decision.action}d by {item.decision.decided_by}.
+            {DECISION_LABEL[item.decision.action]} by {item.decision.decided_by}.
             {item.decision.note ? ` Note: ${item.decision.note}` : ""}
           </p>
         ) : (
@@ -133,30 +133,42 @@ export function ReviewScreen({
               <span className="field__label">Note (optional)</span>
               <textarea
                 className="textarea"
-                rows={3}
+                rows={2}
                 value={note}
                 onChange={(event) => setNote(event.target.value)}
               />
               <span className="help">
-                Anything the next person reading this application should know.
+                Anything the next person reading this application should know. It
+                is saved with whichever button you press below, and only then.
               </span>
             </label>
+            {flagged ? (
+              <p className="help">
+                The tool flagged this label, so approving it is recorded as an
+                approval over the flags.
+              </p>
+            ) : null}
             <div className="review__actions">
-              {ACTIONS.map(({ action, label, hint }) => (
-                <div key={action} className="review__action">
-                  <button
-                    className={`button${action === "approve" ? " button--primary" : ""}`}
-                    type="button"
-                    disabled={saving !== null}
-                    onClick={() => decide(action)}
-                  >
-                    {saving === action ? "Saving…" : label}
-                  </button>
-                  <span className="help">{hint}</span>
-                </div>
-              ))}
+              <button
+                className="button button--primary"
+                type="button"
+                disabled={saving !== null}
+                onClick={() => decide(flagged ? "override" : "approve")}
+              >
+                {saving === "approve" || saving === "override"
+                  ? "Saving…"
+                  : "Approve this application"}
+              </button>
+              <button
+                className="button button--danger"
+                type="button"
+                disabled={saving !== null}
+                onClick={() => decide("reject")}
+              >
+                {saving === "reject" ? "Saving…" : "Reject this application"}
+              </button>
             </div>
-            <p className="help" style={{ marginTop: 16 }}>
+            <p className="help" style={{ marginTop: 12 }}>
               Decisions are kept for this session only. Nothing about an
               application is stored, so a restart clears them.
             </p>
