@@ -17,10 +17,14 @@ body {
   line-height: 1.5;
 }
 
-/* Constraint 6: every focusable thing shows where focus is. Never remove. */
+/* Constraint 6: every focusable thing shows where focus is. Never remove.
+   The white ring under the dark outline is what keeps the pair visible on
+   any surface, including the navy masthead where a dark outline alone would
+   vanish (1.1:1) — white-on-navy is 10.7:1 and the outline sits on the white. */
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--surface);
 }
 
 h1 {
@@ -88,25 +92,65 @@ a:hover {
 }
 
 .masthead {
-  background: var(--surface);
-  border-bottom: 2px solid var(--border);
-  padding: 14px 32px;
+  background: var(--primary);
+  border-bottom: 4px solid var(--accent);
+  padding: 12px 32px;
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+/* Everything in the navy bar reads white; the buttons invert. White on
+   #1b3e6e is 10.7:1. */
+.masthead .button--primary {
+  background: var(--surface);
+  color: var(--primary);
+  border-color: var(--surface);
+}
+
+.masthead .button--quiet {
+  color: var(--surface);
+}
+
+.masthead__who {
+  color: #d5deeb;
 }
 
 /* The asset is seal + wordmark, 262 units wide with the round seal in the
    left 64. The wordmark half renders illegibly at these sizes and its width is
    what pushed the product name a hand's width away from the mark, so a square
    window over the left edge shows the seal alone. */
+.signin {
+  margin: 9vh auto 0;
+}
+
 .signin__logo {
-  height: 52px;
-  width: 52px;
+  height: 104px;
+  width: 104px;
   object-fit: cover;
   object-position: left center;
   display: block;
-  margin-bottom: 20px;
+  margin: 0 auto 18px;
+}
+
+.signin__title {
+  text-align: center;
+}
+
+.signin__subtitle {
+  text-align: center;
+  color: var(--ink-secondary);
+  margin: 6px 0 22px;
+}
+
+.signin__submit {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.signin__submit .button {
+  min-width: 220px;
 }
 
 .masthead__logo {
@@ -127,6 +171,7 @@ a:hover {
   font-size: var(--size-h3);
   font-weight: 700;
   margin-right: auto;
+  color: var(--surface);
 }
 
 .masthead__plus {
@@ -170,15 +215,20 @@ a:hover {
   font-size: 20px;
   font-weight: 700;
   border-radius: var(--radius-control);
-  border: 2px solid var(--ink);
+  border: 2px solid var(--primary);
   background: var(--surface);
-  color: var(--ink);
+  color: var(--primary);
   cursor: pointer;
 }
 
 .button--primary {
-  background: var(--ink);
+  background: var(--primary);
+  border-color: var(--primary);
   color: var(--surface);
+}
+
+.button--primary:hover:not(:disabled) {
+  background: var(--primary-dark);
 }
 
 .button--danger {
@@ -193,7 +243,7 @@ a:hover {
 
 .button--primary[aria-pressed="true"],
 .button[aria-pressed="true"] {
-  background: var(--ink);
+  background: var(--primary);
   color: var(--surface);
 }
 
@@ -301,7 +351,7 @@ a:hover {
   height: 200px;
   object-fit: contain;
   border: 2px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--radius-control);
   background: var(--inset);
 }
 
@@ -514,6 +564,13 @@ a:hover {
   }
 }
 
+.result__verdict {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
 .result__why {
   font-weight: 600;
 }
@@ -718,7 +775,7 @@ a:hover {
   max-width: 520px;
   background: var(--surface);
   border: 2px solid var(--border);
-  border-radius: 2px;
+  border-radius: var(--radius-control);
   overflow: hidden;
 }
 
@@ -841,7 +898,7 @@ a:hover {
   width: auto;
   height: auto;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
 }
 
 .review__actions {
@@ -860,7 +917,6 @@ a:hover {
 }
 
 .masthead__who {
-  color: var(--ink-secondary);
   font-size: 0.9375rem;
 }
 

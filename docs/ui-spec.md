@@ -428,3 +428,21 @@ All decided by the product owner in review of the running app.
 9. **Bottler address help corrected.** 27 CFR 5.66 requires city and State,
    not a street address (verified against Cornell LII, 2026-08-11, recorded in
    .claude/rules/verify-regulations.md).
+
+### Session 6 amendments (2026-08-11, still later)
+
+- **Item 5 is reversed.** A passing field carries no controls at all. The
+  recorded way to disagree with a clean label is the application-level Reject
+  on the review screen, which exists whatever the verdicts were. The per-field
+  "Flag as a problem" lived for about an hour.
+- **The verdict badge and its "Why?" disclosure move below the evidence**, so
+  what the disclosure expands is visibly attached to the verdict it explains.
+- **The sign-in page is the card alone.** No masthead, no product description,
+  no mention that the account is shared (which helped exactly the person the
+  gate keeps out). Seal enlarged and centred, title centred, button centred.
+- **Government restyle.** Flat grey surfaces, square corners, navy masthead
+  with a gold rule (both colours from the seal), USWDS link blue, buttons
+  outlined or filled navy. Public Sans stays: it is the USWDS face. Every
+  contrast ratio re-checked against the accessibility rules; the token file
+  carries the measured values. This supersedes the design handoff's warm
+  palette, which the owner judged too modern for the audience.

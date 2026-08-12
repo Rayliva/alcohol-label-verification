@@ -1,11 +1,13 @@
 import type { Override, Verdict } from "../api/types";
 
 /**
- * The agent's call on one field.
+ * The agent's call on one flagged field.
  *
- * On a flagged field the question is "do you agree?", with both answers
- * offered. On a passing field the only meaningful action is disagreement, so
- * that is the only control: flag it as a problem the tool missed.
+ * Only flagged fields get this. A field the tool passed has nothing to
+ * disagree with here; when an agent believes a passing application is wrong
+ * anyway, the application-level Reject on the review screen is the recorded
+ * disagreement (decided 2026-08-11, superseding the short-lived per-field
+ * flag).
  *
  * What it does is stated on the control itself. These decisions travel with
  * the CSV export and nowhere else: nothing about an application is stored
@@ -39,33 +41,27 @@ export function FieldDecision({
     });
   };
 
-  const passed = verdict === "pass";
-
   return (
     <div className="decision">
       <div className="decision__controls">
         <span className="decision__ask">
-          {passed
-            ? "Spotted a problem the tool missed?"
-            : `The tool flagged this as ${verdict.replace("_", " ")}. Do you agree?`}
+          The tool flagged this as {verdict.replace("_", " ")}. Do you agree?
         </span>
-        {passed ? null : (
-          <button
-            type="button"
-            className="button button--small"
-            aria-pressed={override?.decision === "accepted"}
-            onClick={() => decide("accepted")}
-          >
-            No, accept this field
-          </button>
-        )}
+        <button
+          type="button"
+          className="button button--small"
+          aria-pressed={override?.decision === "accepted"}
+          onClick={() => decide("accepted")}
+        >
+          No, accept this field
+        </button>
         <button
           type="button"
           className="button button--small button--danger"
           aria-pressed={override?.decision === "rejected"}
           onClick={() => decide("rejected")}
         >
-          {passed ? "Flag as a problem" : "Yes, it is a problem"}
+          Yes, it is a problem
         </button>
         <label className="visually-hidden" htmlFor={`note-${fieldKey}`}>
           Note about {displayName}, optional
@@ -85,7 +81,7 @@ export function FieldDecision({
         <p className="decision__made">
           {override.decision === "accepted"
             ? "Accepted by you. The tool's verdict stays on the export beside your decision."
-            : "Flagged as a problem by you. The tool's verdict stays on the export beside your decision."}{" "}
+            : "Confirmed as a problem by you."}{" "}
           <span className="help">
             {reviewer ? `${reviewer}, ` : ""}
             {override.at}. Goes into the CSV export; nothing is stored after this session.
@@ -93,9 +89,7 @@ export function FieldDecision({
         </p>
       ) : (
         <p className="help decision__hint">
-          {passed
-            ? "Flagging enables the note. Both go into the CSV export."
-            : "Pick one to enable the note. Both go into the CSV export."}
+          Pick one to enable the note. Both go into the CSV export.
         </p>
       )}
     </div>

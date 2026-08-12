@@ -244,7 +244,7 @@ describe("Override — the tool advises, the agent decides", () => {
     await user.click(within(card).getByRole("button", { name: /why/i }));
   };
 
-  it("asks agreement on flagged fields and offers only a flag on passing ones", async () => {
+  it("asks agreement on flagged fields and asks nothing on passing ones", async () => {
     const user = userEvent.setup();
     render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
 
@@ -253,10 +253,14 @@ describe("Override — the tool advises, the agent decides", () => {
     expect(within(flagged).getByRole("button", { name: /accept this field/i })).toBeInTheDocument();
     expect(within(flagged).getByRole("button", { name: /it is a problem/i })).toBeInTheDocument();
 
+    // A passing field explains itself but carries no decision controls: the
+    // recorded disagreement with a clean label is the application-level
+    // Reject on the review screen (decided 2026-08-11).
     const passing = screen.getByRole("region", { name: /brand name/i });
     await openWhy(user, passing);
+    expect(within(passing).getByText(/matches once formatting differences/i)).toBeInTheDocument();
     expect(within(passing).queryByRole("button", { name: /accept this field/i })).toBeNull();
-    expect(within(passing).getByRole("button", { name: /flag as a problem/i })).toBeInTheDocument();
+    expect(within(passing).queryByRole("button", { name: /flag as a problem/i })).toBeNull();
   });
 
   it("keeps the tool's verdict visible after the agent accepts a field", async () => {
@@ -283,15 +287,6 @@ describe("Override — the tool advises, the agent decides", () => {
     expect(within(card).getByText(/nothing is stored after this session/i)).toBeInTheDocument();
   });
 
-  it("lets the agent flag a passing field the tool missed", async () => {
-    const user = userEvent.setup();
-    render(<ResultsScreen response={RESPONSE} reviewer="R. Delgado" onCheckAnother={vi.fn()} />);
-    const passing = screen.getByRole("region", { name: /brand name/i });
-    await openWhy(user, passing);
-    await user.click(within(passing).getByRole("button", { name: /flag as a problem/i }));
-    expect(within(passing).getByText(/you: a problem/i)).toBeInTheDocument();
-    expect(within(passing).getByText(/flagged as a problem by you/i)).toBeInTheDocument();
-  });
 
   it("lets the agent disagree with the government warning too", async () => {
     const user = userEvent.setup();

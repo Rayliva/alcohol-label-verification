@@ -122,14 +122,16 @@ export function WarningBlock({
         ))}
       </div>
 
-      <FieldDecision
-        fieldKey="government_warning"
-        displayName="the government warning"
-        verdict={field.verdict}
-        reviewer={reviewer}
-        override={override}
-        onOverride={onOverride}
-      />
+      {field.verdict === "pass" ? null : (
+        <FieldDecision
+          fieldKey="government_warning"
+          displayName="the government warning"
+          verdict={field.verdict}
+          reviewer={reviewer}
+          override={override}
+          onOverride={onOverride}
+        />
+      )}
     </section>
   );
 }

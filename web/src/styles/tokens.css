@@ -1,35 +1,50 @@
-/* Design tokens. See docs/design/design_handoff_label_check/README.md
+/* Design tokens.
  *
- * Every value here is specified in the handoff and every contrast ratio was
- * measured there, not asserted. Do not substitute a lighter grey or a smaller
- * size: the nine constraints in .claude/rules/accessibility.md are acceptance
- * criteria, and half this team is over 50.
+ * Restyled 2026-08-11 at the product owner's request to read as a traditional
+ * government site rather than the warm palette in the original handoff
+ * (docs/design/design_handoff_label_check/README.md, superseded — see
+ * docs/ui-spec.md, Session 6). The values lean on the U.S. Web Design System:
+ * flat surfaces, square corners, a navy masthead, USWDS link blue. Public Sans
+ * is USWDS's own face and was already here.
+ *
+ * Every contrast ratio still clears the bars in
+ * .claude/rules/accessibility.md: 4.5:1 body text, 3:1 borders. Do not
+ * substitute a lighter grey or a smaller size; half this team is over 50.
  */
 
 :root {
-  /* Surfaces */
-  --page: #f2f0ec;
+  /* Surfaces. Flat greys, no warm cast. */
+  --page: #f0f0f0;
   --surface: #ffffff;
-  --inset: #efebe2;
-  --zebra: #f7f5f1;
-  --zebra-soft: #fbfaf8;
+  --inset: #f0f0f0;
+  --zebra: #f5f5f5;
+  --zebra-soft: #fafafa;
 
-  /* Text. Every one of these clears AA on white */
-  --ink: #1a1917; /* 16.9:1 */
-  --ink-secondary: #3a3833; /* 11.1:1 */
-  --ink-quiet: #4a4843; /* 8.7:1, the lightest grey used anywhere */
+  /* Text. Every one of these clears AA on white. */
+  --ink: #1b1b1b; /* 17.2:1 */
+  --ink-secondary: #3d4551; /* 9.7:1 */
+  --ink-quiet: #565c65; /* 6.7:1, the lightest grey used anywhere */
 
   /* Structure. Borders are 2px, not 1px: 1px at this value is too faint at
      agency monitor distances. */
-  --border: #8c877c; /* 3.2:1, clears AA for UI borders */
-  --divider: #ddd9d0; /* decorative only, never carries meaning */
+  --border: #71767a; /* 4.6:1, clears AA for UI borders */
+  --divider: #dfe1e2; /* decorative only, never carries meaning */
 
-  --link: #1a4c8b; /* 8.0:1 */
-  --link-hover: #0f3363;
-  --focus: #1a4c8b;
+  /* The institutional colours. Navy from the TTB seal; link blue from USWDS. */
+  --primary: #1b3e6e; /* 10.7:1 on white */
+  --primary-dark: #122c50;
+  --accent: #e7d568; /* the seal's gold; decorative only */
+  --link: #005ea2; /* 6.7:1 */
+  --link-hover: #1a4480;
+  /* USWDS's light focus blue (#2491ff) reads 2.8:1 against the grey page and
+     tints, under the 3:1 bar for a visible indicator, so link-hover blue is
+     used instead: 9.6:1 on white, 8.3:1 on the deepest tint. On the navy
+     masthead it would vanish, so focus there pairs it with a white underlay
+     (see :focus-visible in app.css). All measured, not quoted. */
+  --focus: #1a4480;
 
   /* Verdicts. Each is a triple, and each is always rendered with a glyph and a
-     word beside it. Colour alone fails colourblind agents and printed pages. */
+     word beside it — colour alone fails colourblind agents and printed pages. */
   --pass-text: #22463c;
   --pass-border: #2f5d50;
   --pass-tint: #eaf0ec;
@@ -46,7 +61,7 @@
   --override-border: #3b348c;
   --override-tint: #edebfb;
 
-  --disabled-fill: #d8d4cb;
+  --disabled-fill: #c9c9c9;
   --highlight: #f6e3a8;
 
   /* Type. Body is 19px because 16px is the floor, not the target. */
@@ -61,6 +76,7 @@
   --size-micro: 16px;
   --size-file: 15px;
 
-  --radius-card: 6px;
-  --radius-control: 4px;
+  /* Square corners. Government sites do not have bubbles. */
+  --radius-card: 0;
+  --radius-control: 0;
 }

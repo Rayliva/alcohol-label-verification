@@ -84,10 +84,11 @@ export default function App() {
 
   return (
     <>
+      {agent ? (
       <header className="masthead">
-        {agent ? <Logo className="masthead__logo" /> : null}
+        <Logo className="masthead__logo" />
         <span className="masthead__name">Alcohol Label Verification</span>
-        {agent && step !== "input" && step !== "batch" && step !== "processing" ? (
+        {step !== "input" && step !== "batch" && step !== "processing" ? (
           <button
             className="button button--small button--primary"
             type="button"
@@ -99,8 +100,7 @@ export default function App() {
             Submit new application
           </button>
         ) : null}
-        {agent ? (
-          <span className="masthead__agent">
+        <span className="masthead__agent">
             <span className="masthead__who">Signed in as {agent}</span>
             <button
               className="button button--quiet"
@@ -113,9 +113,9 @@ export default function App() {
             >
               Sign out
             </button>
-          </span>
-        ) : null}
+        </span>
       </header>
+      ) : null}
 
       <main className="page">
         {checkingSession ? null : !agent ? (

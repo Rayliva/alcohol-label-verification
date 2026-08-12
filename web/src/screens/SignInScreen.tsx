@@ -6,10 +6,11 @@ import { Logo } from "../components/Logo";
 /**
  * The gate on a public URL.
  *
- * Not an identity system. One shared credential, no accounts, no reset, and
- * the copy says so rather than implying a password anyone could recover. The
- * credential is delivered out of band; nothing on this page hints at it, which
- * would defeat the point of having it.
+ * Not an identity system. One shared credential, no accounts, no reset. The
+ * credential is delivered out of band; nothing on this page hints at it, or
+ * even mentions that it is shared — either would help exactly the person the
+ * gate exists to keep out. The seal, the product name, and two fields; the
+ * screens behind the gate explain the product (decided 2026-08-11).
  */
 
 export function SignInScreen({ onSignedIn }: { onSignedIn: (who: string) => void }) {
@@ -35,13 +36,10 @@ export function SignInScreen({ onSignedIn }: { onSignedIn: (who: string) => void
   };
 
   return (
-    <section className="card card--narrow">
+    <section className="card card--narrow signin">
       <Logo className="signin__logo" />
-      <h1>Sign in</h1>
-      <p className="help">
-        Alcohol Label Verification compares label artwork against the values
-        declared in a COLA application.
-      </p>
+      <h1 className="signin__title">Alcohol Label Verification</h1>
+      <p className="signin__subtitle">Sign in to review applications</p>
 
       {error ? (
         <div className="notice notice--error" role="alert">
@@ -78,15 +76,11 @@ export function SignInScreen({ onSignedIn }: { onSignedIn: (who: string) => void
           />
         </label>
 
-        <button className="button button--primary" type="submit" disabled={busy}>
-          {busy ? "Signing in…" : "Sign in"}
-        </button>
-        {busy ? null : (
-          <p className="help" style={{ marginTop: 12 }}>
-            One shared account for the review team. If you do not have the
-            details, ask whoever sent you this link.
-          </p>
-        )}
+        <div className="signin__submit">
+          <button className="button button--primary" type="submit" disabled={busy}>
+            {busy ? "Signing in…" : "Sign in"}
+          </button>
+        </div>
       </form>
     </section>
   );
