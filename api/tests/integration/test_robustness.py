@@ -106,7 +106,7 @@ class TestOversizedPhotographs:
         # Every downstream stage sees the resampled pixels, OCR included: the
         # bytes handed to the engine are the resampled ones, not the upload.
         assert max(image.size) == MAX_WORKING_EDGE
-        assert image.size == (1778, 2400)
+        assert image.size == (1482, 2000)
         assert Image.open(BytesIO(ocr_bytes)).size == image.size
         assert len(ocr_bytes) < len(buffer.getvalue())
 

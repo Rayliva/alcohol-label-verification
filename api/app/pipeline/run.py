@@ -57,11 +57,11 @@ MAX_CROP_EDGE = 900
 # geometric measurement 299 ms to 2,602 ms - and it bought nothing, because the
 # text was legible at both sizes.
 #
-# 2400 is chosen to sit above the corpus rather than inside it: the largest
+# 2000 is the top of the calibration range, not a number above it: the largest
 # curated label is 2000 px on its long edge and the largest sample is 1932, so
-# every image any threshold was calibrated against passes through untouched.
-# Only photographs bigger than anything we have ever measured are resampled.
-MAX_WORKING_EDGE = 2400
+# every image any threshold was calibrated against passes through untouched,
+# and anything resampled lands inside that range rather than beyond it.
+MAX_WORKING_EDGE = 2000
 
 Extractor = Callable[[str], ExtractedFields]
 
@@ -120,6 +120,12 @@ def _decode(image_bytes: bytes) -> tuple[Image.Image, bytes]:
         )
     try:
         image = Image.open(BytesIO(image_bytes))
+        # libjpeg can decode straight to a half, quarter or eighth of the
+        # stored size, which is far cheaper than decoding 22 megapixels and
+        # then throwing most of them away. It is a no-op for any format that
+        # cannot do it, and for any image already small enough. Measured on a
+        # 4116x5556 photograph: 256 ms to reach 2000 px without it, 88 ms with.
+        image.draft("RGB", (MAX_WORKING_EDGE, MAX_WORKING_EDGE))
         image.load()
     except UnidentifiedImageError as exc:
         raise UnreadableImageError(
